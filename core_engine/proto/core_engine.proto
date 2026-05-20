@@ -1,0 +1,88 @@
+// eshodha fintech solution — Core Engine gRPC Service Definition
+//
+// Defines the contract between:
+//   Rust Consumer ──gRPC──► Python SubGraph Extractor ──► PyTorch GNN
+
+syntax = "proto3";
+package eshodha.core;
+
+option java_package = "ai.eshodha.core";
+
+// ─── Transaction Scoring Service ────────────────────────────────────
+
+service CoreEngine {
+  // Score a single transaction (< 150ms SLA)
+  rpc ScoreTransaction (TransactionRequest) returns (ScoringResponse);
+
+  // Extract the 3-hop subgraph for a user (for GNN inference)
+  rpc ExtractSubGraph (SubGraphRequest) returns (SubGraphResponse);
+
+  // Batch score multiple transactions
+  rpc ScoreBatch (BatchRequest) returns (BatchResponse);
+
+  // Health check
+  rpc HealthCheck (Empty) returns (HealthResponse);
+}
+
+// ─── Messages ───────────────────────────────────────────────────────
+
+message Empty {}
+
+message TransactionRequest {
+  string transaction_id = 1;
+  string user_id = 2;
+  string merchant_id = 3;
+  double amount = 4;
+  string currency = 5;
+  string category = 6;
+  string device_id = 7;
+  string ip_address = 8;
+  double latitude = 9;
+  double longitude = 10;
+  string timestamp = 11;
+}
+
+message ScoringResponse {
+  string transaction_id = 1;
+  string decision = 2;          // APPROVE | DECLINE | STEP_UP_AUTH
+  double risk_score = 3;        // Combined score [0, 1]
+  double graph_score = 4;       // GNN fraud probability
+  double xgboost_score = 5;     // XGBoost credit risk
+  double biometric_score = 6;   // Behavioral biometric score
+  double latency_ms = 7;
+  bool circuit_breaker_active = 8;
+  repeated string reason_codes = 9;
+}
+
+message SubGraphRequest {
+  string user_id = 1;
+  int32 hops = 2;               // Number of hops (default: 3)
+  int32 max_neighbors = 3;      // Max neighbors per hop (default: 50)
+}
+
+message SubGraphResponse {
+  repeated int64 node_ids = 1;
+  repeated int64 edge_src = 2;
+  repeated int64 edge_dst = 3;
+  repeated float node_features = 4;  // Flattened [num_nodes x feat_dim]
+  int32 num_nodes = 5;
+  int32 feat_dim = 6;
+  double extraction_ms = 7;
+}
+
+message BatchRequest {
+  repeated TransactionRequest transactions = 1;
+}
+
+message BatchResponse {
+  repeated ScoringResponse results = 1;
+  double total_latency_ms = 2;
+}
+
+message HealthResponse {
+  string status = 1;
+  bool neo4j_connected = 2;
+  bool redis_connected = 3;
+  bool models_loaded = 4;
+  double avg_latency_ms = 5;
+}

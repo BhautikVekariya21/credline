@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=70.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finguard"
+version = "1.0.0"
+description = "FinGuard 2026: Autonomous Fraud Prevention & Inclusive Credit Scoring"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11,<3.13"
+authors = [
+    {name = "FinGuard Team"},
+]
+
+dependencies = [
+    # Core
+    "pydantic>=2.8,<3.0",
+    "pydantic-settings>=2.4",
+    "numpy>=1.26,<2.1",
+    "pandas>=2.2,<3.0",
+    "scipy>=1.13,<2.0",
+    "scikit-learn>=1.5,<2.0",
+    "structlog>=24.1",
+    "python-dotenv>=1.0",
+
+    # ML - PyTorch ecosystem
+    "torch>=2.3,<3.0",
+    "torch-geometric>=2.5,<3.0",
+    "xgboost>=2.1,<3.0",
+
+    # Feature Store
+    "feast>=0.40",
+
+    # Streaming
+    "confluent-kafka>=2.5,<3.0",
+
+    # API Serving
+    "fastapi>=0.115,<1.0",
+    "uvicorn[standard]>=0.32",
+    "gunicorn>=22.0",
+    "httpx>=0.27",
+
+    # Privacy & Explainability
+    "flwr>=1.26",
+    "shap>=0.45",
+
+    # Monitoring
+    "prometheus-client>=0.21",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "mypy>=1.11",
+    "locust>=2.29",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true

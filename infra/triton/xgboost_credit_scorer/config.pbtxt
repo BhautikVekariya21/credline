@@ -1,0 +1,82 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# FinGuard 2026 — NVIDIA Triton Inference Server Configuration
+#
+# Deploys the GPU-accelerated XGBoost credit scoring model for
+# sub-10ms inference latency. Triton handles:
+#   - Model versioning (hot-swap without downtime)
+#   - Dynamic batching (groups requests for GPU efficiency)
+#   - Health monitoring and metrics export
+#
+# Model format: XGBoost JSON (xgb_credit_gpu.json)
+# Expected input: 25 float32 features (thin-file credit data)
+# Output: 1 float32 credit score [300, 850]
+#
+# Deploy:
+#   docker run --gpus all -v $(pwd)/triton_models:/models \
+#     nvcr.io/nvidia/tritonserver:24.05-py3 \
+#     tritonserver --model-repository=/models
+# ═══════════════════════════════════════════════════════════════════════════
+
+name: "xgboost_credit_scorer"
+platform: "ensemble"
+max_batch_size: 1024
+
+# ─── Dynamic Batching ─────────────────────────────────────────────────
+# Groups incoming requests into optimal GPU batches.
+# max_queue_delay: wait up to 5ms to fill a batch.
+dynamic_batching {
+  preferred_batch_size: [ 64, 128, 256, 512 ]
+  max_queue_delay_microseconds: 5000
+}
+
+# ─── Input Specification ──────────────────────────────────────────────
+# 25 features from the thin-file credit pipeline:
+#   [telco: 10] + [utility: 7] + [ecommerce: 4] + [app: 4] = 25
+input [
+  {
+    name: "input__0"
+    data_type: TYPE_FP32
+    dims: [ 25 ]
+  }
+]
+
+# ─── Output Specification ─────────────────────────────────────────────
+# Single credit score prediction [300, 850]
+output [
+  {
+    name: "output__0"
+    data_type: TYPE_FP32
+    dims: [ 1 ]
+  }
+]
+
+# ─── Model Versioning ────────────────────────────────────────────────
+# Triton auto-loads the latest version from:
+#   triton_models/xgboost_credit_scorer/1/xgboost.json
+#   triton_models/xgboost_credit_scorer/2/xgboost.json (hot-swap)
+version_policy {
+  latest {
+    num_versions: 2
+  }
+}
+
+# ─── Instance Groups ─────────────────────────────────────────────────
+# GPU inference with CPU fallback
+instance_group [
+  {
+    count: 2
+    kind: KIND_GPU
+    gpus: [ 0 ]
+  },
+  {
+    count: 1
+    kind: KIND_CPU
+  }
+]
+
+# ─── Metrics & Monitoring ────────────────────────────────────────────
+# Prometheus metrics at :8002/metrics
+parameters {
+  key: "execute_delay_ns"
+  value: { string_value: "0" }
+}

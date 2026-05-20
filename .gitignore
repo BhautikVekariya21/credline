@@ -1,0 +1,32 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python caching & tests
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+.eggs/
+*.egg-info/
+finguard.egg-info/
+
+# Node dependencies & builds
+node_modules/
+dist/
+dist-ssr/
+*.local
+tsconfig.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environments
+.env
+.env.production
+.env.development

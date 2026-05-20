@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: finguard-api
+  namespace: finguard
+  labels: { app: finguard-api }
+spec:
+  replicas: 3
+  selector:
+    matchLabels: { app: finguard-api }
+  template:
+    metadata:
+      labels: { app: finguard-api }
+    spec:
+      containers:
+        - name: api
+          image: finguard/api:latest
+          ports: [{ containerPort: 8000 }]
+          resources:
+            requests: { cpu: "500m", memory: "1Gi" }
+            limits: { cpu: "2000m", memory: "4Gi" }
+          env:
+            - { name: APP_ENV, value: "production" }
+            - { name: API_HOST, value: "0.0.0.0" }
+            - { name: API_PORT, value: "8000" }
+            - { name: API_KEY, valueFrom: { secretKeyRef: { name: finguard-secrets, key: api-key } } }
+            - { name: KAFKA_BOOTSTRAP_SERVERS, value: "kafka.finguard.svc:9092" }
+          readinessProbe:
+            httpGet: { path: /readiness, port: 8000 }
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 60
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: finguard-api
+  namespace: finguard
+spec:
+  selector: { app: finguard-api }
+  ports: [{ port: 80, targetPort: 8000 }]
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: finguard-api-hpa
+  namespace: finguard
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: finguard-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource: { name: cpu, target: { type: Utilization, averageUtilization: 70 } }
+    - type: Resource
+      resource: { name: memory, target: { type: Utilization, averageUtilization: 80 } }

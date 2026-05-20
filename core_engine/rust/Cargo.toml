@@ -1,0 +1,21 @@
+[package]
+name = "eshodha-core-engine"
+version = "0.1.0"
+edition = "2021"
+description = "High-frequency Kafka consumer for eshodha fintech — 10K+ TPS ingestion to Neo4j/Redis"
+
+[dependencies]
+rdkafka = { version = "0.36", features = ["cmake-build", "ssl"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+neo4rs = "0.7"
+redis = { version = "0.25", features = ["aio", "tokio-comp"] }
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tonic = "0.12"
+prost = "0.13"
+dashmap = "6"
+anyhow = "1"

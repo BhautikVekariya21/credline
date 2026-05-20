@@ -1,0 +1,141 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# FinGuard 2026 — Chaos Mesh Experiments for Kafka Pipeline
+#
+# Tests resilience of the Kafka → Feature Store → ML Pipeline
+# by injecting controlled failures:
+#   1. Network partition between Kafka and API
+#   2. Pod kill on the Feast feature server
+#   3. CPU stress on ML inference pods
+#   4. Time skew to test temporal model stability
+#
+# Deploy:
+#   kubectl apply -f chaos_experiments.yaml
+#
+# Requires: Chaos Mesh installed in the cluster
+#   helm install chaos-mesh chaos-mesh/chaos-mesh --namespace chaos-testing
+# ═══════════════════════════════════════════════════════════════════════════
+
+---
+# Experiment 1: Network Partition — Kafka ↔ API
+# Simulates network failure between the streaming pipeline and the API
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: finguard-kafka-partition
+  namespace: finguard
+  labels:
+    app.kubernetes.io/part-of: finguard
+    chaos.finguard.io/type: network
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces: [finguard]
+    labelSelectors:
+      app: finguard-api
+  direction: both
+  target:
+    selector:
+      namespaces: [finguard]
+      labelSelectors:
+        app: finguard-kafka
+    mode: all
+  duration: "120s"
+  scheduler:
+    cron: "@every 6h"
+
+---
+# Experiment 2: Pod Kill — Random API pod
+# Tests Kubernetes self-healing and HPA responsiveness
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: finguard-api-pod-kill
+  namespace: finguard
+  labels:
+    app.kubernetes.io/part-of: finguard
+    chaos.finguard.io/type: pod
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces: [finguard]
+    labelSelectors:
+      app: finguard-api
+  gracePeriod: 0
+  duration: "30s"
+  scheduler:
+    cron: "@every 4h"
+
+---
+# Experiment 3: CPU Stress — ML Inference Pods
+# Simulates high CPU load to test circuit breaker activation
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: finguard-ml-cpu-stress
+  namespace: finguard
+  labels:
+    app.kubernetes.io/part-of: finguard
+    chaos.finguard.io/type: stress
+spec:
+  mode: one
+  selector:
+    namespaces: [finguard]
+    labelSelectors:
+      app: finguard-api
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+  duration: "60s"
+  scheduler:
+    cron: "@every 8h"
+
+---
+# Experiment 4: Time Skew — Temporal Model Stability
+# Shifts system clock to test TFT model temporal invariance
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: finguard-time-skew
+  namespace: finguard
+  labels:
+    app.kubernetes.io/part-of: finguard
+    chaos.finguard.io/type: time
+spec:
+  mode: one
+  selector:
+    namespaces: [finguard]
+    labelSelectors:
+      app: finguard-api
+  timeOffset: "-5m"
+  duration: "120s"
+  scheduler:
+    cron: "@every 12h"
+
+---
+# Experiment 5: I/O Latency — Redis Feature Store
+# Injects latency into Redis reads to test feature-store fallback
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: finguard-redis-io-delay
+  namespace: finguard
+  labels:
+    app.kubernetes.io/part-of: finguard
+    chaos.finguard.io/type: io
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces: [finguard]
+    labelSelectors:
+      app: finguard-redis
+  volumePath: /data
+  path: "*"
+  delay: "200ms"
+  percent: 50
+  duration: "90s"
+  scheduler:
+    cron: "@every 6h"
