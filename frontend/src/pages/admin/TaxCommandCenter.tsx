@@ -130,7 +130,14 @@ export default function TaxCommandCenter() {
   const isProd = import.meta.env.PROD; // environment variable production flag
 
   const { data: liveData, isMocked: dashboardMocked } = useMockData<GSTDashboard>('/compliance/gst/dashboard', MOCK_GST);
-  const { data: liveAlerts, isMocked: alertsMocked } = useMockData<CriticalAlert[]>('/compliance/monitor/alerts', MOCK_ALERTS, { pollInterval: 20_000 });
+  const { data: liveAlerts, isMocked: alertsMocked } = useMockData<CriticalAlert[]>(
+    '/compliance/monitor/alerts',
+    MOCK_ALERTS,
+    {
+      pollInterval: 20_000,
+      normalize: (json: any) => (Array.isArray(json) ? json : json?.alerts ?? []),
+    }
+  );
   
   const [activeTab, setActiveTab] = useState<TaxTab>('overview');
   const [gstin, setGstin] = useState('29ABCDE1234F1Z5');

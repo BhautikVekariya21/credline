@@ -66,52 +66,67 @@ export default function HomePage() {
    HERO
    ═══════════════════════════════════════════════════════════════════════ */
 function Hero() {
+  const [totalVolume, setTotalVolume] = useState(8349120490);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTotalVolume(prev => prev + Math.floor(Math.random() * 8500) + 1500);
+    }, 400);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section className="relative overflow-hidden pt-32 pb-24 border-b border-[var(--border-secondary)]">
       {/* Background Gradient Mesh */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[60%] rounded-full bg-eshodha-500/10 blur-[120px] dark:bg-eshodha-500/20" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[70%] rounded-full bg-brand-green/5 blur-[150px] dark:bg-brand-green/10" />
-        <div className="absolute top-[20%] right-[10%] w-[40%] h-[50%] rounded-full bg-eshodha-300/10 blur-[100px] dark:bg-eshodha-200/15" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,var(--bg-primary)_80%)]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[60%] rounded-full bg-gradient-to-tr from-eshodha-500/10 to-brand-soft/20 blur-[130px] dark:from-eshodha-600/15 dark:to-brand-soft/5" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[65%] h-[70%] rounded-full bg-gradient-to-br from-brand-green/8 via-eshodha-400/5 to-transparent blur-[160px] dark:from-brand-green/5" />
+        <div className="absolute top-[20%] right-[10%] w-[45%] h-[50%] rounded-full bg-eshodha-300/10 blur-[110px] dark:bg-eshodha-200/10" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,var(--bg-primary)_85%)]" />
+        <div className="absolute inset-0 bg-grid-white/[0.02] dark:bg-grid-black/[0.02]" />
       </div>
 
-      <div className="public-wrap relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div className="public-wrap relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
         <div className="lg:col-span-6 space-y-6">
           {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-eshodha-500/10 border border-eshodha-500/20 text-xs font-semibold text-eshodha-500 animate-pulse-soft">
-            <span className="w-1.5 h-1.5 rounded-full bg-eshodha-500" />
-            Phase 12: Absolute Sovereign FinOps & Multi-Agent Ledger Control
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-eshodha-500/20 text-xs font-semibold text-eshodha-500 shadow-sm hover:border-eshodha-500/40 transition-colors">
+            <span className="w-2 h-2 rounded-full bg-eshodha-500 animate-pulse" />
+            <span className="font-mono tracking-wide text-[10px] text-[var(--text-secondary)]">SYSTEM REVENUE VELOCITY:</span>
+            <span className="font-mono font-extrabold">₹{totalVolume.toLocaleString('en-IN')}</span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] font-display">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] font-display text-[var(--text-primary)]">
             Autonomous <br />
-            FinOps & Strategic <br />
-            <span className="bg-gradient-to-r from-eshodha-500 to-eshodha-300 bg-clip-text text-transparent">Corporate Ledger Control.</span>
+            FinOps & Sovereign <br />
+            <span className="bg-gradient-to-r from-eshodha-500 via-[#d3827b] to-[#f0c8b8] bg-clip-text text-transparent drop-shadow-sm">Corporate Ledgers.</span>
           </h1>
 
-          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl">
-            <strong>eshodha fintech solution</strong> completely automates enterprise accounting, forensic audits, tax filing, and CFO strategic forecasting. Driven by sovereign multi-agent cognitive loops with zero-tolerance double-entry invariance.
+          <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl font-normal">
+            <strong>eshodha fintech solution</strong> shifts enterprise financial operations into an absolute, autonomous monopoly. Continuous double-entry verification loops compile journals, reconcile purchases, and forecast liquidity runaways with board-ready attributions.
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link to="/admin" className="px-6 py-3 rounded-xl bg-eshodha-500 hover:bg-eshodha-600 text-white font-bold text-sm shadow-md transition-all duration-200 flex items-center gap-2 group hover:shadow-lg">
+          <div className="flex flex-wrap items-center gap-3.5 pt-2">
+            <Link to="/admin" className="px-6 py-3.5 rounded-xl bg-eshodha-500 hover:bg-eshodha-600 text-white font-bold text-sm shadow-md hover:shadow-lg hover:shadow-eshodha-500/10 transition-all duration-200 flex items-center gap-2 group">
               Start Admin Console <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
-            <Link to="/services" className="px-6 py-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-bold text-sm transition-all duration-200 flex items-center gap-1.5">
+            <Link to="/services" className="px-6 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-bold text-sm transition-all duration-200 flex items-center gap-1.5">
               Explore Services <ArrowRight size={16} />
             </Link>
           </div>
 
-          <div className="flex items-center gap-4 pt-4">
-            <div className="flex -space-x-2">
-              {['#b75d57', '#5d7ab7', '#5db793', '#b7a35d', '#7d5db7'].map((c, i) => (
-                <div key={i} className="w-7 h-7 rounded-full border border-[var(--bg-primary)] shadow-sm" style={{ background: c, zIndex: 5 - i }} />
-              ))}
+          <div className="grid grid-cols-3 gap-6 pt-6 border-t border-[var(--border-secondary)]">
+            <div>
+              <span className="block text-2xl font-extrabold text-[var(--text-primary)] font-mono">100%</span>
+              <span className="block text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-wider mt-0.5">Invariance Checked</span>
             </div>
-            <p className="text-xs text-[var(--text-secondary)]">
-              Authorized by **500+ institutional risk divisions** for autonomous compliance
-            </p>
+            <div>
+              <span className="block text-2xl font-extrabold text-[var(--text-primary)] font-mono">&lt;15ms</span>
+              <span className="block text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-wider mt-0.5">Risk Intervention</span>
+            </div>
+            <div>
+              <span className="block text-2xl font-extrabold text-[var(--text-primary)] font-mono">SOC2</span>
+              <span className="block text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-wider mt-0.5">Audited Sandbox</span>
+            </div>
           </div>
         </div>
 
@@ -125,8 +140,14 @@ function Hero() {
 
 function DashboardPreview() {
   const [tick, setTick] = useState(0);
+  const [invarianceDiff, setInvarianceDiff] = useState(0.00);
+
   useEffect(() => {
-    const id = setInterval(() => setTick((t) => t + 1), 3000);
+    const id = setInterval(() => {
+      setTick((t) => t + 1);
+      // Small fluctuation in invariance calculation which auto-resolves
+      setInvarianceDiff(Math.random() < 0.1 ? 12450.00 : 0.00);
+    }, 3000);
     return () => clearInterval(id);
   }, []);
 
@@ -139,66 +160,86 @@ function DashboardPreview() {
   const active = tick % entries.length;
 
   return (
-    <div className="w-full max-w-md rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-2xl overflow-hidden font-mono text-xs">
-      {/* Header bar */}
-      <div className="flex items-center justify-between border-b border-[var(--border-secondary)] px-4 py-3 bg-[var(--bg-secondary)]/50">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-risk-high" />
-          <span className="w-2.5 h-2.5 rounded-full bg-risk-medium" />
-          <span className="w-2.5 h-2.5 rounded-full bg-risk-low" />
-        </div>
-        <span className="text-[10px] font-bold text-[var(--text-tertiary)] tracking-wider">ESHODHA FINOPS INTERCEPTOR</span>
-        <div className="flex items-center gap-1 text-[10px] text-risk-low font-bold">
-          <span className="w-1.5 h-1.5 rounded-full bg-risk-low animate-ping" />
-          ACTIVE
-        </div>
-      </div>
-
-      {/* Main Console view */}
-      <div className="p-4 space-y-4">
-        {/* Double-entry Balance Visualizer */}
-        <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] p-3">
-          <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)] mb-2">
-            <span>INVARIANCE VERIFIER</span>
-            <span className="text-risk-low font-bold">MATCHED</span>
+    <div className="relative group w-full max-w-md">
+      {/* Visual background glow around dashboard */}
+      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-eshodha-500 to-brand-soft opacity-20 blur-lg group-hover:opacity-30 transition-opacity duration-300" />
+      
+      <div className="relative w-full rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-2xl overflow-hidden font-mono text-[11px] backdrop-blur-md">
+        {/* Header bar */}
+        <div className="flex items-center justify-between border-b border-[var(--border-secondary)] px-4 py-3.5 bg-[var(--bg-secondary)]/50">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#e07060]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#d4a84b]" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#4eba7a]" />
           </div>
-          <div className="flex items-center justify-around py-1">
-            <div className="text-center">
-              <span className="block text-[10px] text-[var(--text-secondary)]">DEBITS LEG</span>
-              <span className="text-xs font-bold text-[var(--text-primary)]">₹83,21,450.00</span>
-            </div>
-            <div className="h-6 w-px bg-[var(--border-secondary)]" />
-            <div className="text-center">
-              <span className="block text-[10px] text-[var(--text-secondary)]">CREDITS LEG</span>
-              <span className="text-xs font-bold text-[var(--text-primary)]">₹83,21,450.00</span>
-            </div>
-          </div>
-          <div className="h-1.5 w-full bg-[var(--bg-secondary)] rounded-full overflow-hidden mt-2 border border-[var(--border-secondary)]">
-            <div className="h-full bg-risk-low transition-all duration-500" style={{ width: '100%' }} />
+          <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] tracking-widest uppercase">ESHODHA FINOPS COCKPIT</span>
+          <div className="flex items-center gap-1.5 text-[9px] text-[#4eba7a] font-bold bg-[#4eba7a]/8 border border-[#4eba7a]/20 px-2 py-0.5 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4eba7a] animate-ping" />
+            LIVE CDC
           </div>
         </div>
 
-        {/* Ledger Event stream */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-[10px] text-[var(--text-tertiary)]">
-            <span>CDC WAL EVENT OBSERVER</span>
-            <span>Real-time</span>
-          </div>
-          <div className="space-y-1.5">
-            {entries.map((item, idx) => (
-              <div key={item.id} className={cn('p-2.5 rounded-lg border transition-all duration-300 flex items-center justify-between', idx === active ? 'bg-eshodha-500/5 border-eshodha-500/20' : 'bg-transparent border-transparent opacity-50')}>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-[var(--text-primary)]">{item.id}</span>
-                    <span className={cn('text-[9px] px-1.5 py-0.5 rounded-full font-bold', idx === active ? 'bg-eshodha-500/10 text-eshodha-500' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
-                      {item.status}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-[var(--text-secondary)] block mt-0.5">{item.label}</span>
-                </div>
-                <span className={cn('font-bold font-mono', item.color)}>{item.value}</span>
+        {/* Main Console view */}
+        <div className="p-5 space-y-4">
+          {/* Double-entry Balance Visualizer */}
+          <div className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] p-4 space-y-3">
+            <div className="flex items-center justify-between text-[9px] text-[var(--text-tertiary)] font-bold">
+              <span>LEDGER BALANCE INVARIANCE: ∑(D) - ∑(C)</span>
+              {invarianceDiff === 0 ? (
+                <span className="text-[#4eba7a] font-extrabold bg-[#4eba7a]/8 px-1.5 py-0.5 rounded">Δ = 0.00 (GAAP BALANCED)</span>
+              ) : (
+                <span className="text-[#e07060] font-extrabold bg-[#e07060]/8 px-1.5 py-0.5 rounded animate-pulse">RE-ALIGNING LEDGER</span>
+              )}
+            </div>
+            <div className="flex items-center justify-around py-1 bg-[var(--bg-card)] rounded-lg border border-[var(--border-secondary)] p-2">
+              <div className="text-center">
+                <span className="block text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-wider">DEBITS</span>
+                <span className="text-xs font-extrabold text-[var(--text-primary)]">₹83,21,450.00</span>
               </div>
-            ))}
+              <div className="h-6 w-px bg-[var(--border-secondary)]" />
+              <div className="text-center">
+                <span className="block text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-wider">CREDITS</span>
+                <span className="text-xs font-extrabold text-[var(--text-primary)]">₹83,21,450.00</span>
+              </div>
+            </div>
+            <div className="h-1.5 w-full bg-[var(--bg-secondary)] rounded-full overflow-hidden border border-[var(--border-secondary)]">
+              <div 
+                className={cn('h-full transition-all duration-500', invarianceDiff === 0 ? 'bg-[#4eba7a]' : 'bg-[#e07060]')} 
+                style={{ width: invarianceDiff === 0 ? '100%' : '90%' }} 
+              />
+            </div>
+          </div>
+
+          {/* Ledger Event stream */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-[9px] text-[var(--text-tertiary)] font-bold">
+              <span>CDC WRITE-AHEAD LOG STREAM</span>
+              <span className="text-eshodha-500">PQC SIGNED</span>
+            </div>
+            <div className="space-y-2">
+              {entries.map((item, idx) => (
+                <div 
+                  key={item.id} 
+                  className={cn(
+                    'p-3 rounded-xl border transition-all duration-300 flex items-center justify-between', 
+                    idx === active 
+                      ? 'bg-eshodha-500/5 border-eshodha-500/30 scale-[1.02] shadow-sm' 
+                      : 'bg-transparent border-transparent opacity-45'
+                  )}
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-extrabold text-[var(--text-primary)]">{item.id}</span>
+                      <span className={cn('text-[9px] px-1.5 py-0.5 rounded-full font-bold font-sans', idx === active ? 'bg-eshodha-500/10 text-eshodha-500 border border-eshodha-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
+                        {item.status}
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-[var(--text-secondary)] block mt-1 truncate">{item.label}</span>
+                  </div>
+                  <span className={cn('font-extrabold font-mono text-[var(--text-primary)] text-right pl-3', idx === active && item.color === 'text-risk-high' ? 'text-[#e07060]' : idx === active && item.color === 'text-risk-low' ? 'text-[#4eba7a]' : '')}>{item.value}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -222,13 +263,13 @@ const TRUST_BADGES = [
 
 function TrustBar() {
   return (
-    <div className="py-4 border-y border-[var(--border-secondary)] bg-[var(--bg-secondary)]/30 overflow-hidden">
+    <div className="py-5 border-y border-[var(--border-secondary)] bg-[var(--bg-secondary)]/30 overflow-hidden backdrop-blur-sm">
       <div className="public-wrap flex items-center justify-between gap-6">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--text-tertiary)] whitespace-nowrap flex-shrink-0">
-          Regulatory Protocols
+        <span className="text-[9px] font-extrabold uppercase tracking-widest text-[var(--text-tertiary)] whitespace-nowrap flex-shrink-0">
+          REGULATORY PROTOCOLS
         </span>
         <div className="relative w-full overflow-hidden">
-          <div className="flex items-center gap-8 animate-shimmer whitespace-nowrap">
+          <div className="flex items-center gap-12 animate-shimmer whitespace-nowrap">
             {TRUST_BADGES.concat(TRUST_BADGES).map((b, i) => (
               <span key={i} className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]">
                 <span>{b.icon}</span> {b.label}
@@ -352,8 +393,12 @@ function ValueSimulatorSection() {
    ═══════════════════════════════════════════════════════════════════════ */
 function AgentOrchestrationSection() {
   const { ref } = useReveal();
-
   const [activeAgent, setActiveAgent] = useState(0);
+  const [consoleLogs, setConsoleLogs] = useState<string[]>([
+    'System: Booting Sovereign Multi-Agent FinOps environment...',
+    'System: Establishing double-entry ledger database hook...',
+    'System: Active agents synced: [Bookkeeper, Tax Consultant, Forensic Auditor, CFO]',
+  ]);
 
   const agents = [
     {
@@ -382,15 +427,42 @@ function AgentOrchestrationSection() {
     },
   ];
 
+  // Dynamic telemetry log simulation
+  useEffect(() => {
+    const loopLogs = [
+      'Staff Accountant: Intercepted WAL sequence #948210. Journal JRN-48092 opened.',
+      'Tax Consultant: Splitting CGST (9%) / SGST (9%) for HSN 998313 (IT Services).',
+      'Forensic Auditor: Chi-Squared goodness-of-fit run on 1,200 samples. Chi-Sq score: 12.44.',
+      'Sovereign CFO: Balance sheet invariant confirmed (Debit=Credit). Runway certified at 18.4m.',
+      'Staff Accountant: Committing journal JRN-48092 with SHA-256 integrity hash.',
+      'Tax Consultant: Formulating GSTR-3B payload parameters. Recurrent liability computed.',
+      'Forensic Auditor: Benford probability test matches logarithmic distribution. Verified.',
+      'Sovereign CFO: AI narrative compiled. Action: freeze Sector B marketing variables.'
+    ];
+
+    let current = 0;
+    const interval = setInterval(() => {
+      setConsoleLogs(prev => {
+        const nextLogs = [...prev, loopLogs[current]];
+        // Cap logs at 10 items
+        if (nextLogs.length > 10) nextLogs.shift();
+        return nextLogs;
+      });
+      current = (current + 1) % loopLogs.length;
+    }, 4500);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section ref={ref as React.RefObject<HTMLElement>} className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10 reveal">
       <div className="public-wrap">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500">Autonomous Ledger Control</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500 font-mono">Autonomous Ledger Control</p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
             Replace legacy processes with Sovereign Multi-Agent AI
           </h2>
-          <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
+          <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
             Four specialized autonomous financial agents work continuously in the background to handle bookkeeping, compliance reporting, forensic statistical checking, and strategic forecasting.
           </p>
         </div>
@@ -409,7 +481,7 @@ function AgentOrchestrationSection() {
                     : 'bg-transparent border-transparent text-[var(--text-secondary)]'
                 )}
               >
-                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0', activeAgent === idx ? 'bg-eshodha-500/10 text-eshodha-500' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
+                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors', activeAgent === idx ? 'bg-eshodha-500/10 text-eshodha-500 border border-eshodha-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
                   <Bot size={18} />
                 </div>
                 <div>
@@ -421,8 +493,8 @@ function AgentOrchestrationSection() {
           </div>
 
           {/* Active Agent detail display */}
-          <div className="lg:col-span-7">
-            <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-xl min-h-[320px] flex flex-col justify-between">
+          <div className="lg:col-span-7 space-y-4">
+            <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-xl min-h-[300px] flex flex-col justify-between">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 text-eshodha-500">
                   <Cpu size={20} />
@@ -434,12 +506,12 @@ function AgentOrchestrationSection() {
                 </p>
               </div>
 
-              {/* Log simulation */}
+              {/* Local Logger View */}
               <div className="mt-6 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/50 p-4 font-mono text-[10px] text-[var(--text-secondary)] space-y-1.5">
-                <div className="flex items-center justify-between border-b border-[var(--border-primary)] pb-1.5 mb-2 font-bold">
-                  <span>TELEMETRY CONSOLE LOGGER</span>
-                  <span className="text-risk-low flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-risk-low animate-ping" /> ONLINE
+                <div className="flex items-center justify-between border-b border-[var(--border-primary)] pb-1.5 mb-2 font-bold text-[9px]">
+                  <span>LOCAL TELEMETRY CONSOLE</span>
+                  <span className="text-[#4eba7a] flex items-center gap-1">
+                    <span className="w-1 h-1 rounded-full bg-[#4eba7a] animate-ping" /> READY
                   </span>
                 </div>
                 {agents[activeAgent].log.map((line, lIdx) => (
@@ -450,6 +522,25 @@ function AgentOrchestrationSection() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Real-time Multi-Agent Communication Ticker */}
+        <div className="card p-5 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg mt-8 font-mono text-[11px]">
+          <div className="flex items-center justify-between border-b border-[var(--border-secondary)] pb-3 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-eshodha-500" />
+              <span className="font-extrabold text-[var(--text-primary)]">COGNITIVE MULTI-AGENT NETWORK MONITOR</span>
+            </div>
+            <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">PORT 50051 streaming</span>
+          </div>
+          <div className="space-y-1.5 max-h-36 overflow-y-auto">
+            {consoleLogs.map((log, index) => (
+              <div key={index} className="flex items-start gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
+                <span className="text-eshodha-500 flex-shrink-0">&gt;</span>
+                <span className="leading-relaxed">{log}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

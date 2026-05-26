@@ -502,8 +502,8 @@ button {
 
 .admin-site[data-font="satoshi"],
 .admin-site {
-  --font-sans: "Satoshi", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Satoshi", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-display: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
 }
 
 .admin-site[data-font="system"] {
