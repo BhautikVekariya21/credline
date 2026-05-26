@@ -113,8 +113,10 @@ def create_app() -> FastAPI:
     app.include_router(core_router)
 
     # Phase 11: Autonomous Compliance & Tax
-    from compliance.compliance_router import router as compliance_router
+    from compliance.compliance_router import router as compliance_router, compat_router as compliance_compat_router
     app.include_router(compliance_router)
+    app.include_router(compliance_compat_router)
+
 
     return app
 

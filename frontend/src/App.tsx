@@ -23,8 +23,10 @@ import {
 // Admin Pages
 import Dashboard from './pages/admin/Dashboard';
 import Settings from './pages/admin/Settings';
-import TaxCenter from './pages/admin/TaxCenter';
+import TaxCommandCenter from './pages/admin/TaxCommandCenter';
 import DatabaseConnectorPage from './pages/admin/DatabaseConnectorPage';
+import NotificationsPage from './pages/admin/NotificationsPage';
+import AuditLogPage from './pages/admin/AuditLogPage';
 import {
   CreditEnginePage,
   FederationPage,
@@ -70,10 +72,13 @@ export default function App() {
         <Route path="/admin/quantum" element={<QuantumPage />} />
         <Route path="/admin/infra" element={<InfrastructurePage />} />
         <Route path="/admin/database" element={<DatabaseConnectorPage />} />
-        <Route path="/admin/tax" element={<TaxCenter />} />
+        <Route path="/admin/tax" element={<TaxCommandCenter />} />
+
         <Route path="/admin/payments" element={<PaymentsIntelligencePage />} />
         <Route path="/admin/wealth" element={<WealthRiskPage />} />
         <Route path="/admin/regtech" element={<RegTechConsolePage />} />
+        <Route path="/admin/notifications" element={<NotificationsPage />} />
+        <Route path="/admin/audit" element={<AuditLogPage />} />
         <Route path="/admin/settings" element={<Settings />} />
       </Route>
     </Routes>

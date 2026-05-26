@@ -1,10 +1,12 @@
-import { useEffect, type CSSProperties } from 'react';
+import { useEffect, useState, useRef, type CSSProperties } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, CreditCard, Network, Bot, Settings,
   ChevronLeft, ChevronRight, Activity, Globe, Zap,
   Database, AlertTriangle, Receipt, DatabaseZap,
-  Banknote, LineChart, FileText,
+  Banknote, LineChart, FileText, Bell, ClipboardList,
+  Check,
+
 } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import { useAppStore } from '../../store/useAppStore';
@@ -21,31 +23,47 @@ const NAV_ITEMS = [
   { id: 'infrastructure', label: 'Infrastructure',      icon: Database,        path: '/admin/infra' },
   { id: 'database',       label: 'DB Connector',        icon: DatabaseZap,     path: '/admin/database' },
   { id: 'tax',            label: 'Tax Center',          icon: Receipt,         path: '/admin/tax' },
-  // ─── New Service Modules ──────────────────────────
+  // ─── Service Modules ──────────────────────────────
   { id: 'payments',       label: 'Payment Intel',       icon: Banknote,        path: '/admin/payments' },
   { id: 'wealth',         label: 'Wealth Risk',         icon: LineChart,       path: '/admin/wealth' },
   { id: 'regtech',        label: 'RegTech Console',     icon: FileText,        path: '/admin/regtech' },
+  // ─── Operations ───────────────────────────────────
+  { id: 'notifications',  label: 'Notifications',       icon: Bell,            path: '/admin/notifications' },
+  { id: 'audit',          label: 'Audit Trail',         icon: ClipboardList,   path: '/admin/audit' },
   // ─── Settings ─────────────────────────────────────
   { id: 'settings',       label: 'Preferences',         icon: Settings,        path: '/admin/settings' },
 ];
 
 export default function AppLayout() {
-  const { sidebarOpen, setSidebarOpen, theme, font } = useAppStore();
+  const { sidebarOpen, setSidebarOpen, theme, font, notifications, markAsRead } = useAppStore();
   const location = useLocation();
   const navigate = useNavigate();
 
+  const [bellOpen, setBellOpen] = useState(false);
+  const bellRef = useRef<HTMLDivElement>(null);
+
   const activeItem = NAV_ITEMS.find(n => n.path === location.pathname) || NAV_ITEMS[0];
   const shellStyle = { '--admin-sidebar-width': sidebarOpen ? '16rem' : '72px' } as CSSProperties;
+  const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Synchronization handled by ThemeContext.tsx
+
+
+  // Close bell dropdown on outside click
   useEffect(() => {
-    const root = document.documentElement;
-    const hadDarkClass = root.classList.contains('dark');
-    root.classList.remove('dark');
-
-    return () => {
-      if (hadDarkClass) root.classList.add('dark');
+    const handler = (e: MouseEvent) => {
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) {
+        setBellOpen(false);
+      }
     };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
   }, []);
+
+  // Close bell on route change
+  useEffect(() => { setBellOpen(false); }, [location.pathname]);
+
+  const recentNotifs = notifications.slice(0, 6);
 
   return (
     <div className="admin-site min-h-screen flex" data-theme={theme} data-font={font} style={shellStyle}>
@@ -82,7 +100,16 @@ export default function AppLayout() {
                 {sidebarOpen && (
                   <span className="admin-nav-label animate-fade-in truncate">{item.label}</span>
                 )}
-                {isActive && sidebarOpen && (
+                {/* Show unread badge on Notifications nav item */}
+                {item.id === 'notifications' && unreadCount > 0 && sidebarOpen && (
+                  <span className="ml-auto rounded-full bg-risk-high px-1.5 py-0.5 text-[9px] font-bold text-white leading-none">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+                {item.id === 'notifications' && unreadCount > 0 && !sidebarOpen && (
+                  <span className="absolute right-2 top-1 h-2 w-2 rounded-full bg-risk-high" />
+                )}
+                {isActive && sidebarOpen && item.id !== 'notifications' && (
                   <div className="admin-active-dot ml-auto h-1.5 w-1.5 rounded-sm bg-[var(--brand-accent)]" />
                 )}
               </button>
@@ -120,11 +147,93 @@ export default function AppLayout() {
             </div>
 
             {/* Right Side Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* System Status */}
               <div className="hidden items-center gap-2 rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 sm:flex">
                 <div className="w-2 h-2 rounded-sm bg-risk-low pulse-dot" />
                 <span className="text-xs font-medium text-risk-low">All Systems Operational</span>
+              </div>
+
+              {/* Notification Bell */}
+              <div className="relative" ref={bellRef}>
+                <button
+                  onClick={() => setBellOpen(v => !v)}
+                  className="relative rounded-lg p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-card)] hover:text-[var(--text-primary)] transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-risk-high px-1 text-[9px] font-bold text-white leading-none">
+                      {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Bell dropdown */}
+                {bellOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-[380px] rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-overlay)] shadow-2xl backdrop-blur-xl animate-fade-in z-50">
+                    <div className="flex items-center justify-between border-b border-[var(--border-secondary)] px-4 py-3">
+                      <span className="text-xs font-bold text-[var(--text-primary)]">Notifications</span>
+                      <div className="flex items-center gap-2">
+                        {unreadCount > 0 && (
+                          <span className="rounded-full bg-risk-high/15 px-2 py-0.5 text-[9px] font-bold text-risk-high">
+                            {unreadCount} new
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="max-h-[360px] overflow-y-auto">
+                      {recentNotifs.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-10 text-center">
+                          <Bell size={24} className="text-[var(--text-tertiary)]" />
+                          <p className="mt-2 text-xs text-[var(--text-secondary)]">No notifications</p>
+                        </div>
+                      ) : (
+                        recentNotifs.map((notif) => (
+                          <div
+                            key={notif.id}
+                            className={cn(
+                              'flex items-start gap-3 px-4 py-3 border-b border-[var(--border-secondary)] last:border-0 transition-colors hover:bg-[var(--bg-secondary)]/50',
+                              !notif.read && 'bg-eshodha-500/5'
+                            )}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5">
+                                {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-eshodha-500 flex-shrink-0" />}
+                                <p className={cn('text-xs font-semibold truncate', notif.read ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]')}>
+                                  {notif.title}
+                                </p>
+                              </div>
+                              <p className="mt-0.5 text-[11px] text-[var(--text-tertiary)] line-clamp-2">{notif.message}</p>
+                              <p className="mt-1 text-[9px] font-mono text-[var(--text-tertiary)]">
+                                {new Date(notif.timestamp).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })}
+                              </p>
+                            </div>
+                            {!notif.read && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
+                                className="mt-1 rounded p-1 text-[var(--text-tertiary)] hover:text-risk-low hover:bg-[var(--bg-secondary)]"
+                                title="Mark as read"
+                              >
+                                <Check size={12} />
+                              </button>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="border-t border-[var(--border-secondary)] px-4 py-2.5">
+                      <button
+                        onClick={() => { navigate('/admin/notifications'); setBellOpen(false); }}
+                        className="w-full rounded-lg bg-[var(--bg-secondary)] py-2 text-xs font-semibold text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors"
+                      >
+                        View all notifications
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Live Indicator */}

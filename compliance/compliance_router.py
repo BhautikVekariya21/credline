@@ -349,3 +349,56 @@ async def reconciliation_status():
         "discrepancy_amount": 24850.00,
         "next_scheduled": "2026-05-13T02:00:00",
     }
+
+
+# ─── Compatibility Router for Frontend ──────────────────────────────
+compat_router = APIRouter(prefix="/compliance", tags=["Compliance Compatibility"])
+
+@compat_router.get("/gst/dashboard")
+async def get_compat_gst_dashboard():
+    return await gst_dashboard()
+
+@compat_router.get("/monitor/alerts")
+async def get_compat_alerts(severity: str | None = None):
+    return await get_alerts(severity=severity)
+
+@compat_router.get("/forensics/benford")
+async def get_benford_forensics():
+    import random
+    from services.analytics.forensic_auditor import BenfordAuditor
+    txs = []
+    # Conforming Benford distribution data
+    for _ in range(1200):
+        # 10^uniform gives a logarithmic distribution matching Benford's Law
+        amt = 10 ** random.uniform(1.5, 6.0)
+        txs.append({"amount": amt})
+
+    # Add minor structuring anomalies
+    if random.random() < 0.2:
+        for _ in range(75):
+            txs.append({"amount": 49000.0})
+
+    auditor = BenfordAuditor()
+    return auditor.analyze(txs)
+
+@compat_router.get("/forensics/cfo-summary")
+async def get_cfo_summary():
+    import random
+    from services.analytics.forensic_auditor import BenfordAuditor, FinancialStatementCompiler, CFOExecutiveNarrative
+    txs = []
+    for _ in range(1200):
+        txs.append({
+            "amount": 10 ** random.uniform(1.5, 6.0),
+            "category": random.choice(["revenue", "cogs", "salary", "opex", "interest", "tax", "general"]),
+            "transaction_type": random.choice(["DEBIT", "CREDIT"])
+        })
+
+    compiler = FinancialStatementCompiler()
+    financial_data = compiler.compile_reports(txs)
+    auditor = BenfordAuditor()
+    anomaly_report = auditor.analyze(txs)
+
+    cfo = CFOExecutiveNarrative()
+    summary = await cfo.generate_summary(financial_data, anomaly_report)
+    return {"summary": summary}
+

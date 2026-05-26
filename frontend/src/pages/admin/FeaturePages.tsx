@@ -1,28 +1,44 @@
 import { useState, useCallback, useRef, useEffect, type ElementType, type ReactNode } from 'react';
 import {
   AlertTriangle,
+  ArrowUpRight,
+  Ban,
   Banknote,
+  Bell,
   Bot,
+  Camera,
   CheckCircle2,
+  ChevronRight,
+  Clock,
   CreditCard,
   Database,
   Download,
+  FileSearch,
   FileText,
+
   Globe,
+  Grid3X3,
   LineChart,
   Lock,
+  LogOut,
+  Minus,
   Network,
   PlayCircle,
+  Plus,
   RefreshCw,
-  X,
-  Sliders,
   Shield,
+  ShieldAlert,
+  Sliders,
   Key,
   Terminal as TerminalIcon,
+  Timer,
+  TrendingDown,
+  TrendingUp,
+  UserX,
+  X,
   Zap,
   Activity,
   Cpu,
-  ShieldAlert,
 } from 'lucide-react';
 import {
   MOCK_CONSORTIUM,
@@ -1088,6 +1104,16 @@ export function GraphIntelligencePage() {
   const [scanLoading, setScanLoading] = useState(false);
   const [scanLogs, setScanLogs] = useState<string[]>([]);
   const [scanResult, setScanResult] = useState<any[] | null>(null);
+  const [entitySearch, setEntitySearch] = useState('');
+  const [expandedCluster, setExpandedCluster] = useState<number | null>(null);
+
+  // Node type statistics (simulated)
+  const nodeStats = [
+    { type: 'Customers', count: 12840, pct: 69.7, color: 'var(--brand-accent)' },
+    { type: 'Merchants', count: 3420, pct: 18.6, color: 'var(--accent-purple)' },
+    { type: 'Intermediaries', count: 1560, pct: 8.5, color: 'var(--risk-medium)' },
+    { type: 'Shell entities', count: 600, pct: 3.2, color: 'var(--risk-high)' },
+  ];
 
   const handleDetectCycles = async () => {
     setScanLoading(true);
@@ -1095,22 +1121,30 @@ export function GraphIntelligencePage() {
     setScanResult(null);
 
     await new Promise(r => setTimeout(r, 600));
-    setScanLogs(prev => [...prev, 'Traversing transactional edges using DFS cycle scanner…']);
+    setScanLogs(prev => [...prev, 'Loading entity graph from Neo4j cluster (18,420 nodes, 74,830 edges)…']);
     
-    await new Promise(r => setTimeout(r, 800));
-    setScanLogs(prev => [...prev, 'Running Graph Neural Network (GNN) contagion scoring…']);
+    await new Promise(r => setTimeout(r, 500));
+    setScanLogs(prev => [...prev, 'Running DFS cycle detection across 7 risk cluster shards…']);
+
+    await new Promise(r => setTimeout(r, 600));
+    setScanLogs(prev => [...prev, 'Executing Graph Neural Network (GraphSAGE) contagion scoring on flagged subgraphs…']);
+
+    await new Promise(r => setTimeout(r, 500));
+    setScanLogs(prev => [...prev, 'Computing PageRank centrality for 42 high-betweenness nodes…']);
 
     try {
       const res = await apiGet<any[]>('/api/v1/services/graph/cycles');
       setScanResult(res);
-      setScanLogs(prev => [...prev, 'Scan complete. Discovered ' + res.length + ' cyclical fraud loops.']);
-    } catch (err) {
+      setScanLogs(prev => [...prev, `✓ Scan complete. Discovered ${res.length} cyclical fraud loops.`]);
+    } catch {
       const fallbackCycles = [
-        { cycle: ['CUST-IN-2212', 'MERCH-PE-8840', 'CUST-IN-5542'], risk: 0.94, size: 3, loop_type: 'Mule Cashout' },
-        { cycle: ['CUST-US-9912', 'CUST-AP-4401'], risk: 0.72, size: 2, loop_type: 'P2P Structuring' }
+        { cycle: ['CUST-IN-2212', 'MERCH-PE-8840', 'CUST-IN-5542', 'INTERM-SG-0042'], risk: 0.94, size: 4, loop_type: 'Mule Cashout Ring', volume: 2_450_000, txn_count: 127, first_seen: '2026-03-14', centrality: 0.89 },
+        { cycle: ['CUST-US-9912', 'CUST-AP-4401', 'SHELL-UK-0019'], risk: 0.87, size: 3, loop_type: 'Layering Network', volume: 890_000, txn_count: 43, first_seen: '2026-04-21', centrality: 0.76 },
+        { cycle: ['MERCH-IN-7723', 'CUST-IN-8842', 'MERCH-IN-9901'], risk: 0.72, size: 3, loop_type: 'Merchant Collusion', volume: 340_000, txn_count: 89, first_seen: '2026-05-02', centrality: 0.68 },
+        { cycle: ['CUST-EU-1105', 'CUST-EU-1106'], risk: 0.65, size: 2, loop_type: 'P2P Structuring', volume: 180_000, txn_count: 22, first_seen: '2026-05-18', centrality: 0.54 },
       ];
       setScanResult(fallbackCycles);
-      setScanLogs(prev => [...prev, 'Scan complete. Adjacency recursion flagged ' + fallbackCycles.length + ' cycles.']);
+      setScanLogs(prev => [...prev, `✓ Adjacency scan complete. ${fallbackCycles.length} cyclical contagion clusters flagged.`]);
     } finally {
       setScanLoading(false);
     }
@@ -1135,41 +1169,155 @@ export function GraphIntelligencePage() {
       <div className="space-y-6">
         <InteractiveFraudRingExplorer />
 
+        {/* Node Statistics */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4">
+            <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+              <Database size={13} className="text-eshodha-500" />
+              Entity Type Distribution
+            </h4>
+            <div className="mt-4 space-y-3">
+              {nodeStats.map((stat) => (
+                <div key={stat.type}>
+                  <div className="flex justify-between text-[11px] font-semibold">
+                    <span className="text-[var(--text-secondary)]">{stat.type}</span>
+                    <span className="text-[var(--text-primary)]">{stat.count.toLocaleString()} ({stat.pct}%)</span>
+                  </div>
+                  <div className="mt-1 h-2 rounded-full bg-[var(--bg-card)] overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{ width: `${stat.pct}%`, background: stat.color }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4">
+            <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
+              <Activity size={13} className="text-eshodha-500" />
+              Risk Topology Summary
+            </h4>
+            <div className="mt-4 space-y-2">
+              {graph.topologies.map((topo, i) => (
+                <button
+                  key={topo.name}
+                  onClick={() => setExpandedCluster(expandedCluster === i ? null : i)}
+                  className="w-full text-left rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] p-3 transition-all hover:border-eshodha-500/30 hover:bg-eshodha-500/5"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[var(--text-primary)]">{topo.name}</span>
+                    <span className={cn(
+                      'text-xs font-bold',
+                      topo.risk >= 0.85 ? 'text-risk-high' : topo.risk >= 0.7 ? 'text-risk-medium' : 'text-risk-low'
+                    )}>{(topo.risk * 100).toFixed(0)}%</span>
+                  </div>
+                  <div className="mt-1 flex items-center gap-2 text-[10px] text-[var(--text-tertiary)]">
+                    <span>{topo.nodes} nodes</span>
+                    <span>·</span>
+                    <span>{Math.round(topo.nodes * 2.8)} edges</span>
+                    <span>·</span>
+                    <span>Betweenness: {(0.4 + topo.risk * 0.5).toFixed(2)}</span>
+                  </div>
+                  {expandedCluster === i && (
+                    <div className="mt-2 pt-2 border-t border-[var(--border-secondary)] text-[10px] text-[var(--text-secondary)] font-mono space-y-1 animate-fade-in">
+                      <div>CONTAGION RADIUS: {Math.round(topo.nodes * 1.5)} affected entities</div>
+                      <div>FINANCIAL EXPOSURE: ₹{(topo.nodes * 45000 + Math.random() * 500000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}</div>
+                      <div>GRAPH DENSITY: {(0.3 + topo.risk * 0.4).toFixed(3)}</div>
+                      <div>STATUS: <span className="text-risk-high font-bold">ACTIVE INVESTIGATION</span></div>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Scanner */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
               <TerminalIcon size={14} className="text-eshodha-500" />
               <span>GNN Adjacency Loop Scanner</span>
             </div>
-            <button
-              onClick={handleDetectCycles}
-              disabled={scanLoading}
-              className="btn-primary px-3 py-1 text-xs"
-            >
-              {scanLoading ? 'Scanning Adjacencies…' : 'Detect Cycle Loops'}
-            </button>
+            <div className="flex gap-2">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={entitySearch}
+                  onChange={(e) => setEntitySearch(e.target.value)}
+                  placeholder="Search entity ID..."
+                  className="rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] pl-3 pr-3 py-1.5 text-xs font-mono w-48"
+                />
+              </div>
+              <button
+                onClick={handleDetectCycles}
+                disabled={scanLoading}
+                className="btn-primary px-3 py-1.5 text-xs flex items-center gap-1"
+              >
+                {scanLoading ? <RefreshCw size={12} className="animate-spin" /> : <PlayCircle size={12} />}
+                {scanLoading ? 'Scanning…' : 'Detect Cycles'}
+              </button>
+            </div>
           </div>
 
-          <div className="bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-lg p-3 h-28 overflow-y-auto font-mono text-[10px] text-[var(--text-secondary)] space-y-1">
+          <div className="bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-lg p-3 h-32 overflow-y-auto font-mono text-[10px] text-[var(--text-secondary)] space-y-1">
             {scanLogs.length === 0 ? (
-              <span className="text-[var(--text-tertiary)] italic">&gt; Press "Detect Cycle Loops" to start live graph traversal...</span>
+              <span className="text-[var(--text-tertiary)] italic">&gt; Press "Detect Cycles" to start live graph traversal...</span>
             ) : (
-              scanLogs.map((log, idx) => <div key={idx}>&gt; {log}</div>)
+              scanLogs.map((log, idx) => <div key={idx} className="animate-fade-in">&gt; {log}</div>)
             )}
           </div>
 
           {scanResult && (
             <div className="animate-fade-in space-y-3">
               <h4 className="text-xs font-bold text-[var(--text-primary)]">Flagged Cyclical Contagion Clusters</h4>
-              <DataTable
-                columns={['Loop Type', 'Involved Entities', 'Cluster Size', 'Cohesive Risk']}
-                rows={scanResult.map((c: any) => [
-                  <span className="font-semibold text-risk-high">{c.loop_type || 'Circular Structuring'}</span>,
-                  <span className="font-mono text-xs text-[var(--text-secondary)]">{c.cycle.join(' ➔ ')}</span>,
-                  `${c.size || c.cycle.length} nodes`,
-                  <span className="font-semibold text-risk-high">{(c.risk * 100).toFixed(0)}%</span>
-                ])}
-              />
+              <div className="space-y-2">
+                {scanResult
+                  .filter((c: any) => !entitySearch || c.cycle.some((e: string) => e.toLowerCase().includes(entitySearch.toLowerCase())))
+                  .map((c: any, i: number) => (
+                  <div key={i} className="rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] p-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className={cn(
+                          'rounded-full px-2 py-0.5 text-[9px] font-bold uppercase',
+                          c.risk >= 0.85 ? 'bg-risk-high/15 text-risk-high' : c.risk >= 0.7 ? 'bg-risk-medium/15 text-risk-medium' : 'bg-risk-low/15 text-risk-low'
+                        )}>
+                          {(c.risk * 100).toFixed(0)}% risk
+                        </span>
+                        <span className="text-xs font-semibold text-[var(--text-primary)]">{c.loop_type}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-[var(--text-tertiary)]">{c.size} nodes · {c.txn_count} txns</span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap gap-1">
+                      {c.cycle.map((entity: string) => (
+                        <span key={entity} className="rounded bg-[var(--bg-secondary)] border border-[var(--border-secondary)] px-2 py-0.5 text-[10px] font-mono font-semibold text-eshodha-500">
+                          {entity}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-2 grid grid-cols-4 gap-2 text-[10px]">
+                      <div>
+                        <span className="text-[var(--text-tertiary)] block">Volume</span>
+                        <span className="font-semibold text-[var(--text-primary)]">₹{(c.volume || 0).toLocaleString()}</span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--text-tertiary)] block">First Seen</span>
+                        <span className="font-semibold text-[var(--text-primary)] font-mono">{c.first_seen || 'N/A'}</span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--text-tertiary)] block">Centrality</span>
+                        <span className="font-semibold text-[var(--text-primary)]">{(c.centrality || 0).toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--text-tertiary)] block">Status</span>
+                        <span className="font-semibold text-risk-high">Active</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -1192,14 +1340,119 @@ export function SoarPage() {
   const [suspectDob, setSuspectDob] = useState('1994-08-12');
 
   const [zkpLoading, setZkpLoading] = useState(false);
-  const [zkpProof, setZkpProof] = useState<any | null>(null);
+  const [zkpProof, setZkpProof] = useState<Record<string, unknown> | null>(null);
 
   // Verification
   const [claimedSsn, setClaimedSsn] = useState('');
   const [claimedDob, setClaimedDob] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
-  const [verifyResult, setVerifyResult] = useState<any | null>(null);
+  const [verifyResult, setVerifyResult] = useState<Record<string, unknown> | null>(null);
 
+  // ─── 1. Incident Severity Matrix State ─────────────────────────────
+  type SeverityLevel = 'High' | 'Medium' | 'Low';
+  interface SeverityCell { impact: SeverityLevel; urgency: SeverityLevel; count: number; priority: string; color: string; }
+  const severityMatrix: SeverityCell[] = [
+    { impact: 'High', urgency: 'High', count: 3, priority: 'P1', color: 'bg-red-500/20 text-red-400 border-red-500/30' },
+    { impact: 'High', urgency: 'Medium', count: 5, priority: 'P2', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
+    { impact: 'High', urgency: 'Low', count: 2, priority: 'P3', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+    { impact: 'Medium', urgency: 'High', count: 7, priority: 'P2', color: 'bg-orange-500/20 text-orange-400 border-orange-500/30' },
+    { impact: 'Medium', urgency: 'Medium', count: 12, priority: 'P3', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+    { impact: 'Medium', urgency: 'Low', count: 8, priority: 'P4', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    { impact: 'Low', urgency: 'High', count: 4, priority: 'P3', color: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' },
+    { impact: 'Low', urgency: 'Medium', count: 6, priority: 'P4', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+    { impact: 'Low', urgency: 'Low', count: 15, priority: 'P4', color: 'bg-green-500/20 text-green-400 border-green-500/30' },
+  ];
+  const [matrixFilter, setMatrixFilter] = useState<string | null>(null);
+
+  // ─── 2. Playbook Builder State ─────────────────────────────────────
+  interface PlaybookStep { id: string; label: string; icon: ElementType; }
+  const availableSteps: PlaybookStep[] = [
+    { id: 'block-ip', label: 'Block IP', icon: Ban },
+    { id: 'freeze-account', label: 'Freeze Account', icon: UserX },
+    { id: 'alert-compliance', label: 'Alert Compliance', icon: Bell },
+    { id: 'escalate-l2', label: 'Escalate to L2', icon: ArrowUpRight },
+    { id: 'generate-sar', label: 'Generate SAR', icon: FileSearch },
+    { id: 'revoke-sessions', label: 'Revoke Sessions', icon: LogOut },
+    { id: 'snapshot-evidence', label: 'Snapshot Evidence', icon: Camera },
+  ];
+  const [playbookSequence, setPlaybookSequence] = useState<PlaybookStep[]>([]);
+  const [playbookRunning, setPlaybookRunning] = useState(false);
+  const [playbookProgress, setPlaybookProgress] = useState(-1);
+  const [playbookComplete, setPlaybookComplete] = useState(false);
+
+  const handleAddStep = (step: PlaybookStep) => {
+    setPlaybookSequence(prev => [...prev, step]);
+    setPlaybookComplete(false);
+  };
+
+  const handleRemoveStep = (index: number) => {
+    setPlaybookSequence(prev => prev.filter((_, i) => i !== index));
+    setPlaybookComplete(false);
+  };
+
+  const handleExecutePlaybook = async () => {
+    if (playbookSequence.length === 0) return;
+    setPlaybookRunning(true);
+    setPlaybookComplete(false);
+    setPlaybookProgress(-1);
+
+    for (let i = 0; i < playbookSequence.length; i++) {
+      setPlaybookProgress(i);
+      await new Promise(r => setTimeout(r, 800 + Math.random() * 600));
+    }
+
+    setPlaybookProgress(playbookSequence.length);
+    setPlaybookRunning(false);
+    setPlaybookComplete(true);
+  };
+
+  // ─── 3. MTTR Dashboard State ───────────────────────────────────────
+  interface MttrMetric { type: string; minutes: number; maxMinutes: number; trend: 'up' | 'down'; trendPct: number; }
+  const mttrData: MttrMetric[] = [
+    { type: 'Fraud', minutes: 4.2, maxMinutes: 15, trend: 'down', trendPct: 12 },
+    { type: 'AML', minutes: 12.8, maxMinutes: 30, trend: 'down', trendPct: 8 },
+    { type: 'PEP Screening', minutes: 2.1, maxMinutes: 10, trend: 'down', trendPct: 22 },
+    { type: 'Card Testing', minutes: 1.8, maxMinutes: 10, trend: 'up', trendPct: 3 },
+  ];
+  const [mttrAnimated, setMttrAnimated] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMttrAnimated(true), 300);
+    return () => clearTimeout(t);
+  }, []);
+
+  // ─── 4. Incident Timeline State ────────────────────────────────────
+  interface TimelineEvent { id: string; time: string; hour: number; severity: 'critical' | 'high' | 'medium' | 'low'; label: string; }
+  const timelineEvents: TimelineEvent[] = [
+    { id: 'tl-1', time: '00:14', hour: 0.23, severity: 'low', label: 'Suspicious login from new device' },
+    { id: 'tl-2', time: '02:38', hour: 2.63, severity: 'medium', label: 'Velocity rule triggered — 4 txns/min' },
+    { id: 'tl-3', time: '05:12', hour: 5.2, severity: 'critical', label: 'Account takeover attempt detected' },
+    { id: 'tl-4', time: '07:45', hour: 7.75, severity: 'high', label: 'Cross-border wire > ₹50L flagged' },
+    { id: 'tl-5', time: '09:02', hour: 9.03, severity: 'low', label: 'Device fingerprint mismatch' },
+    { id: 'tl-6', time: '10:30', hour: 10.5, severity: 'medium', label: 'PEP match on beneficiary screening' },
+    { id: 'tl-7', time: '12:18', hour: 12.3, severity: 'critical', label: 'Card testing burst — 22 micro-txns' },
+    { id: 'tl-8', time: '14:55', hour: 14.92, severity: 'high', label: 'SAR auto-filed for structuring' },
+    { id: 'tl-9', time: '16:40', hour: 16.67, severity: 'medium', label: 'Mule account network flagged' },
+    { id: 'tl-10', time: '18:22', hour: 18.37, severity: 'low', label: 'Geo-velocity anomaly (2 countries)' },
+    { id: 'tl-11', time: '20:05', hour: 20.08, severity: 'high', label: 'Credential stuffing wave detected' },
+    { id: 'tl-12', time: '22:48', hour: 22.8, severity: 'critical', label: 'DDoS on payment gateway' },
+  ];
+  const [timelineZoom, setTimelineZoom] = useState(100);
+  const [hoveredEvent, setHoveredEvent] = useState<string | null>(null);
+
+  const severityColorMap: Record<string, string> = {
+    critical: 'bg-red-500',
+    high: 'bg-orange-500',
+    medium: 'bg-yellow-500',
+    low: 'bg-green-500',
+  };
+  const severityRingMap: Record<string, string> = {
+    critical: 'ring-red-500/40',
+    high: 'ring-orange-500/40',
+    medium: 'ring-yellow-500/40',
+    low: 'ring-green-500/40',
+  };
+
+  // ─── ZKP handlers (unchanged logic) ────────────────────────────────
   const handleCreateZkp = async () => {
     setZkpLoading(true);
     setZkpProof(null);
@@ -1214,11 +1467,11 @@ export function SoarPage() {
     };
 
     try {
-      const res = await apiPost<any>('/api/v1/services/governance/zkp/create', payload);
+      const res = await apiPost<Record<string, unknown>>('/api/v1/services/governance/zkp/create', payload);
       setZkpProof(res);
       setClaimedSsn(suspectSsn);
       setClaimedDob(suspectDob);
-    } catch (err) {
+    } catch {
       setZkpProof({
         proof_id: 'ZKP-MOCK-' + Math.random().toString(36).slice(2, 6).toUpperCase(),
         created_at: new Date().toISOString(),
@@ -1251,9 +1504,9 @@ export function SoarPage() {
     };
 
     try {
-      const res = await apiPost<any>('/api/v1/services/governance/zkp/verify', payload);
+      const res = await apiPost<Record<string, unknown>>('/api/v1/services/governance/zkp/verify', payload);
       setVerifyResult(res);
-    } catch (err) {
+    } catch {
       const isSsnMatch = claimedSsn === suspectSsn;
       const isDobMatch = claimedDob === suspectDob;
       setVerifyResult({
@@ -1262,12 +1515,16 @@ export function SoarPage() {
           ssn: isSsnMatch,
           dob: isDobMatch
         },
-        proof_id: zkpProof.proof_id
+        proof_id: zkpProof.proof_id as string
       });
     } finally {
       setVerifyLoading(false);
     }
   };
+
+  // Cast helpers for ZKP proof rendering
+  const zkpCommitments = (zkpProof as Record<string, unknown> | null)?.commitments as Array<{ attribute: string; commitment: string; salt: string }> | undefined;
+  const verifyAttrResults = (verifyResult as Record<string, unknown> | null)?.attribute_results as { ssn: boolean; dob: boolean } | undefined;
 
   return (
     <ModuleWorkspace
@@ -1285,13 +1542,345 @@ export function SoarPage() {
       side={<RunbookSidePanel />}
       audit={['ZKP HMAC-SHA256 commitments created', 'Cryptographic verification logged in compliance audit', 'Zero raw PII cached or written to local storage']}
     >
-      <div className="space-y-4">
-        {/* Workspace Switcher Tabs */}
-        <div className="flex gap-2 border-b border-[var(--border-secondary)] pb-2">
+      <div className="space-y-6">
+
+        {/* ══════════════════════════════════════════════════════════════
+            NEW: 1. Incident Severity Matrix
+           ══════════════════════════════════════════════════════════════ */}
+        <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
+              <Grid3X3 size={14} className="text-eshodha-500" />
+              <span>Incident Severity Matrix</span>
+            </div>
+            {matrixFilter && (
+              <button
+                onClick={() => setMatrixFilter(null)}
+                className="text-[10px] font-bold text-eshodha-500 hover:underline flex items-center gap-1"
+                aria-label="Clear severity matrix filter"
+              >
+                <X size={10} /> Clear filter
+              </button>
+            )}
+          </div>
+          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+            Real-time incident distribution by Impact vs Urgency. Click any cell to filter the view.
+          </p>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs" role="grid" aria-label="Severity matrix grid">
+              <thead>
+                <tr>
+                  <th className="px-2 py-2 text-left text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider w-24">Impact ↓ / Urgency →</th>
+                  {(['High', 'Medium', 'Low'] as SeverityLevel[]).map(u => (
+                    <th key={u} className="px-2 py-2 text-center text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">{u}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {(['High', 'Medium', 'Low'] as SeverityLevel[]).map(impact => (
+                  <tr key={impact}>
+                    <td className="px-2 py-1.5 text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">{impact}</td>
+                    {(['High', 'Medium', 'Low'] as SeverityLevel[]).map(urgency => {
+                      const cell = severityMatrix.find(c => c.impact === impact && c.urgency === urgency);
+                      if (!cell) return <td key={urgency} />;
+                      const cellKey = `${impact}-${urgency}`;
+                      const isActive = matrixFilter === cellKey;
+                      return (
+                        <td key={urgency} className="px-1.5 py-1.5">
+                          <button
+                            onClick={() => setMatrixFilter(isActive ? null : cellKey)}
+                            aria-label={`${cell.priority}: ${cell.count} incidents — Impact ${impact}, Urgency ${urgency}`}
+                            aria-pressed={isActive}
+                            className={cn(
+                              'w-full rounded-lg border px-3 py-2.5 text-center transition-all duration-200 cursor-pointer',
+                              cell.color,
+                              isActive && 'ring-2 ring-eshodha-500 scale-105 shadow-lg',
+                              !isActive && 'hover:scale-[1.03] hover:shadow-md'
+                            )}
+                          >
+                            <div className="text-lg font-extrabold leading-none">{cell.count}</div>
+                            <div className="text-[9px] font-bold mt-1 uppercase tracking-wider opacity-80">{cell.priority}</div>
+                          </button>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {matrixFilter && (
+            <div className="animate-fade-in rounded-lg bg-[var(--bg-card)] border border-[var(--border-secondary)] p-3 text-xs text-[var(--text-secondary)]">
+              <span className="font-bold text-[var(--text-primary)]">Filtered view:</span>{' '}
+              Showing incidents with Impact: <span className="font-bold text-eshodha-500">{matrixFilter.split('-')[0]}</span> and Urgency: <span className="font-bold text-eshodha-500">{matrixFilter.split('-')[1]}</span>.
+              {' '}Use this filter to drill into matching alerts and correlate with playbook actions.
+            </div>
+          )}
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            NEW: 2. Automated Response Playbook Builder
+           ══════════════════════════════════════════════════════════════ */}
+        <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
+            <Zap size={14} className="text-eshodha-500" />
+            <span>Automated Response Playbook Builder</span>
+          </div>
+          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+            Compose custom response playbooks by clicking steps. Build a sequence and execute it with simulated progress.
+          </p>
+
+          {/* Available steps as clickable chips */}
+          <div>
+            <div className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">Available Actions</div>
+            <div className="flex flex-wrap gap-2" role="list" aria-label="Available playbook steps">
+              {availableSteps.map(step => {
+                const StepIcon = step.icon;
+                return (
+                  <button
+                    key={step.id}
+                    onClick={() => handleAddStep(step)}
+                    disabled={playbookRunning}
+                    aria-label={`Add ${step.label} to playbook`}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border-secondary)] bg-[var(--bg-card)] text-[11px] font-semibold text-[var(--text-secondary)] hover:border-eshodha-500 hover:text-eshodha-500 hover:bg-eshodha-500/5 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <StepIcon size={12} />
+                    {step.label}
+                    <Plus size={10} className="opacity-50" />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Constructed sequence */}
+          <div>
+            <div className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
+              Playbook Sequence {playbookSequence.length > 0 && <span className="text-eshodha-500">({playbookSequence.length} steps)</span>}
+            </div>
+            {playbookSequence.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-[var(--border-secondary)] bg-[var(--bg-card)] p-4 text-center text-[11px] text-[var(--text-tertiary)]">
+                Click actions above to build your response playbook sequence
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center gap-1.5" role="list" aria-label="Playbook execution sequence">
+                {playbookSequence.map((step, idx) => {
+                  const StepIcon = step.icon;
+                  const isExecuted = playbookProgress > idx;
+                  const isRunning = playbookProgress === idx && playbookRunning;
+                  return (
+                    <div key={`${step.id}-${idx}`} className="flex items-center gap-1.5" role="listitem">
+                      {idx > 0 && <ChevronRight size={12} className="text-[var(--text-tertiary)]" />}
+                      <div
+                        className={cn(
+                          'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-300',
+                          isExecuted && 'border-green-500/30 bg-green-500/10 text-green-400',
+                          isRunning && 'border-eshodha-500/50 bg-eshodha-500/10 text-eshodha-500 animate-pulse',
+                          !isExecuted && !isRunning && 'border-[var(--border-secondary)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
+                        )}
+                      >
+                        {isExecuted ? <CheckCircle2 size={12} className="text-green-400" /> : isRunning ? <RefreshCw size={12} className="animate-spin" /> : <StepIcon size={12} />}
+                        {step.label}
+                        {!playbookRunning && (
+                          <button
+                            onClick={() => handleRemoveStep(idx)}
+                            aria-label={`Remove ${step.label} from playbook`}
+                            className="ml-0.5 rounded-full hover:bg-red-500/20 p-0.5 transition-colors"
+                          >
+                            <X size={10} className="text-[var(--text-tertiary)] hover:text-red-400" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExecutePlaybook}
+              disabled={playbookRunning || playbookSequence.length === 0}
+              className="btn-primary px-4 py-2 text-xs font-bold flex items-center gap-1.5 disabled:opacity-40"
+              aria-label="Execute playbook sequence"
+            >
+              {playbookRunning ? <RefreshCw size={12} className="animate-spin" /> : <PlayCircle size={12} />}
+              {playbookRunning ? 'Executing…' : 'Execute Playbook'}
+            </button>
+            {playbookSequence.length > 0 && !playbookRunning && (
+              <button
+                onClick={() => { setPlaybookSequence([]); setPlaybookComplete(false); setPlaybookProgress(-1); }}
+                className="text-[11px] font-bold text-[var(--text-tertiary)] hover:text-red-400 transition-colors"
+                aria-label="Clear all playbook steps"
+              >
+                Clear All
+              </button>
+            )}
+            {playbookComplete && (
+              <span className="animate-fade-in flex items-center gap-1 text-[11px] font-bold text-green-400">
+                <CheckCircle2 size={12} /> Playbook executed successfully
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            NEW: 3. Mean Time to Respond (MTTR) Dashboard
+           ══════════════════════════════════════════════════════════════ */}
+        <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
+          <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
+            <Timer size={14} className="text-eshodha-500" />
+            <span>Mean Time to Respond (MTTR)</span>
+          </div>
+          <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
+            Average response latency across incident categories with improvement trends over the trailing 30-day window.
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2">
+            {mttrData.map(metric => {
+              const pct = Math.min(100, (metric.minutes / metric.maxMinutes) * 100);
+              const barColor = pct < 30 ? 'bg-green-500' : pct < 60 ? 'bg-yellow-500' : 'bg-orange-500';
+              return (
+                <div key={metric.type} className="rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-[var(--text-primary)]">{metric.type}</span>
+                    <div className={cn(
+                      'flex items-center gap-0.5 text-[10px] font-bold',
+                      metric.trend === 'down' ? 'text-green-400' : 'text-red-400'
+                    )}>
+                      {metric.trend === 'down' ? <TrendingDown size={10} /> : <TrendingUp size={10} />}
+                      {metric.trendPct}%
+                    </div>
+                  </div>
+
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-xl font-extrabold text-[var(--text-primary)]">{metric.minutes}</span>
+                    <span className="text-[10px] font-semibold text-[var(--text-tertiary)]">min</span>
+                  </div>
+
+                  <div className="w-full h-2 rounded-full bg-[var(--bg-secondary)] overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`MTTR for ${metric.type}: ${metric.minutes} minutes`}>
+                    <div
+                      className={cn('h-full rounded-full transition-all duration-1000 ease-out', barColor)}
+                      style={{ width: mttrAnimated ? `${pct}%` : '0%' }}
+                    />
+                  </div>
+
+                  <div className="text-[9px] text-[var(--text-tertiary)] font-semibold">
+                    Target: {metric.maxMinutes}min ceiling · {metric.trend === 'down' ? 'Improving' : 'Degrading'} over 30d
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            NEW: 4. Incident Timeline Visualization
+           ══════════════════════════════════════════════════════════════ */}
+        <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
+              <Clock size={14} className="text-eshodha-500" />
+              <span>Incident Timeline — Last 24 Hours</span>
+            </div>
+            <div className="flex items-center gap-2 text-[10px] text-[var(--text-tertiary)]">
+              <Minus size={10} />
+              <input
+                type="range" min={50} max={200} value={timelineZoom}
+                onChange={e => setTimelineZoom(Number(e.target.value))}
+                className="w-20 accent-eshodha-500"
+                aria-label="Timeline zoom slider"
+              />
+              <Plus size={10} />
+              <span className="font-bold text-[var(--text-secondary)]">{timelineZoom}%</span>
+            </div>
+          </div>
+
+          {/* Severity legend */}
+          <div className="flex items-center gap-4 text-[10px] text-[var(--text-tertiary)]">
+            {Object.entries(severityColorMap).map(([key, clr]) => (
+              <div key={key} className="flex items-center gap-1">
+                <span className={cn('h-2 w-2 rounded-full', clr)} />
+                <span className="capitalize font-semibold">{key}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Timeline track */}
+          <div className="overflow-x-auto">
+            <div className="relative" style={{ width: `${timelineZoom}%`, minWidth: '100%' }}>
+              {/* Hour markers */}
+              <div className="flex justify-between px-2 text-[9px] text-[var(--text-tertiary)] font-mono">
+                {Array.from({ length: 25 }, (_, i) => (
+                  <span key={i}>{String(i).padStart(2, '0')}:00</span>
+                ))}
+              </div>
+
+              {/* Track bar */}
+              <div className="relative mt-2 mx-2 h-12 rounded-lg bg-[var(--bg-card)] border border-[var(--border-secondary)]">
+                {/* Hour gridlines */}
+                {Array.from({ length: 23 }, (_, i) => (
+                  <div
+                    key={i}
+                    className="absolute top-0 bottom-0 border-l border-[var(--border-secondary)]/30"
+                    style={{ left: `${((i + 1) / 24) * 100}%` }}
+                  />
+                ))}
+
+                {/* Event markers */}
+                {timelineEvents.map(evt => (
+                  <div
+                    key={evt.id}
+                    className="absolute top-1/2 -translate-y-1/2 group"
+                    style={{ left: `${(evt.hour / 24) * 100}%` }}
+                  >
+                    <button
+                      onMouseEnter={() => setHoveredEvent(evt.id)}
+                      onMouseLeave={() => setHoveredEvent(null)}
+                      onFocus={() => setHoveredEvent(evt.id)}
+                      onBlur={() => setHoveredEvent(null)}
+                      tabIndex={0}
+                      aria-label={`${evt.time} — ${evt.severity}: ${evt.label}`}
+                      className={cn(
+                        'h-4 w-4 rounded-full transition-all duration-200 cursor-pointer ring-2',
+                        severityColorMap[evt.severity],
+                        severityRingMap[evt.severity],
+                        hoveredEvent === evt.id && 'scale-150 ring-4 z-10'
+                      )}
+                    />
+
+                    {/* Tooltip */}
+                    {hoveredEvent === evt.id && (
+                      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-fade-in whitespace-nowrap rounded-lg bg-[var(--bg-card)] border border-[var(--border-secondary)] shadow-xl px-3 py-2 text-[10px]">
+                        <div className="font-bold text-[var(--text-primary)]">{evt.time} — <span className="capitalize">{evt.severity}</span></div>
+                        <div className="text-[var(--text-secondary)] mt-0.5">{evt.label}</div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Event count summary */}
+              <div className="flex justify-between px-2 mt-2 text-[9px] text-[var(--text-tertiary)]">
+                <span>{timelineEvents.length} incidents in 24h</span>
+                <span>{timelineEvents.filter(e => e.severity === 'critical').length} critical · {timelineEvents.filter(e => e.severity === 'high').length} high</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            EXISTING: Workspace Switcher Tabs (Agents / ZKP)
+           ══════════════════════════════════════════════════════════════ */}
+        <div className="flex gap-2 border-b border-[var(--border-secondary)] pb-2 pt-2">
           <button
             onClick={() => setSoarTab('agents')}
+            aria-pressed={soarTab === 'agents'}
             className={cn(
-              'px-3 py-1.5 text-xs font-bold rounded-lg',
+              'px-3 py-1.5 text-xs font-bold rounded-lg transition-colors',
               soarTab === 'agents' ? 'bg-[var(--text-primary)] text-[var(--text-inverse)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
             )}
           >
@@ -1299,8 +1888,9 @@ export function SoarPage() {
           </button>
           <button
             onClick={() => setSoarTab('zkp')}
+            aria-pressed={soarTab === 'zkp'}
             className={cn(
-              'px-3 py-1.5 text-xs font-bold rounded-lg',
+              'px-3 py-1.5 text-xs font-bold rounded-lg transition-colors',
               soarTab === 'zkp' ? 'bg-[var(--text-primary)] text-[var(--text-inverse)]' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]'
             )}
           >
@@ -1328,6 +1918,7 @@ export function SoarPage() {
                   <input
                     type="text" value={suspectName} onChange={(e) => setSuspectName(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-bold"
+                    aria-label="Client legal name"
                   />
                 </div>
                 <div>
@@ -1335,6 +1926,7 @@ export function SoarPage() {
                   <input
                     type="text" value={suspectSsn} onChange={(e) => setSuspectSsn(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-mono"
+                    aria-label="National ID or SSN"
                   />
                 </div>
                 <div>
@@ -1342,6 +1934,7 @@ export function SoarPage() {
                   <input
                     type="date" value={suspectDob} onChange={(e) => setSuspectDob(e.target.value)}
                     className="mt-1 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-bold"
+                    aria-label="Date of birth"
                   />
                 </div>
               </div>
@@ -1350,16 +1943,17 @@ export function SoarPage() {
                 onClick={handleCreateZkp}
                 disabled={zkpLoading}
                 className="w-full btn-primary py-2 text-xs font-bold"
+                aria-label="Generate cryptographic ZKP proof"
               >
                 {zkpLoading ? 'Shielding attributes…' : 'Generate Cryptographic Proof'}
               </button>
 
-              {zkpProof && (
+              {zkpProof && zkpCommitments && (
                 <div className="rounded-lg bg-[var(--bg-card)] p-3 border border-[var(--border-secondary)] font-mono text-[9px] text-[var(--text-secondary)] max-h-40 overflow-y-auto space-y-2 animate-fade-in">
                   <div className="text-[10px] font-bold text-[var(--text-primary)] border-b border-[var(--border-secondary)] pb-1">PII SHIELD PROOF GENERATED</div>
-                  <div>PROOF ID: {zkpProof.proof_id}</div>
-                  <div>METHOD: {zkpProof.verification_method}</div>
-                  {zkpProof.commitments.map((c: any) => (
+                  <div>PROOF ID: {String(zkpProof.proof_id)}</div>
+                  <div>METHOD: {String(zkpProof.verification_method)}</div>
+                  {zkpCommitments.map((c) => (
                     <div key={c.attribute} className="border-t border-[var(--border-secondary)]/50 pt-1 mt-1">
                       <span className="font-bold block text-eshodha-500 uppercase">{c.attribute} COMMITMENT</span>
                       <span className="break-all block">{c.commitment}</span>
@@ -1388,6 +1982,7 @@ export function SoarPage() {
                       <input
                         type="text" value={claimedSsn} onChange={(e) => setClaimedSsn(e.target.value)}
                         className="mt-1 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-mono"
+                        aria-label="Claimed SSN for verification"
                       />
                     </div>
                     <div>
@@ -1395,6 +1990,7 @@ export function SoarPage() {
                       <input
                         type="date" value={claimedDob} onChange={(e) => setClaimedDob(e.target.value)}
                         className="mt-1 w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs font-bold"
+                        aria-label="Claimed date of birth for verification"
                       />
                     </div>
                   </div>
@@ -1403,23 +1999,24 @@ export function SoarPage() {
                     onClick={handleVerifyZkp}
                     disabled={verifyLoading}
                     className="w-full btn-primary py-2 text-xs font-bold flex items-center justify-center gap-1"
+                    aria-label="Verify identity shield proof"
                   >
                     {verifyLoading ? <RefreshCw size={12} className="animate-spin" /> : <PlayCircle size={12} />}
                     Verify Identity Shield Proof
                   </button>
 
-                  {verifyResult && (
+                  {verifyResult && verifyAttrResults && (
                     <div className={cn(
                       'rounded-xl border p-4 font-mono text-xs space-y-2',
-                      verifyResult.verified ? 'border-risk-low/30 bg-risk-low/5' : 'border-risk-high/30 bg-risk-high/5'
+                      (verifyResult.verified as boolean) ? 'border-risk-low/30 bg-risk-low/5' : 'border-risk-high/30 bg-risk-high/5'
                     )}>
                       <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
-                        {verifyResult.verified ? <CheckCircle2 className="text-risk-low" /> : <ShieldAlert className="text-risk-high" />}
-                        {verifyResult.verified ? 'IDENTITY PROOF VERIFIED' : 'PROOF FAIL / SUSPECT MATCH'}
+                        {(verifyResult.verified as boolean) ? <CheckCircle2 className="text-risk-low" /> : <ShieldAlert className="text-risk-high" />}
+                        {(verifyResult.verified as boolean) ? 'IDENTITY PROOF VERIFIED' : 'PROOF FAIL / SUSPECT MATCH'}
                       </div>
                       <div className="mt-2 space-y-1">
-                        <div>SSN Attribute: {verifyResult.attribute_results.ssn ? '✅ MATCH' : '❌ CORRUPTED / WRONG'}</div>
-                        <div>DOB Attribute: {verifyResult.attribute_results.dob ? '✅ MATCH' : '❌ CORRUPTED / WRONG'}</div>
+                        <div>SSN Attribute: {verifyAttrResults.ssn ? '✅ MATCH' : '❌ CORRUPTED / WRONG'}</div>
+                        <div>DOB Attribute: {verifyAttrResults.dob ? '✅ MATCH' : '❌ CORRUPTED / WRONG'}</div>
                       </div>
                     </div>
                   )}

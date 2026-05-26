@@ -125,6 +125,34 @@ docker-compose up -d
 | `GET`  | `/api/v1/mlops/serving-status`            | Champion/Challenger status    |
 | `GET`  | `/api/v1/mlops/experiments`               | MLflow experiments            |
 
+## Expanded Administrative & Intelligence Services
+
+The platform features deep, production-grade administrative modules and settings persistence:
+
+### 1. Advanced Consoles & Risk Simulators
+* **Payment Intelligence**: UPI/SWIFT velocity windows, offshore proxy risk toggle, 3DS enforcement threshold adjustment, and simulated ledger receipt gateway logs.
+* **Wealth & Risk Console**: Real-time PEP & sanctions list checking, MiFID II KYC suitability certificate generation, and portfolio market-shock simulators graphing equities/interest rates impacts on VaR.
+* **RegTech & Compliance**: Interactive SAR (Suspicious Activity Report) generator, ML-DSA cryptographic envelopes, and transmission status terminal logs.
+* **Database Link**: Active integration dashboard displaying simulated PostgreSQL ingestion streams, live throughput rates, and table metrics.
+
+### 2. Persisted Settings & Accessibility
+* **Stateful Theme Switching**: Unified support for `Dark Mode`, `Light Mode`, and `High-Contrast` palettes synchronized across all components.
+* **Typography Scaling**: Choose between Satoshi Display, Atkinson Mono, or standard system sans-serif typefaces.
+* **Zustand Persistence**: All custom sliders, notification settings, and display preferences are automatically saved in local browser storage.
+
+### 3. Notifications & Audit Trail
+* **Notifications Center** (`/admin/notifications`): Real-time alert feed with filtering by type, severity, and read status. Supports bulk mark-as-read, pin, dismiss, and CSV export. New notifications auto-stream every 20–40 seconds.
+* **Notification Bell**: Header-bar bell icon with unread count badge and dropdown preview of recent alerts.
+* **Audit Trail** (`/admin/audit`): Immutable event log with paginated table, event density timeline visualization, module/severity filters, full JSON payload detail drawer, and CSV export.
+
+### 4. Dashboard Activity & Quick Actions
+* **Activity Timeline**: Scrollable feed of recent system events (fraud alerts, model promotions, federation rounds, key rotations) with timestamps, icons, and connector lines.
+* **Quick Action Cards**: One-click navigation to key workflows — Run Fraud Review, Score Applicant, Detect Graph Cycles, Generate SAR, View Audit Trail, and Rotate Keys.
+
+### 5. Interactive Credit Portal
+* **Live Score Calculator**: Adjust alternative data inputs (SIM tenure, payment rates, top-up regularity) via sliders and compute trust scores with animated results and SHAP-style factor attribution.
+* **Document Checklist**: Interactive progress-tracked document list with checkbox toggling, required/optional badges, and eligibility status bar.
+
 ## Project Structure
 
 ```

@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Shield, TrendingUp, Users, AlertTriangle, Activity, Globe, CreditCard,
   Clock, Zap, CheckCircle,
   ChevronRight, Eye, BarChart3, RefreshCw, Cpu, Lock, Network,
-  TrendingDown, Database,
+  TrendingDown, Database, ClipboardList,
 } from 'lucide-react';
 import {
   useMockData,
@@ -796,6 +797,645 @@ function SecurityPosture() {
   );
 }
 
+/* ─── System Health Heartbeat Monitor ───────────────────────────── */
+
+interface HeartbeatSegment {
+  label: string;
+  key: string;
+  icon: typeof Activity;
+  value: number;
+  unit: string;
+  threshold: { green: number; amber: number };
+}
+
+function SystemHealthHeartbeat() {
+  const [tick, setTick] = useState(0);
+  const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
+
+  // Simulate real-time heartbeat data
+  useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  const segments: HeartbeatSegment[] = [
+    {
+      label: 'API Latency',
+      key: 'api',
+      icon: Zap,
+      value: 12 + Math.round(Math.sin(tick * 0.3) * 5 + Math.random() * 3),
+      unit: 'ms',
+      threshold: { green: 30, amber: 80 },
+    },
+    {
+      label: 'Model Inference',
+      key: 'model',
+      icon: Cpu,
+      value: 8 + Math.round(Math.cos(tick * 0.2) * 3 + Math.random() * 2),
+      unit: 'ms',
+      threshold: { green: 20, amber: 50 },
+    },
+    {
+      label: 'DB Response',
+      key: 'db',
+      icon: Database,
+      value: 4 + Math.round(Math.sin(tick * 0.5) * 2 + Math.random() * 1.5),
+      unit: 'ms',
+      threshold: { green: 15, amber: 40 },
+    },
+    {
+      label: 'Feature Store',
+      key: 'feature',
+      icon: BarChart3,
+      value: 18 + Math.round(Math.cos(tick * 0.4) * 6 + Math.random() * 4),
+      unit: 'ms',
+      threshold: { green: 35, amber: 70 },
+    },
+  ];
+
+  const getStatusColor = (value: number, threshold: { green: number; amber: number }): string => {
+    if (value <= threshold.green) return 'var(--risk-low)';
+    if (value <= threshold.amber) return 'var(--risk-medium)';
+    return 'var(--risk-high)';
+  };
+
+  const getStatusLabel = (value: number, threshold: { green: number; amber: number }): string => {
+    if (value <= threshold.green) return 'Healthy';
+    if (value <= threshold.amber) return 'Degraded';
+    return 'Critical';
+  };
+
+  return (
+    <div className="card p-6 animate-fade-in" role="region" aria-label="System Health Heartbeat Monitor">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 rounded-xl bg-[var(--risk-low)]/10 flex items-center justify-center relative">
+          <Activity size={18} className="text-[var(--risk-low)]" />
+          {/* Pulsing heartbeat ring */}
+          <div
+            className="absolute inset-0 rounded-xl border-2 border-[var(--risk-low)] animate-ping opacity-30"
+            style={{ animationDuration: '1.5s' }}
+          />
+        </div>
+        <div>
+          <h3 className="text-base font-semibold font-display text-[var(--text-primary)]">
+            System Heartbeat
+          </h3>
+          <p className="text-xs text-[var(--text-tertiary)]">
+            Real-time infrastructure pulse · <span className="font-mono text-[var(--risk-low)] font-bold">ALL NOMINAL</span>
+          </p>
+        </div>
+        <div className="ml-auto flex items-center gap-1.5">
+          <div
+            className="w-2.5 h-2.5 rounded-full bg-[var(--risk-low)]"
+            style={{ animation: 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }}
+          />
+          <span className="text-[10px] font-bold text-[var(--risk-low)] uppercase">Live</span>
+        </div>
+      </div>
+
+      {/* Heartbeat ECG line */}
+      <div className="mb-5 overflow-hidden rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-secondary)] p-3">
+        <svg
+          width="100%"
+          height="40"
+          viewBox="0 0 400 40"
+          preserveAspectRatio="none"
+          role="img"
+          aria-label="Heartbeat ECG animation"
+        >
+          <defs>
+            <linearGradient id="ecg-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stopColor="var(--risk-low)" stopOpacity="0" />
+              <stop offset="30%" stopColor="var(--risk-low)" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="var(--risk-low)" stopOpacity="0.3" />
+            </linearGradient>
+          </defs>
+          <polyline
+            fill="none"
+            stroke="url(#ecg-grad)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            points="0,20 40,20 60,20 70,8 80,32 90,4 100,36 110,20 130,20 160,20 180,20 190,8 200,32 210,4 220,36 230,20 250,20 280,20 300,20 310,8 320,32 330,4 340,36 350,20 370,20 400,20"
+          >
+            <animate
+              attributeName="points"
+              dur="2s"
+              repeatCount="indefinite"
+              values="0,20 40,20 60,20 70,8 80,32 90,4 100,36 110,20 130,20 160,20 180,20 190,8 200,32 210,4 220,36 230,20 250,20 280,20 300,20 310,8 320,32 330,4 340,36 350,20 370,20 400,20;0,20 40,20 60,20 70,12 80,28 90,6 100,34 110,20 130,20 160,20 180,20 190,12 200,28 210,6 220,34 230,20 250,20 280,20 300,20 310,12 320,28 330,6 340,34 350,20 370,20 400,20;0,20 40,20 60,20 70,8 80,32 90,4 100,36 110,20 130,20 160,20 180,20 190,8 200,32 210,4 220,36 230,20 250,20 280,20 300,20 310,8 320,32 330,4 340,36 350,20 370,20 400,20"
+            />
+          </polyline>
+        </svg>
+      </div>
+
+      {/* Segment bars */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {segments.map((seg) => {
+          const color = getStatusColor(seg.value, seg.threshold);
+          const statusLabel = getStatusLabel(seg.value, seg.threshold);
+          const SegIcon = seg.icon;
+          return (
+            <div
+              key={seg.key}
+              className="relative rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)] p-3 cursor-default transition-all hover:border-[var(--border-primary)] hover:shadow-sm"
+              onMouseEnter={() => setHoveredSegment(seg.key)}
+              onMouseLeave={() => setHoveredSegment(null)}
+              role="status"
+              aria-label={`${seg.label}: ${seg.value}${seg.unit} — ${statusLabel}`}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <SegIcon size={13} style={{ color }} />
+                <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider truncate">
+                  {seg.label}
+                </span>
+              </div>
+              <div className="flex items-end justify-between">
+                <span className="text-lg font-extrabold font-mono" style={{ color }}>
+                  <AnimatedCount value={seg.value} />
+                  <span className="text-[10px] font-bold ml-0.5">{seg.unit}</span>
+                </span>
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{
+                    backgroundColor: color,
+                    animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                  }}
+                />
+              </div>
+              {/* Tooltip */}
+              {hoveredSegment === seg.key && (
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 z-20 bg-[var(--bg-card)] border border-[var(--border-secondary)] shadow-lg rounded-lg px-3 py-1.5 whitespace-nowrap">
+                  <span className="text-[10px] font-bold" style={{ color }}>{statusLabel}</span>
+                  <span className="text-[10px] text-[var(--text-tertiary)] ml-1.5">
+                    threshold: &lt;{seg.threshold.green}{seg.unit}
+                  </span>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Risk Heatmap Grid ─────────────────────────────────────────── */
+
+interface HeatmapCell {
+  region: string;
+  period: string;
+  value: number;
+  count: number;
+  alerts: number;
+}
+
+function RiskHeatmapGrid() {
+  const regions = ['ap-south-1', 'eu-west-1', 'us-east-1', 'ap-southeast-1'];
+  const regionLabels: Record<string, string> = {
+    'ap-south-1': 'India',
+    'eu-west-1': 'EU',
+    'us-east-1': 'US East',
+    'ap-southeast-1': 'APAC',
+  };
+  const periods = ['1h', '6h', '12h', '24h', '7d', '30d'];
+
+  const [hoveredCell, setHoveredCell] = useState<HeatmapCell | null>(null);
+  const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Generate deterministic-ish mock data
+  const heatmapData: HeatmapCell[][] = regions.map((region, ri) =>
+    periods.map((period, pi) => {
+      const base = [72, 38, 55, 28][ri];
+      const decay = [1, 0.85, 0.7, 0.55, 0.35, 0.2][pi];
+      const value = Math.min(100, Math.max(5, Math.round(base * decay + (ri * pi * 3) % 15)));
+      return {
+        region,
+        period,
+        value,
+        count: Math.round(value * 12 + (ri + pi) * 20),
+        alerts: value > 60 ? Math.ceil((value - 60) / 12) : 0,
+      };
+    })
+  );
+
+  const getCellColor = (value: number): string => {
+    if (value >= 75) return 'rgba(239, 68, 68, 0.85)';
+    if (value >= 55) return 'rgba(239, 68, 68, 0.5)';
+    if (value >= 40) return 'rgba(212, 168, 75, 0.6)';
+    if (value >= 25) return 'rgba(212, 168, 75, 0.35)';
+    if (value >= 15) return 'rgba(78, 186, 122, 0.4)';
+    return 'rgba(78, 186, 122, 0.2)';
+  };
+
+  const handleCellHover = (cell: HeatmapCell, e: React.MouseEvent) => {
+    setHoveredCell(cell);
+    if (gridRef.current) {
+      const rect = gridRef.current.getBoundingClientRect();
+      setTooltipPos({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top - 60,
+      });
+    }
+  };
+
+  return (
+    <div className="card p-6 animate-fade-in" role="region" aria-label="Risk Density Heatmap">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 rounded-xl bg-[var(--risk-high)]/10 flex items-center justify-center">
+          <Globe size={18} className="text-[var(--risk-high)]" />
+        </div>
+        <div>
+          <h3 className="text-base font-semibold font-display text-[var(--text-primary)]">
+            Risk Density Heatmap
+          </h3>
+          <p className="text-xs text-[var(--text-tertiary)]">
+            Regional risk concentration over time
+          </p>
+        </div>
+        {/* Legend */}
+        <div className="ml-auto flex items-center gap-1">
+          <span className="text-[9px] text-[var(--text-tertiary)] font-bold uppercase mr-1">Low</span>
+          <div className="w-12 h-2 rounded-full" style={{ background: 'linear-gradient(to right, rgba(78,186,122,0.3), rgba(212,168,75,0.5), rgba(239,68,68,0.8))' }} />
+          <span className="text-[9px] text-[var(--text-tertiary)] font-bold uppercase ml-1">High</span>
+        </div>
+      </div>
+
+      <div className="relative" ref={gridRef}>
+        {/* Column headers */}
+        <div className="grid gap-1 mb-1" style={{ gridTemplateColumns: '80px repeat(6, 1fr)' }}>
+          <div /> {/* Empty corner cell */}
+          {periods.map(p => (
+            <div
+              key={p}
+              className="text-center text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider py-1"
+            >
+              {p}
+            </div>
+          ))}
+        </div>
+
+        {/* Grid rows */}
+        {heatmapData.map((row, ri) => (
+          <div
+            key={regions[ri]}
+            className="grid gap-1 mb-1"
+            style={{ gridTemplateColumns: '80px repeat(6, 1fr)' }}
+          >
+            {/* Row label */}
+            <div className="flex items-center text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider pr-2">
+              <span className="truncate" title={regions[ri]}>
+                {regionLabels[regions[ri]]}
+              </span>
+            </div>
+            {/* Cells */}
+            {row.map((cell) => (
+              <button
+                key={`${cell.region}-${cell.period}`}
+                className="relative h-10 rounded-lg transition-all duration-200 hover:scale-105 hover:z-10 hover:shadow-lg cursor-pointer border border-transparent hover:border-[var(--text-primary)]/20 focus:outline-none focus:ring-2 focus:ring-[var(--brand-accent)] focus:ring-offset-1"
+                style={{ backgroundColor: getCellColor(cell.value) }}
+                onMouseEnter={(e) => handleCellHover(cell, e)}
+                onMouseLeave={() => setHoveredCell(null)}
+                onClick={(e) => handleCellHover(cell, e)}
+                aria-label={`${regionLabels[cell.region]} ${cell.period}: risk ${cell.value}, ${cell.count} events, ${cell.alerts} alerts`}
+                tabIndex={0}
+              >
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white/90 font-mono">
+                  {cell.value}
+                </span>
+              </button>
+            ))}
+          </div>
+        ))}
+
+        {/* Tooltip */}
+        {hoveredCell && tooltipPos && (
+          <div
+            className="absolute z-30 bg-[var(--bg-card)] border border-[var(--border-secondary)] shadow-xl rounded-xl p-3 pointer-events-none min-w-[160px]"
+            style={{ left: tooltipPos.x, top: tooltipPos.y }}
+          >
+            <div className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase mb-1">
+              {regionLabels[hoveredCell.region]} · {hoveredCell.period}
+            </div>
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-[var(--text-secondary)]">Risk Score</span>
+                <span className={cn(
+                  'font-bold font-mono',
+                  hoveredCell.value >= 65 ? 'text-[var(--risk-high)]'
+                    : hoveredCell.value >= 40 ? 'text-[var(--risk-medium)]'
+                    : 'text-[var(--risk-low)]'
+                )}>{hoveredCell.value}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[var(--text-secondary)]">Events</span>
+                <span className="font-bold font-mono text-[var(--text-primary)]">{hoveredCell.count.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-[var(--text-secondary)]">Alerts</span>
+                <span className={cn(
+                  'font-bold font-mono',
+                  hoveredCell.alerts > 0 ? 'text-[var(--risk-high)]' : 'text-[var(--risk-low)]'
+                )}>{hoveredCell.alerts}</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Model Performance Comparison Panel ────────────────────────── */
+
+interface ModelMetrics {
+  name: string;
+  version: string;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1: number;
+  aucRoc: number;
+}
+
+function ModelPerformanceComparison() {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [promoted, setPromoted] = useState(false);
+
+  const champion: ModelMetrics = {
+    name: 'FraudGraphSAGE',
+    version: 'v2.3.8',
+    accuracy: 97.8,
+    precision: 96.4,
+    recall: 94.2,
+    f1: 95.3,
+    aucRoc: 98.1,
+  };
+
+  const challenger: ModelMetrics = {
+    name: 'FraudGraphSAGE',
+    version: 'v2.4.1',
+    accuracy: 98.2,
+    precision: 97.1,
+    recall: 95.8,
+    f1: 96.4,
+    aucRoc: 98.7,
+  };
+
+  const metrics: { key: keyof Omit<ModelMetrics, 'name' | 'version'>; label: string }[] = [
+    { key: 'accuracy', label: 'Accuracy' },
+    { key: 'precision', label: 'Precision' },
+    { key: 'recall', label: 'Recall' },
+    { key: 'f1', label: 'F1 Score' },
+    { key: 'aucRoc', label: 'AUC-ROC' },
+  ];
+
+  const handlePromote = useCallback(() => {
+    setPromoted(true);
+    setShowConfirm(false);
+  }, []);
+
+  return (
+    <div className="card p-6 animate-fade-in" role="region" aria-label="Model Performance Comparison">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 rounded-xl bg-purple-400/10 flex items-center justify-center">
+          <BarChart3 size={18} className="text-purple-400" />
+        </div>
+        <div>
+          <h3 className="text-base font-semibold font-display text-[var(--text-primary)]">
+            Champion vs Challenger
+          </h3>
+          <p className="text-xs text-[var(--text-tertiary)]">
+            A/B performance comparison · {promoted ? 'Promotion applied' : 'Shadow testing active'}
+          </p>
+        </div>
+        {promoted && (
+          <span className="ml-auto text-[9px] font-bold text-[var(--risk-low)] border border-[var(--risk-low)]/30 bg-[var(--risk-low)]/10 px-2 py-0.5 rounded uppercase">
+            ✓ Promoted
+          </span>
+        )}
+      </div>
+
+      {/* Header row */}
+      <div className="grid grid-cols-[140px_1fr_1fr] gap-3 mb-3">
+        <div />
+        <div className="text-center">
+          <span className="text-[10px] font-bold text-[var(--risk-low)] bg-[var(--risk-low)]/10 border border-[var(--risk-low)]/30 px-2 py-0.5 rounded uppercase">
+            Champion
+          </span>
+          <p className="text-[9px] text-[var(--text-tertiary)] font-mono mt-1">
+            {champion.name} {champion.version}
+          </p>
+        </div>
+        <div className="text-center">
+          <span className="text-[10px] font-bold text-[var(--risk-medium)] bg-[var(--risk-medium)]/10 border border-[var(--risk-medium)]/30 px-2 py-0.5 rounded uppercase">
+            Challenger
+          </span>
+          <p className="text-[9px] text-[var(--text-tertiary)] font-mono mt-1">
+            {challenger.name} {challenger.version}
+          </p>
+        </div>
+      </div>
+
+      {/* Metric rows */}
+      <div className="space-y-2.5">
+        {metrics.map(({ key, label }) => {
+          const chVal = champion[key];
+          const clVal = challenger[key];
+          const diff = clVal - chVal;
+          const isWinning = diff > 0;
+          return (
+            <div
+              key={key}
+              className="grid grid-cols-[140px_1fr_1fr] gap-3 items-center p-2 rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-secondary)]"
+            >
+              <span className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider">
+                {label}
+              </span>
+              {/* Champion bar */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 rounded-full bg-[var(--bg-tertiary)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[var(--risk-low)] transition-all duration-700"
+                    style={{ width: `${chVal}%` }}
+                  />
+                </div>
+                <span className="text-xs font-bold font-mono text-[var(--text-primary)] w-12 text-right">
+                  {chVal.toFixed(1)}%
+                </span>
+              </div>
+              {/* Challenger bar */}
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 rounded-full bg-[var(--bg-tertiary)] overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-700"
+                    style={{
+                      width: `${clVal}%`,
+                      background: isWinning ? 'var(--risk-low)' : 'var(--risk-medium)',
+                    }}
+                  />
+                </div>
+                <span className="text-xs font-bold font-mono text-[var(--text-primary)] w-12 text-right">
+                  {clVal.toFixed(1)}%
+                </span>
+                <span className={cn(
+                  'text-[9px] font-bold font-mono w-10 text-right flex-shrink-0',
+                  isWinning ? 'text-[var(--risk-low)]' : 'text-[var(--risk-high)]'
+                )}>
+                  {isWinning ? '+' : ''}{diff.toFixed(1)}
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Promote button */}
+      {!promoted && (
+        <div className="mt-5 flex items-center justify-end gap-3">
+          {showConfirm ? (
+            <div className="flex items-center gap-2 p-3 rounded-xl border border-[var(--risk-medium)]/50 bg-[var(--risk-medium)]/5">
+              <AlertTriangle size={14} className="text-[var(--risk-medium)] flex-shrink-0" />
+              <span className="text-xs text-[var(--text-secondary)] font-medium">
+                Promote <span className="font-bold">{challenger.version}</span> to Champion?
+              </span>
+              <button
+                onClick={handlePromote}
+                className="px-3 py-1 rounded-lg bg-[var(--risk-low)] text-white text-[10px] font-bold uppercase hover:opacity-90 transition-opacity"
+                aria-label="Confirm promotion of challenger model"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-3 py-1 rounded-lg bg-[var(--bg-tertiary)] text-[var(--text-secondary)] text-[10px] font-bold uppercase hover:bg-[var(--bg-secondary)] transition-colors"
+                aria-label="Cancel promotion"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-400/10 border border-purple-400/30 text-purple-400 text-xs font-bold hover:bg-purple-400/20 transition-colors"
+              aria-label="Promote challenger model to champion"
+            >
+              <TrendingUp size={14} />
+              Promote Challenger
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Live Transaction Throughput Counter ───────────────────────── */
+
+function LiveTransactionThroughput() {
+  const [txPerSec, setTxPerSec] = useState(1500);
+  const [history, setHistory] = useState<number[]>(() =>
+    Array.from({ length: 20 }, () => 1200 + Math.round(Math.random() * 600))
+  );
+  const [totalProcessed, setTotalProcessed] = useState(4_283_761);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const next = 1200 + Math.round(Math.random() * 600);
+      setTxPerSec(next);
+      setHistory(prev => [...prev.slice(-19), next]);
+      setTotalProcessed(prev => prev + Math.round(next / 2));
+    }, 500);
+    return () => clearInterval(id);
+  }, []);
+
+  const avgTps = Math.round(history.reduce((s, v) => s + v, 0) / history.length);
+  const peakTps = Math.max(...history);
+  const minTps = Math.min(...history);
+
+  return (
+    <div className="card p-6 animate-fade-in" role="region" aria-label="Live Transaction Throughput">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-9 h-9 rounded-xl bg-[var(--brand-accent)]/10 flex items-center justify-center">
+          <Zap size={18} className="text-[var(--brand-accent)]" />
+        </div>
+        <div>
+          <h3 className="text-base font-semibold font-display text-[var(--text-primary)]">
+            Transaction Throughput
+          </h3>
+          <p className="text-xs text-[var(--text-tertiary)]">
+            Real-time processing rate · <span className="font-mono font-bold text-[var(--text-primary)]">{totalProcessed.toLocaleString()}</span> total
+          </p>
+        </div>
+        <div className="ml-auto badge badge-live">
+          <div className="w-1.5 h-1.5 rounded-full bg-[var(--risk-low)] pulse-dot" />
+          Live
+        </div>
+      </div>
+
+      <div className="grid grid-cols-12 gap-4">
+        {/* Main counter */}
+        <div className="col-span-12 lg:col-span-5 flex flex-col items-center justify-center p-5 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)]">
+          <div className="text-4xl font-extrabold font-mono text-[var(--text-primary)] leading-none">
+            <AnimatedCount value={txPerSec} />
+          </div>
+          <div className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mt-1.5">
+            transactions / second
+          </div>
+          {/* Mini sparkline */}
+          <div className="mt-3">
+            <Sparkline data={history} color="var(--brand-accent)" width={120} height={28} />
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="col-span-12 lg:col-span-7 grid grid-cols-3 gap-3">
+          <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)]">
+            <span className="text-lg font-extrabold font-mono text-[var(--risk-low)]">
+              <AnimatedCount value={avgTps} />
+            </span>
+            <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase mt-0.5">Avg TPS</span>
+          </div>
+          <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)]">
+            <span className="text-lg font-extrabold font-mono text-[var(--brand-accent)]">
+              <AnimatedCount value={peakTps} />
+            </span>
+            <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase mt-0.5">Peak</span>
+          </div>
+          <div className="flex flex-col items-center justify-center p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)]">
+            <span className="text-lg font-extrabold font-mono text-[var(--risk-medium)]">
+              <AnimatedCount value={minTps} />
+            </span>
+            <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase mt-0.5">Min</span>
+          </div>
+          {/* Throughput bar */}
+          <div className="col-span-3 p-3 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-secondary)]">
+            <div className="flex justify-between mb-1">
+              <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase">Capacity Utilization</span>
+              <span className="text-[9px] font-bold font-mono text-[var(--text-primary)]">
+                {Math.round((txPerSec / 2000) * 100)}%
+              </span>
+            </div>
+            <div className="h-1.5 rounded-full bg-[var(--bg-tertiary)] overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.min(100, (txPerSec / 2000) * 100)}%`,
+                  background: txPerSec > 1700
+                    ? 'var(--risk-high)'
+                    : txPerSec > 1400
+                      ? 'var(--risk-medium)'
+                      : 'var(--risk-low)',
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Main Dashboard ────────────────────────────────────────────── */
 
 export default function Dashboard() {
@@ -803,6 +1443,16 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* ─── KPI Cards ─────────────────────────────────────────── */}
       <HealthCards />
+
+      {/* ─── System Health Heartbeat + Live Throughput ──────────── */}
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-7">
+          <SystemHealthHeartbeat />
+        </div>
+        <div className="col-span-12 lg:col-span-5">
+          <LiveTransactionThroughput />
+        </div>
+      </div>
 
       {/* ─── Main Grid ─────────────────────────────────────────── */}
       <div className="grid grid-cols-12 gap-6">
@@ -814,8 +1464,14 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* ─── Risk Heatmap ──────────────────────────────────────── */}
+      <RiskHeatmapGrid />
+
       {/* ─── Transaction Feed ──────────────────────────────────── */}
       <TransactionFeed />
+
+      {/* ─── Model Performance Comparison ──────────────────────── */}
+      <ModelPerformanceComparison />
 
       {/* ─── Bottom Grid ───────────────────────────────────────── */}
       <div className="grid grid-cols-12 gap-6">
@@ -832,6 +1488,105 @@ export default function Dashboard() {
 
       {/* ─── Federation ────────────────────────────────────────── */}
       <FederationPanel />
+
+      {/* ─── Quick Actions + Activity Timeline ─────────────────── */}
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-5">
+          <QuickActions />
+        </div>
+        <div className="col-span-12 lg:col-span-7">
+          <ActivityTimeline />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Quick Action Cards ────────────────────────────────────────── */
+
+function QuickActions() {
+  const navigate = useNavigate();
+
+  const actions = [
+    { label: 'Run Fraud Review', sub: 'Scan open alert queue', path: '/admin/fraud', icon: AlertTriangle, color: 'text-risk-high', bg: 'bg-risk-high/10' },
+    { label: 'Score Applicant', sub: 'Credit sandbox scoring', path: '/admin/credit', icon: CreditCard, color: 'text-eshodha-500', bg: 'bg-eshodha-500/10' },
+    { label: 'Detect Graph Cycles', sub: 'GNN topology scan', path: '/admin/graph', icon: Network, color: 'text-accent-purple', bg: 'bg-accent-purple/10' },
+    { label: 'Generate SAR', sub: 'Compliance narrative', path: '/admin/regtech', icon: Lock, color: 'text-risk-medium', bg: 'bg-risk-medium/10' },
+    { label: 'View Audit Trail', sub: 'System event log', path: '/admin/audit', icon: ClipboardList, color: 'text-risk-low', bg: 'bg-risk-low/10' },
+    { label: 'Rotate Keys', sub: 'PQC key management', path: '/admin/quantum', icon: Zap, color: 'text-eshodha-500', bg: 'bg-eshodha-500/10' },
+  ];
+
+  return (
+    <div className="card p-5">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+        <Zap size={16} className="text-eshodha-500" />
+        Quick Actions
+      </h3>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        {actions.map((a) => (
+          <button
+            key={a.label}
+            onClick={() => navigate(a.path)}
+            className="flex items-start gap-3 rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3 text-left transition-all hover:bg-[var(--bg-card)] hover:shadow-sm group"
+          >
+            <div className={cn('grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg', a.bg, a.color)}>
+              <a.icon size={15} />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-eshodha-500 transition-colors">{a.label}</p>
+              <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{a.sub}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Activity Timeline ─────────────────────────────────────────── */
+
+const TIMELINE_EVENTS = [
+  { time: '22:41', icon: AlertTriangle, color: 'text-risk-high', title: 'Fraud alert FA-005 escalated', detail: 'USR-IN-2c9b · ₹45,000 bust-out pattern · auto-blocked' },
+  { time: '22:38', icon: Shield, color: 'text-risk-low', title: 'Model champion promoted', detail: 'v2.4.1 → production · accuracy 94.2% · A/B passed' },
+  { time: '22:30', icon: CreditCard, color: 'text-eshodha-500', title: 'Batch scoring completed', detail: '2,847 thin-file applications · 73.4% approval rate' },
+  { time: '22:24', icon: Database, color: 'text-accent-purple', title: 'Database sync checkpoint', detail: 'credline_prod · 12,400 rows · latency 18ms' },
+  { time: '22:18', icon: Network, color: 'text-risk-medium', title: 'Graph cycle detected', detail: 'Synthetic identity ring · 42 nodes · risk 0.94' },
+  { time: '22:12', icon: Globe, color: 'text-risk-low', title: 'Federation round complete', detail: 'Global Commerce Bank · gradient merge · fraud rate 0.8%' },
+  { time: '22:05', icon: Zap, color: 'text-eshodha-500', title: 'PQC key rotation', detail: 'ML-KEM-768 refresh · 4 sovereign regions · hybrid TLS' },
+  { time: '21:58', icon: RefreshCw, color: 'text-accent-purple', title: 'Feature store materialized', detail: 'Feast online/offline sync · stream lag 42ms' },
+  { time: '21:50', icon: CheckCircle, color: 'text-risk-low', title: 'SAR report transmitted', detail: 'Q2-2026-batch-014 · 14 cases · FIU gateway confirmed' },
+  { time: '21:42', icon: Activity, color: 'text-risk-medium', title: 'Circuit breaker tested', detail: 'Failsafe rules engine verified · fallback latency 8ms' },
+];
+
+function ActivityTimeline() {
+  return (
+    <div className="card p-5">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+        <Clock size={16} className="text-eshodha-500" />
+        Activity Timeline
+      </h3>
+      <div className="mt-4 max-h-[360px] overflow-y-auto space-y-0 pr-2">
+        {TIMELINE_EVENTS.map((event, i) => (
+          <div key={i} className="relative flex gap-3 pb-4 last:pb-0">
+            {/* Vertical connector line */}
+            {i < TIMELINE_EVENTS.length - 1 && (
+              <div className="absolute left-[13px] top-7 bottom-0 w-px bg-[var(--border-secondary)]" />
+            )}
+            {/* Icon dot */}
+            <div className={cn('relative z-10 mt-0.5 grid h-7 w-7 flex-shrink-0 place-items-center rounded-lg bg-[var(--bg-secondary)] border border-[var(--border-secondary)]', event.color)}>
+              <event.icon size={13} />
+            </div>
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{event.title}</p>
+                <span className="flex-shrink-0 text-[10px] font-mono text-[var(--text-tertiary)]">{event.time} IST</span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-[var(--text-secondary)]">{event.detail}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -850,3 +1605,4 @@ function CardSkeleton({ count = 1, height = 'h-32' }: { count?: number; height?:
     </div>
   );
 }
+
