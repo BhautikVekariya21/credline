@@ -17,12 +17,12 @@ const FOOTER_COLS = [
   {
     title: 'Platform',
     links: [
-      { label: 'Overview',        path: '/platform' },
-      { label: 'Security',        path: '/security' },
+      { label: 'Overview',          path: '/platform' },
+      { label: 'Security',          path: '/security' },
       { label: 'Graph Intelligence', path: '/platform' },
-      { label: 'MLOps & Infra',   path: '/platform' },
-      { label: 'Credit Portal',   path: '/portal' },
-      { label: 'Risk Console',    path: '/admin' },
+      { label: 'MLOps & Infra',     path: '/platform' },
+      { label: 'Developer Portal',  path: '/admin/developers' },
+      { label: 'Risk Console',      path: '/admin' },
     ],
   },
   {
@@ -30,15 +30,15 @@ const FOOTER_COLS = [
     links: [
       { label: 'About',         path: '/about' },
       { label: 'All Services',  path: '/services' },
-      { label: 'Documentation', path: '/platform' },
+      { label: 'Documentation', path: '/admin/developers' },
       { label: 'Changelog',     path: '/about' },
     ],
   },
   {
     title: 'Compliance',
     links: [
-      { label: 'Privacy Policy',    path: '/about' },
-      { label: 'Terms of Service',  path: '/about' },
+      { label: 'Privacy Policy',    path: '/security' },
+      { label: 'Terms of Service',  path: '/security' },
       { label: 'GDPR & DPDP',       path: '/security' },
       { label: 'SOC 2 Report',      path: '/security' },
       { label: 'PCI DSS',           path: '/security' },
@@ -49,7 +49,7 @@ const FOOTER_COLS = [
 const BADGES = ['SOC 2 Type II', 'PCI DSS', 'ISO 27001', 'GDPR', 'FCRA'];
 
 const SOCIAL = [
-  { Icon: Github,   label: 'GitHub',     href: '#' },
+  { Icon: Github,   label: 'GitHub',     href: 'https://github.com/BhautikVekariya21/credline' },
   { Icon: Linkedin, label: 'LinkedIn',   href: '#' },
   { Icon: Twitter,  label: 'Twitter/X',  href: '#' },
   { Icon: Mail,     label: 'Email',      href: 'mailto:hello@creditline.io' },
