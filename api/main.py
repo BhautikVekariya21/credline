@@ -119,6 +119,10 @@ def create_app() -> FastAPI:
     from api.routers.baas_developer import router as baas_developer_router
     app.include_router(baas_developer_router)
 
+    # Phase 19: Embedded Finance, Web3 Liquidity Syndicate & Super-App
+    from api.routers.embedded_finance import router as embedded_finance_router
+    app.include_router(embedded_finance_router)
+
     # Phase 10: Core Transaction Engine
     from core_engine.transaction_controller import router as core_router
     app.include_router(core_router)
