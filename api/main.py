@@ -127,6 +127,10 @@ def create_app() -> FastAPI:
     from api.routers.institutional import router as institutional_router
     app.include_router(institutional_router)
 
+    # Phase 21: Autonomous Credit Default Swaps (CDS), Real-Time AML/Sanction Graph Matching & Settlement Clearing House
+    from api.routers.compliance_hedging import router as compliance_hedging_router
+    app.include_router(compliance_hedging_router)
+
     # Phase 10: Core Transaction Engine
     from core_engine.transaction_controller import router as core_router
     app.include_router(core_router)

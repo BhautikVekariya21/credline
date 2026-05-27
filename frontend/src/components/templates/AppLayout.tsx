@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { id: 'godseye',        label: 'God\'s Eye Resiliency', icon: Activity,        path: '/admin/godseye' },
   { id: 'developers',     label: 'Developer Portal',    icon: Code,            path: '/admin/developers' },
   { id: 'institutional',  label: 'Institutional RWA',   icon: Scale,           path: '/admin/institutional' },
+  { id: 'compliance',     label: 'Compliance & Hedging', icon: ShieldAlert,    path: '/admin/compliance' },
   // ─── Service Modules ──────────────────────────────
   { id: 'payments',       label: 'Payment Intel',       icon: Banknote,        path: '/admin/payments' },
   { id: 'wealth',         label: 'Wealth Risk',         icon: LineChart,       path: '/admin/wealth' },
