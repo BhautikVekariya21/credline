@@ -53,14 +53,79 @@ DEVELOPER_USAGE_METER = {
 }
 
 
-# ─── Redis Token Bucket Rate Limiter Simulation ──────────────────────────────
+# ─── Redis & Stripe SDK Optional Integrations ─────────────────────────────────
+try:
+    import redis
+    # Try connecting to Redis locally
+    redis_client = redis.Redis(host="localhost", port=6379, db=0, socket_timeout=1.0, decode_responses=True)
+    redis_client.ping()
+    HAS_REDIS = True
+    logger.info("Connected to Redis for rate-limiting.")
+except Exception:
+    HAS_REDIS = False
+    redis_client = None
+    logger.warning("Redis server not available. Falling back to in-memory rate-limiting.")
+
+try:
+    import stripe
+    stripe.api_key = "sk_test_mock_stripe_key_12345"
+    HAS_STRIPE = True
+    logger.info("Stripe SDK is available for billing.")
+except ImportError:
+    HAS_STRIPE = False
+    logger.warning("Stripe SDK not installed. Using mock Stripe event parsing.")
+
+
+# ─── Redis Token Bucket Rate Limiter ──────────────────────────────────────────
 class TokenBucketLimiter:
     """Thread-safe token-bucket rate limiter with Redis-like interface."""
     def __init__(self):
-        # API Key -> { "tokens": float, "last_updated": float }
+        # In-memory fallback: API Key -> { "tokens": float, "last_updated": float }
         self._buckets: Dict[str, Dict[str, float]] = {}
 
     def is_rate_limited(self, api_key: str, limit_rpm: int) -> bool:
+        # 1. Try Redis rate limiting if active
+        if HAS_REDIS and redis_client:
+            try:
+                tokens_key = f"rate_limit:{api_key}:tokens"
+                last_updated_key = f"rate_limit:{api_key}:last_updated"
+                
+                now = time.time()
+                capacity = float(limit_rpm)
+                fill_rate = capacity / 60.0
+                
+                pipe = redis_client.pipeline()
+                pipe.get(tokens_key)
+                pipe.get(last_updated_key)
+                tokens_val, last_updated_val = pipe.execute()
+                
+                if tokens_val is None or last_updated_val is None:
+                    pipe = redis_client.pipeline()
+                    pipe.set(tokens_key, capacity - 1.0)
+                    pipe.set(last_updated_key, now)
+                    pipe.execute()
+                    return False
+                
+                tokens = float(tokens_val)
+                last_updated = float(last_updated_val)
+                
+                elapsed = now - last_updated
+                refilled_tokens = tokens + (elapsed * fill_rate)
+                current_tokens = min(capacity, refilled_tokens)
+                
+                if current_tokens >= 1.0:
+                    current_tokens -= 1.0
+                    pipe = redis_client.pipeline()
+                    pipe.set(tokens_key, current_tokens)
+                    pipe.set(last_updated_key, now)
+                    pipe.execute()
+                    return False
+                else:
+                    return True
+            except Exception as e:
+                logger.error(f"Redis rate limiter exception: {str(e)}. Falling back to memory.")
+
+        # 2. In-memory fallback
         now = time.time()
         capacity = float(limit_rpm)
         fill_rate = capacity / 60.0  # tokens per second

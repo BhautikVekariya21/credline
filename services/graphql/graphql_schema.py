@@ -59,6 +59,82 @@ MOCK_TAX_LIABILITIES = {
 }
 
 
+# ─── Strawberry GraphQL Integration ──────────────────────────────────────────
+try:
+    import strawberry
+    HAS_STRAWBERRY = True
+except ImportError:
+    HAS_STRAWBERRY = False
+
+if HAS_STRAWBERRY:
+    @strawberry.type
+    class UserNode:
+        id: str
+        name: str
+        company: str
+
+    @strawberry.type
+    class FraudHop:
+        hop_id: int
+        node_name: str
+        node_type: str
+        risk_contribution: float
+
+    @strawberry.type
+    class FraudGraphNode:
+        userId: str
+        risk_score: float
+        hops: List[FraudHop]
+
+    @strawberry.type
+    class TaxLiabilityNode:
+        tenantId: str
+        total_taxable: float
+        total_tax: float
+        filing_status: str
+
+    @strawberry.type
+    class Query:
+        @strawberry.field
+        def user(self, id: str) -> Optional[UserNode]:
+            u = MOCK_USERS.get(id)
+            if u:
+                return UserNode(id=u["id"], name=u["name"], company=u["company"])
+            return None
+
+        @strawberry.field
+        def fraudGraph(self, userId: str) -> Optional[FraudGraphNode]:
+            g = MOCK_FRAUD_GRAPHS.get(userId)
+            if g:
+                hops_list = [
+                    FraudHop(
+                        hop_id=h["hop_id"],
+                        node_name=h["node_name"],
+                        node_type=h["node_type"],
+                        risk_contribution=h["risk_contribution"]
+                    )
+                    for h in g["hops"]
+                ]
+                return FraudGraphNode(userId=g["userId"], risk_score=g["risk_score"], hops=hops_list)
+            return None
+
+        @strawberry.field
+        def taxLiability(self, tenantId: str) -> Optional[TaxLiabilityNode]:
+            t = MOCK_TAX_LIABILITIES.get(tenantId)
+            if t:
+                return TaxLiabilityNode(
+                    tenantId=t["tenant_id"],
+                    total_taxable=t["total_taxable"],
+                    total_tax=t["total_tax"],
+                    filing_status=t["filing_status"]
+                )
+            return None
+
+    strawberry_schema = strawberry.Schema(query=Query)
+else:
+    strawberry_schema = None
+
+
 class GraphQLQueryRequest(BaseModel):
     query: str = Field(..., description="GraphQL query payload")
     variables: Optional[Dict[str, Any]] = Field(None, description="Optional variables dictionary")
@@ -72,6 +148,18 @@ class GraphQLSchemaResolver:
     def resolve(self, query_string: str, variables: Optional[dict] = None) -> Dict[str, Any]:
         logger.info("Executing GraphQL query resolution...")
         
+        # If Strawberry is installed, execute using official engine
+        if HAS_STRAWBERRY and strawberry_schema:
+            try:
+                result = strawberry_schema.execute_sync(query_string, variable_values=variables)
+                if not result.errors:
+                    return {"data": result.data}
+                else:
+                    logger.warning(f"Strawberry execution returned errors: {result.errors}. Falling back to Regex AST.")
+            except Exception as e:
+                logger.error(f"Strawberry execution failed: {str(e)}. Falling back to Regex AST.")
+
+        # Fallback Regex AST Resolver
         # Clean query whitespace
         normalized = re.sub(r'\s+', ' ', query_string).strip()
         
