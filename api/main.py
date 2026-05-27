@@ -111,6 +111,13 @@ def create_app() -> FastAPI:
     app.include_router(treasury_audit.router)
     app.include_router(ceo.router)
 
+    # Phase 17: Adaptive Auto-Remediation & Sovereign AI
+    from api.routers.remediation_sovereignty import router as remediation_sovereignty_router
+    app.include_router(remediation_sovereignty_router)
+
+    # Phase 18: Banking-as-a-Service (BaaS) & Open Developer Ecosystem
+    from api.routers.baas_developer import router as baas_developer_router
+    app.include_router(baas_developer_router)
 
     # Phase 10: Core Transaction Engine
     from core_engine.transaction_controller import router as core_router

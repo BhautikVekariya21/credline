@@ -27,6 +27,8 @@ import TaxCommandCenter from './pages/admin/TaxCommandCenter';
 import ExecutiveStrategyRoom from './pages/admin/ExecutiveStrategyRoom';
 import TreasuryAndAuditPortal from './pages/admin/TreasuryAndAuditPortal';
 import OmniMonopolyDashboard from './pages/admin/OmniMonopolyDashboard';
+import GodsEyeResiliency from './pages/admin/GodsEyeResiliency';
+import EshodhaDevPortal from './pages/admin/EshodhaDevPortal';
 import DatabaseConnectorPage from './pages/admin/DatabaseConnectorPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 import AuditLogPage from './pages/admin/AuditLogPage';
@@ -79,6 +81,8 @@ export default function App() {
         <Route path="/admin/strategy" element={<ExecutiveStrategyRoom />} />
         <Route path="/admin/treasury" element={<TreasuryAndAuditPortal />} />
         <Route path="/admin/ceo" element={<OmniMonopolyDashboard />} />
+        <Route path="/admin/godseye" element={<GodsEyeResiliency />} />
+        <Route path="/admin/developers" element={<EshodhaDevPortal />} />
 
         <Route path="/admin/payments" element={<PaymentsIntelligencePage />} />
         <Route path="/admin/wealth" element={<WealthRiskPage />} />
