@@ -41,7 +41,7 @@ interface Toast {
   type: 'success' | 'error' | 'info';
 }
 
-export default function EshodhaDevPortal() {
+export default function CreditLineDevPortal() {
   const { theme, font } = useAppStore();
 
   // Local Toast System
