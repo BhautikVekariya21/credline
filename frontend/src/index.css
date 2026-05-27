@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -516,25 +518,165 @@ button {
   --font-display: "Atkinson Hyperlegible Mono", "SF Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, monospace;
 }
 
-.admin-site h1,.admin-site h2,.admin-site h3,
-.admin-site h4,.admin-site h5,.admin-site h6,
-.admin-site .font-display { font-family: var(--font-display); }
+.admin-site,
+.admin-site .font-sans {
+  font-family: var(--font-sans) !important;
+}
 
-/* Cards */
+.admin-site h1,
+.admin-site h2,
+.admin-site h3,
+.admin-site h4,
+.admin-site h5,
+.admin-site h6,
+.admin-site .font-display {
+  font-family: var(--font-display) !important;
+}
+
+.admin-site code,
+.admin-site pre,
+.admin-site .font-mono {
+  font-family: var(--font-mono) !important;
+}
+
+/* Cards - Ultra-Premium Glassmorphism & Cybernetic Styling */
 .admin-site .card,
 .admin-site .glass {
-  background: var(--bg-card);
-  border: 1px solid var(--border-secondary);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: rgba(21, 22, 20, 0.7) !important;
+  border: 1px solid rgba(243, 242, 236, 0.08) !important;
+  border-radius: 1rem !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.admin-site .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--brand-accent), transparent);
+  opacity: 0.3;
+  transition: opacity 0.25s ease;
 }
 
 .admin-site .card:hover {
-  border-color: var(--border-primary);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  transform: translateY(-2px);
+  border-color: rgba(240, 176, 170, 0.3) !important;
+  box-shadow: 0 12px 40px 0 rgba(240, 176, 170, 0.1), 0 0 1px 1px rgba(240, 176, 170, 0.15) !important;
+}
+
+.admin-site .card:hover::before {
+  opacity: 1;
+}
+
+/* Custom Scrollbars */
+.admin-site ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-site ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-site ::-webkit-scrollbar-thumb {
+  background: rgba(243, 242, 236, 0.15);
+  border-radius: 3px;
+}
+
+.admin-site ::-webkit-scrollbar-thumb:hover {
+  background: rgba(243, 242, 236, 0.3);
+}
+
+/* Cybernetic & Financial Premium Enhancements */
+.admin-site .premium-gradient-text {
+  background: linear-gradient(135deg, #ffffff 30%, var(--brand-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-site .cyber-badge {
+  background: rgba(240, 176, 170, 0.08);
+  border: 1px solid rgba(240, 176, 170, 0.2);
+  color: var(--brand-accent);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.admin-site .radar-pulse {
+  position: relative;
+}
+
+.admin-site .radar-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: inherit;
+  border-radius: inherit;
+  animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+.admin-site table {
+  background: transparent !important;
+  border-collapse: separate !important;
+  border-spacing: 0 6px !important;
+}
+
+.admin-site tr {
+  background: rgba(21, 22, 20, 0.4);
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.admin-site tr:hover {
+  background: rgba(21, 22, 20, 0.7);
+}
+
+.admin-site th {
+  border-bottom: 1px solid rgba(243, 242, 236, 0.05) !important;
+  font-family: var(--font-display) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary) !important;
+}
+
+.admin-site td {
+  border-top: 1px solid rgba(243, 242, 236, 0.03) !important;
+  border-bottom: 1px solid rgba(243, 242, 236, 0.03) !important;
+}
+
+.admin-site td:first-child {
+  border-left: 1px solid rgba(243, 242, 236, 0.03) !important;
+  border-top-left-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+}
+
+.admin-site td:last-child {
+  border-right: 1px solid rgba(243, 242, 236, 0.03) !important;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
 }
 
 .admin-site .rounded-2xl,

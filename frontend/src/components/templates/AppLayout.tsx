@@ -39,16 +39,81 @@ const NAV_ITEMS = [
 ];
 
 export default function AppLayout() {
-  const { sidebarOpen, setSidebarOpen, theme, font, notifications, markAsRead } = useAppStore();
+  const { sidebarOpen, setSidebarOpen, theme, font, notifications, markAsRead, setTheme, setFont } = useAppStore();
   const location = useLocation();
   const navigate = useNavigate();
 
   const [bellOpen, setBellOpen] = useState(false);
   const bellRef = useRef<HTMLDivElement>(null);
 
+  const [isCmdPaletteOpen, setIsCmdPaletteOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const cmdPaletteInputRef = useRef<HTMLInputElement>(null);
+
   const activeItem = NAV_ITEMS.find(n => n.path === location.pathname) || NAV_ITEMS[0];
   const shellStyle = { '--admin-sidebar-width': sidebarOpen ? '16rem' : '72px' } as CSSProperties;
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Command palette event listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCmdPaletteOpen(v => !v);
+      }
+      if (e.key === 'Escape') {
+        setIsCmdPaletteOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (isCmdPaletteOpen) {
+      setTimeout(() => cmdPaletteInputRef.current?.focus(), 80);
+    } else {
+      setSearchQuery('');
+    }
+  }, [isCmdPaletteOpen]);
+
+  const actions = [
+    ...NAV_ITEMS.map(item => ({
+      name: `Navigate: Go to ${item.label}`,
+      category: 'Navigation',
+      icon: item.icon,
+      perform: () => { navigate(item.path); setIsCmdPaletteOpen(false); }
+    })),
+    {
+      name: 'Theme: Toggle Dark Mode',
+      category: 'Preferences',
+      icon: Settings,
+      perform: () => { setTheme(theme === 'dark' ? 'light' : 'dark'); setIsCmdPaletteOpen(false); }
+    },
+    {
+      name: 'Font: Default to SF Pro / System',
+      category: 'Preferences',
+      icon: Code,
+      perform: () => { setFont('system'); setIsCmdPaletteOpen(false); }
+    },
+    {
+      name: 'Font: Set Atkinson Hyperlegible Mono',
+      category: 'Preferences',
+      icon: Code,
+      perform: () => { setFont('mono'); setIsCmdPaletteOpen(false); }
+    },
+    {
+      name: 'Font: Set Satoshi (Harmonious)',
+      category: 'Preferences',
+      icon: Code,
+      perform: () => { setFont('satoshi'); setIsCmdPaletteOpen(false); }
+    }
+  ];
+
+  const filteredActions = actions.filter(act =>
+    act.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    act.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // Synchronization handled by ThemeContext.tsx
 
@@ -142,12 +207,23 @@ export default function AppLayout() {
         <header className="sticky top-0 z-30 border-b border-[var(--border-secondary)] bg-[var(--bg-overlay)] px-6 py-3">
           <div className="flex items-center justify-between">
             {/* Breadcrumb */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-semibold uppercase text-[var(--text-tertiary)]">Credit Line</span>
-              <span className="text-[var(--text-tertiary)]">/</span>
-              <span className="text-sm font-semibold text-[var(--text-primary)]">
-                {activeItem.label}
-              </span>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-mono font-semibold uppercase text-[var(--text-tertiary)]">Credit Line</span>
+                <span className="text-[var(--text-tertiary)]">/</span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {activeItem.label}
+                </span>
+              </div>
+              
+              {/* CMD+K Global Command Button */}
+              <button
+                onClick={() => setIsCmdPaletteOpen(true)}
+                className="hidden md:flex items-center gap-2 rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:border-[var(--text-primary)] hover:text-[var(--text-primary)] transition-all cursor-pointer select-none"
+              >
+                <span>Search controls...</span>
+                <kbd className="font-mono bg-[var(--bg-secondary)] px-1.5 py-0.5 rounded text-[10px] border border-[var(--border-secondary)] font-bold">⌘K</kbd>
+              </button>
             </div>
 
             {/* Right Side Controls */}
@@ -254,6 +330,60 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
+
+      {/* Global CMD+K Command Palette Modal */}
+      {isCmdPaletteOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex justify-center pt-[15vh] p-4 font-sans animate-fade-in" onClick={() => setIsCmdPaletteOpen(false)}>
+          <div 
+            className="w-full max-w-xl bg-[var(--bg-overlay)] border border-[var(--border-secondary)] rounded-xl shadow-2xl overflow-hidden flex flex-col h-[400px] animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Input bar */}
+            <div className="flex items-center border-b border-[var(--border-secondary)] px-4 py-3 gap-3 bg-[var(--bg-card)]">
+              <Code size={18} className="text-[var(--text-secondary)] shrink-0" />
+              <input
+                ref={cmdPaletteInputRef}
+                type="text"
+                placeholder="Search pages, actions, and developer resources... (ESC to close)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none outline-none text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)]"
+              />
+            </div>
+
+            {/* Actions list */}
+            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+              {filteredActions.length === 0 ? (
+                <div className="text-center py-12 text-xs text-[var(--text-tertiary)] font-mono">
+                  No matching admin controls or pages found...
+                </div>
+              ) : (
+                filteredActions.map((action, idx) => (
+                  <button
+                    key={idx}
+                    onClick={action.perform}
+                    className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-card)] transition-colors group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <action.icon size={16} className="text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)] flex-shrink-0" />
+                      <span>{action.name}</span>
+                    </div>
+                    <span className="text-[9px] uppercase px-1.5 py-0.5 rounded font-bold tracking-wider font-mono border border-[var(--border-secondary)] bg-[var(--bg-secondary)] text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]">
+                      {action.category}
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+            
+            {/* Command Palette Footer */}
+            <div className="border-t border-[var(--border-secondary)] px-4 py-2 bg-[var(--bg-card)] text-[10px] text-[var(--text-tertiary)] flex items-center justify-between font-mono">
+              <span>Navigate with arrow keys & enter</span>
+              <span>ESC to close</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
