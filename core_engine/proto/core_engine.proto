@@ -1,12 +1,12 @@
-// eshodha fintech solution — Core Engine gRPC Service Definition
+// Credit Line Fintech Solution — Core Engine gRPC Service Definition
 //
 // Defines the contract between:
 //   Rust Consumer ──gRPC──► Python SubGraph Extractor ──► PyTorch GNN
 
 syntax = "proto3";
-package eshodha.core;
+package Credit Line.core;
 
-option java_package = "ai.eshodha.core";
+option java_package = "ai.Credit Line.core";
 
 // ─── Transaction Scoring Service ────────────────────────────────────
 

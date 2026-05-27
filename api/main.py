@@ -21,6 +21,7 @@ from api.middleware.rate_limiter import RateLimiterMiddleware
 from api.routers import (
     agent, credit, credit_engine, direct, explain, fraud, health,
     mlops, quantum, regulator, security, services, soar, database_link,
+    executive, treasury_audit, ceo,
 )
 from config.logging_config import get_logger, setup_logging
 from config.settings import get_settings
@@ -106,6 +107,9 @@ def create_app() -> FastAPI:
     app.include_router(credit_engine.router)
     app.include_router(quantum.router)
     app.include_router(database_link.router)
+    app.include_router(executive.router)
+    app.include_router(treasury_audit.router)
+    app.include_router(ceo.router)
 
 
     # Phase 10: Core Transaction Engine

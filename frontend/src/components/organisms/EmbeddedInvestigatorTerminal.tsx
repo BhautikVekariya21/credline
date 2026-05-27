@@ -78,7 +78,7 @@ export default function EmbeddedInvestigatorTerminal() {
   return (
     <div 
       className={cn(
-        "glass rounded-xl flex flex-col transition-all duration-300 relative border-t-2 border-t-eshodha-500",
+        "glass rounded-xl flex flex-col transition-all duration-300 relative border-t-2 border-t-credit-line-500",
         isExpanded ? "h-[600px] fixed inset-10 z-[100] shadow-2xl" : "h-[300px]"
       )}
       onClick={handleTerminalClick}
@@ -86,7 +86,7 @@ export default function EmbeddedInvestigatorTerminal() {
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-black/40 rounded-t-xl select-none">
         <div className="flex items-center gap-2">
-          <TerminalIcon size={14} className="text-eshodha-400" />
+          <TerminalIcon size={14} className="text-credit-line-400" />
           <span className="text-xs font-mono text-white/70 font-semibold tracking-wider">Investigator CLI</span>
         </div>
         <button 
@@ -99,7 +99,7 @@ export default function EmbeddedInvestigatorTerminal() {
 
       {/* Terminal Output */}
       <div className="flex-1 p-4 font-mono text-[13px] overflow-y-auto bg-[#0a0a0c] custom-scrollbar">
-        <div className="text-eshodha-400 mb-4 opacity-80">
+        <div className="text-credit-line-400 mb-4 opacity-80">
           Welcome to FinGuard Investigator CLI. Type 'help' for commands.
         </div>
         

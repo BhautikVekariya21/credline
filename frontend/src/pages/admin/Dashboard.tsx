@@ -1509,17 +1509,17 @@ function QuickActions() {
 
   const actions = [
     { label: 'Run Fraud Review', sub: 'Scan open alert queue', path: '/admin/fraud', icon: AlertTriangle, color: 'text-risk-high', bg: 'bg-risk-high/10' },
-    { label: 'Score Applicant', sub: 'Credit sandbox scoring', path: '/admin/credit', icon: CreditCard, color: 'text-eshodha-500', bg: 'bg-eshodha-500/10' },
+    { label: 'Score Applicant', sub: 'Credit sandbox scoring', path: '/admin/credit', icon: CreditCard, color: 'text-credit-line-500', bg: 'bg-credit-line-500/10' },
     { label: 'Detect Graph Cycles', sub: 'GNN topology scan', path: '/admin/graph', icon: Network, color: 'text-accent-purple', bg: 'bg-accent-purple/10' },
     { label: 'Generate SAR', sub: 'Compliance narrative', path: '/admin/regtech', icon: Lock, color: 'text-risk-medium', bg: 'bg-risk-medium/10' },
     { label: 'View Audit Trail', sub: 'System event log', path: '/admin/audit', icon: ClipboardList, color: 'text-risk-low', bg: 'bg-risk-low/10' },
-    { label: 'Rotate Keys', sub: 'PQC key management', path: '/admin/quantum', icon: Zap, color: 'text-eshodha-500', bg: 'bg-eshodha-500/10' },
+    { label: 'Rotate Keys', sub: 'PQC key management', path: '/admin/quantum', icon: Zap, color: 'text-credit-line-500', bg: 'bg-credit-line-500/10' },
   ];
 
   return (
     <div className="card p-5">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-        <Zap size={16} className="text-eshodha-500" />
+        <Zap size={16} className="text-credit-line-500" />
         Quick Actions
       </h3>
       <div className="mt-4 grid grid-cols-2 gap-2">
@@ -1533,7 +1533,7 @@ function QuickActions() {
               <a.icon size={15} />
             </div>
             <div>
-              <p className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-eshodha-500 transition-colors">{a.label}</p>
+              <p className="text-xs font-semibold text-[var(--text-primary)] group-hover:text-credit-line-500 transition-colors">{a.label}</p>
               <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{a.sub}</p>
             </div>
           </button>
@@ -1548,11 +1548,11 @@ function QuickActions() {
 const TIMELINE_EVENTS = [
   { time: '22:41', icon: AlertTriangle, color: 'text-risk-high', title: 'Fraud alert FA-005 escalated', detail: 'USR-IN-2c9b · ₹45,000 bust-out pattern · auto-blocked' },
   { time: '22:38', icon: Shield, color: 'text-risk-low', title: 'Model champion promoted', detail: 'v2.4.1 → production · accuracy 94.2% · A/B passed' },
-  { time: '22:30', icon: CreditCard, color: 'text-eshodha-500', title: 'Batch scoring completed', detail: '2,847 thin-file applications · 73.4% approval rate' },
-  { time: '22:24', icon: Database, color: 'text-accent-purple', title: 'Database sync checkpoint', detail: 'credline_prod · 12,400 rows · latency 18ms' },
+  { time: '22:30', icon: CreditCard, color: 'text-credit-line-500', title: 'Batch scoring completed', detail: '2,847 thin-file applications · 73.4% approval rate' },
+  { time: '22:24', icon: Database, color: 'text-accent-purple', title: 'Database sync checkpoint', detail: 'Credit Line_prod · 12,400 rows · latency 18ms' },
   { time: '22:18', icon: Network, color: 'text-risk-medium', title: 'Graph cycle detected', detail: 'Synthetic identity ring · 42 nodes · risk 0.94' },
   { time: '22:12', icon: Globe, color: 'text-risk-low', title: 'Federation round complete', detail: 'Global Commerce Bank · gradient merge · fraud rate 0.8%' },
-  { time: '22:05', icon: Zap, color: 'text-eshodha-500', title: 'PQC key rotation', detail: 'ML-KEM-768 refresh · 4 sovereign regions · hybrid TLS' },
+  { time: '22:05', icon: Zap, color: 'text-credit-line-500', title: 'PQC key rotation', detail: 'ML-KEM-768 refresh · 4 sovereign regions · hybrid TLS' },
   { time: '21:58', icon: RefreshCw, color: 'text-accent-purple', title: 'Feature store materialized', detail: 'Feast online/offline sync · stream lag 42ms' },
   { time: '21:50', icon: CheckCircle, color: 'text-risk-low', title: 'SAR report transmitted', detail: 'Q2-2026-batch-014 · 14 cases · FIU gateway confirmed' },
   { time: '21:42', icon: Activity, color: 'text-risk-medium', title: 'Circuit breaker tested', detail: 'Failsafe rules engine verified · fallback latency 8ms' },
@@ -1562,7 +1562,7 @@ function ActivityTimeline() {
   return (
     <div className="card p-5">
       <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-        <Clock size={16} className="text-eshodha-500" />
+        <Clock size={16} className="text-credit-line-500" />
         Activity Timeline
       </h3>
       <div className="mt-4 max-h-[360px] overflow-y-auto space-y-0 pr-2">

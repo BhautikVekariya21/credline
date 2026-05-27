@@ -70,7 +70,7 @@ export default function GraphView() {
       </div>
       {sel && (
         <div className="mt-4 glass p-4">
-          <h4 className="font-semibold text-eshodha-400">{sel.id}</h4>
+          <h4 className="font-semibold text-credit-line-400">{sel.id}</h4>
           <p className="text-sm text-white/50 mt-1">Type: <span className="text-white/80 capitalize">{sel.type}</span> · Risk Score: <span className={sel.risk > 0.6 ? 'text-red-400' : 'text-green-400'}>{(sel.risk * 100).toFixed(0)}%</span></p>
         </div>
       )}

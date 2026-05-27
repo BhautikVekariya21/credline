@@ -29,8 +29,8 @@ function Lockup({ compact = false }: { compact?: boolean }) {
       <Mark />
       {!compact && (
         <span className="brand-copy">
-          <span className="brand-name">Credline</span>
-          <span className="brand-subtitle">risk intelligence</span>
+          <span className="brand-name">Credit Line</span>
+          <span className="brand-subtitle">fintech solution</span>
         </span>
       )}
     </>
@@ -47,7 +47,7 @@ export default function BrandLogo({ className, compact = false, to = '/' }: Bran
   }
 
   return (
-    <Link to={to} className={cn('brand-lockup', className)} aria-label="Credline home">
+    <Link to={to} className={cn('brand-lockup', className)} aria-label="Credit Line home">
       <Lockup compact={compact} />
     </Link>
   );

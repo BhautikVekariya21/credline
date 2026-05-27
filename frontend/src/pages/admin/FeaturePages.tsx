@@ -320,7 +320,7 @@ export function ModuleWorkspace({
         <section className="rounded-2xl border border-[var(--border-secondary)] bg-[var(--bg-card)] p-5 md:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex gap-4">
-              <div className="grid h-12 w-12 place-items-center rounded-xl bg-eshodha-500/10 text-eshodha-500">
+              <div className="grid h-12 w-12 place-items-center rounded-xl bg-credit-line-500/10 text-credit-line-500">
                 <Icon size={24} />
               </div>
               <div>
@@ -406,7 +406,7 @@ export function ModuleWorkspace({
 
 function KpiTile({ label, value, detail, tone = 'blue' }: Kpi) {
   const tones = {
-    blue: 'text-eshodha-500',
+    blue: 'text-credit-line-500',
     green: 'text-risk-low',
     amber: 'text-risk-medium',
     red: 'text-risk-high',
@@ -958,7 +958,7 @@ export function CreditEnginePage() {
         {/* Sandbox Configurator (Sliders) */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <Sliders size={14} className="text-eshodha-500" />
+            <Sliders size={14} className="text-credit-line-500" />
             <span>Lender Scoring Sandbox</span>
           </div>
 
@@ -971,7 +971,7 @@ export function CreditEnginePage() {
               <input
                 type="range" min="1" max="60" value={simTenure}
                 onChange={(e) => setSimTenure(Number(e.target.value))}
-                className="mt-1 w-full accent-eshodha-500"
+                className="mt-1 w-full accent-credit-line-500"
               />
             </div>
 
@@ -983,7 +983,7 @@ export function CreditEnginePage() {
               <input
                 type="range" min="10" max="100" value={onTimeRate}
                 onChange={(e) => setOnTimeRate(Number(e.target.value))}
-                className="mt-1 w-full accent-eshodha-500"
+                className="mt-1 w-full accent-credit-line-500"
               />
             </div>
 
@@ -995,7 +995,7 @@ export function CreditEnginePage() {
               <input
                 type="range" min="10" max="100" value={topupScore}
                 onChange={(e) => setTopupScore(Number(e.target.value))}
-                className="mt-1 w-full accent-eshodha-500"
+                className="mt-1 w-full accent-credit-line-500"
               />
             </div>
 
@@ -1007,7 +1007,7 @@ export function CreditEnginePage() {
               <input
                 type="range" min="100" max="5000" step="100" value={avgTopup}
                 onChange={(e) => setAvgTopup(Number(e.target.value))}
-                className="mt-1 w-full accent-eshodha-500"
+                className="mt-1 w-full accent-credit-line-500"
               />
             </div>
 
@@ -1019,7 +1019,7 @@ export function CreditEnginePage() {
               <input
                 type="range" min="10" max="100" value={paymentConsistency * 100}
                 onChange={(e) => setPaymentConsistency(Number(e.target.value) / 100)}
-                className="mt-1 w-full accent-eshodha-500"
+                className="mt-1 w-full accent-credit-line-500"
               />
             </div>
           </div>
@@ -1064,7 +1064,7 @@ export function CreditEnginePage() {
                 </div>
                 <div>
                   <span className="text-[10px] text-[var(--text-tertiary)] block">INGESTION DATASOURCES</span>
-                  <span className="font-bold text-eshodha-500 capitalize">{scoreResult.data_sources.join(', ')}</span>
+                  <span className="font-bold text-credit-line-500 capitalize">{scoreResult.data_sources.join(', ')}</span>
                 </div>
                 <div>
                   <span className="text-[10px] text-[var(--text-tertiary)] block">FAIRNESS BIAS STATUS</span>
@@ -1173,7 +1173,7 @@ export function GraphIntelligencePage() {
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4">
             <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-              <Database size={13} className="text-eshodha-500" />
+              <Database size={13} className="text-credit-line-500" />
               Entity Type Distribution
             </h4>
             <div className="mt-4 space-y-3">
@@ -1196,7 +1196,7 @@ export function GraphIntelligencePage() {
 
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4">
             <h4 className="text-xs font-bold text-[var(--text-primary)] flex items-center gap-1.5">
-              <Activity size={13} className="text-eshodha-500" />
+              <Activity size={13} className="text-credit-line-500" />
               Risk Topology Summary
             </h4>
             <div className="mt-4 space-y-2">
@@ -1204,7 +1204,7 @@ export function GraphIntelligencePage() {
                 <button
                   key={topo.name}
                   onClick={() => setExpandedCluster(expandedCluster === i ? null : i)}
-                  className="w-full text-left rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] p-3 transition-all hover:border-eshodha-500/30 hover:bg-eshodha-500/5"
+                  className="w-full text-left rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-card)] p-3 transition-all hover:border-credit-line-500/30 hover:bg-credit-line-500/5"
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-[var(--text-primary)]">{topo.name}</span>
@@ -1238,7 +1238,7 @@ export function GraphIntelligencePage() {
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <TerminalIcon size={14} className="text-eshodha-500" />
+              <TerminalIcon size={14} className="text-credit-line-500" />
               <span>GNN Adjacency Loop Scanner</span>
             </div>
             <div className="flex gap-2">
@@ -1292,7 +1292,7 @@ export function GraphIntelligencePage() {
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
                       {c.cycle.map((entity: string) => (
-                        <span key={entity} className="rounded bg-[var(--bg-secondary)] border border-[var(--border-secondary)] px-2 py-0.5 text-[10px] font-mono font-semibold text-eshodha-500">
+                        <span key={entity} className="rounded bg-[var(--bg-secondary)] border border-[var(--border-secondary)] px-2 py-0.5 text-[10px] font-mono font-semibold text-credit-line-500">
                           {entity}
                         </span>
                       ))}
@@ -1550,13 +1550,13 @@ export function SoarPage() {
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Grid3X3 size={14} className="text-eshodha-500" />
+              <Grid3X3 size={14} className="text-credit-line-500" />
               <span>Incident Severity Matrix</span>
             </div>
             {matrixFilter && (
               <button
                 onClick={() => setMatrixFilter(null)}
-                className="text-[10px] font-bold text-eshodha-500 hover:underline flex items-center gap-1"
+                className="text-[10px] font-bold text-credit-line-500 hover:underline flex items-center gap-1"
                 aria-label="Clear severity matrix filter"
               >
                 <X size={10} /> Clear filter
@@ -1595,7 +1595,7 @@ export function SoarPage() {
                             className={cn(
                               'w-full rounded-lg border px-3 py-2.5 text-center transition-all duration-200 cursor-pointer',
                               cell.color,
-                              isActive && 'ring-2 ring-eshodha-500 scale-105 shadow-lg',
+                              isActive && 'ring-2 ring-credit-line-500 scale-105 shadow-lg',
                               !isActive && 'hover:scale-[1.03] hover:shadow-md'
                             )}
                           >
@@ -1614,7 +1614,7 @@ export function SoarPage() {
           {matrixFilter && (
             <div className="animate-fade-in rounded-lg bg-[var(--bg-card)] border border-[var(--border-secondary)] p-3 text-xs text-[var(--text-secondary)]">
               <span className="font-bold text-[var(--text-primary)]">Filtered view:</span>{' '}
-              Showing incidents with Impact: <span className="font-bold text-eshodha-500">{matrixFilter.split('-')[0]}</span> and Urgency: <span className="font-bold text-eshodha-500">{matrixFilter.split('-')[1]}</span>.
+              Showing incidents with Impact: <span className="font-bold text-credit-line-500">{matrixFilter.split('-')[0]}</span> and Urgency: <span className="font-bold text-credit-line-500">{matrixFilter.split('-')[1]}</span>.
               {' '}Use this filter to drill into matching alerts and correlate with playbook actions.
             </div>
           )}
@@ -1625,7 +1625,7 @@ export function SoarPage() {
            ══════════════════════════════════════════════════════════════ */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <Zap size={14} className="text-eshodha-500" />
+            <Zap size={14} className="text-credit-line-500" />
             <span>Automated Response Playbook Builder</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -1644,7 +1644,7 @@ export function SoarPage() {
                     onClick={() => handleAddStep(step)}
                     disabled={playbookRunning}
                     aria-label={`Add ${step.label} to playbook`}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border-secondary)] bg-[var(--bg-card)] text-[11px] font-semibold text-[var(--text-secondary)] hover:border-eshodha-500 hover:text-eshodha-500 hover:bg-eshodha-500/5 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[var(--border-secondary)] bg-[var(--bg-card)] text-[11px] font-semibold text-[var(--text-secondary)] hover:border-credit-line-500 hover:text-credit-line-500 hover:bg-credit-line-500/5 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <StepIcon size={12} />
                     {step.label}
@@ -1658,7 +1658,7 @@ export function SoarPage() {
           {/* Constructed sequence */}
           <div>
             <div className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider mb-2">
-              Playbook Sequence {playbookSequence.length > 0 && <span className="text-eshodha-500">({playbookSequence.length} steps)</span>}
+              Playbook Sequence {playbookSequence.length > 0 && <span className="text-credit-line-500">({playbookSequence.length} steps)</span>}
             </div>
             {playbookSequence.length === 0 ? (
               <div className="rounded-lg border border-dashed border-[var(--border-secondary)] bg-[var(--bg-card)] p-4 text-center text-[11px] text-[var(--text-tertiary)]">
@@ -1677,7 +1677,7 @@ export function SoarPage() {
                         className={cn(
                           'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-semibold transition-all duration-300',
                           isExecuted && 'border-green-500/30 bg-green-500/10 text-green-400',
-                          isRunning && 'border-eshodha-500/50 bg-eshodha-500/10 text-eshodha-500 animate-pulse',
+                          isRunning && 'border-credit-line-500/50 bg-credit-line-500/10 text-credit-line-500 animate-pulse',
                           !isExecuted && !isRunning && 'border-[var(--border-secondary)] bg-[var(--bg-card)] text-[var(--text-secondary)]'
                         )}
                       >
@@ -1732,7 +1732,7 @@ export function SoarPage() {
            ══════════════════════════════════════════════════════════════ */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <Timer size={14} className="text-eshodha-500" />
+            <Timer size={14} className="text-credit-line-500" />
             <span>Mean Time to Respond (MTTR)</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -1783,7 +1783,7 @@ export function SoarPage() {
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4 animate-fade-in">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Clock size={14} className="text-eshodha-500" />
+              <Clock size={14} className="text-credit-line-500" />
               <span>Incident Timeline — Last 24 Hours</span>
             </div>
             <div className="flex items-center gap-2 text-[10px] text-[var(--text-tertiary)]">
@@ -1791,7 +1791,7 @@ export function SoarPage() {
               <input
                 type="range" min={50} max={200} value={timelineZoom}
                 onChange={e => setTimelineZoom(Number(e.target.value))}
-                className="w-20 accent-eshodha-500"
+                className="w-20 accent-credit-line-500"
                 aria-label="Timeline zoom slider"
               />
               <Plus size={10} />
@@ -1905,7 +1905,7 @@ export function SoarPage() {
             {/* Step 1: Shield PII (Create Commitments) */}
             <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-                <Key size={14} className="text-eshodha-500" />
+                <Key size={14} className="text-credit-line-500" />
                 <span>1. Shield Identity Attributes</span>
               </div>
               <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -1955,7 +1955,7 @@ export function SoarPage() {
                   <div>METHOD: {String(zkpProof.verification_method)}</div>
                   {zkpCommitments.map((c) => (
                     <div key={c.attribute} className="border-t border-[var(--border-secondary)]/50 pt-1 mt-1">
-                      <span className="font-bold block text-eshodha-500 uppercase">{c.attribute} COMMITMENT</span>
+                      <span className="font-bold block text-credit-line-500 uppercase">{c.attribute} COMMITMENT</span>
                       <span className="break-all block">{c.commitment}</span>
                       <span className="text-[8px] text-[var(--text-tertiary)] block mt-0.5">SALT: {c.salt}</span>
                     </div>
@@ -1967,7 +1967,7 @@ export function SoarPage() {
             {/* Step 2: Verification */}
             <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
               <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-                <Shield size={14} className="text-eshodha-500" />
+                <Shield size={14} className="text-credit-line-500" />
                 <span>2. Cryptographic Proof Verifier</span>
               </div>
               <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -2102,7 +2102,7 @@ export function FederationPage() {
         {/* Federated training panel */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <Globe size={14} className="text-eshodha-500" />
+            <Globe size={14} className="text-credit-line-500" />
             <span>Differential Privacy Federated Training Sandbox</span>
           </div>
 
@@ -2116,7 +2116,7 @@ export function FederationPage() {
                 <input
                   type="range" min="1" max="10" value={rounds}
                   onChange={(e) => setRounds(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500"
+                  className="mt-1 w-full accent-credit-line-500"
                 />
               </div>
 
@@ -2128,7 +2128,7 @@ export function FederationPage() {
                 <input
                   type="range" min="0.5" max="5.0" step="0.5" value={epsilon}
                   onChange={(e) => setEpsilon(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500"
+                  className="mt-1 w-full accent-credit-line-500"
                 />
               </div>
 
@@ -2272,7 +2272,7 @@ export function QuantumPage() {
           {/* Post-Quantum Dilithium Action Signer */}
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Key size={14} className="text-eshodha-500" />
+              <Key size={14} className="text-credit-line-500" />
               <span>PQC ML-DSA-65 Action Signer</span>
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -2299,7 +2299,7 @@ export function QuantumPage() {
                 <div>METHOD: {signResult.algorithm}</div>
                 <div>STATUS: {signResult.verified ? '✓ SIGNATURE MATHEMATICALLY SOUND' : '✗ CORRUPT ENVELOPE'}</div>
                 <div className="border-t border-[var(--border-secondary)]/50 pt-1 mt-1 font-mono break-all leading-relaxed">
-                  <span className="font-bold text-eshodha-500">SIGNATURE BLOCK:</span>
+                  <span className="font-bold text-credit-line-500">SIGNATURE BLOCK:</span>
                   <span className="block">{signResult.signature_info}</span>
                 </div>
               </div>
@@ -2309,7 +2309,7 @@ export function QuantumPage() {
           {/* Regional Sovereignty Check */}
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Globe size={14} className="text-eshodha-500" />
+              <Globe size={14} className="text-credit-line-500" />
               <span>Sovereignty Jurisdictional Resolver</span>
             </div>
             <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -2333,7 +2333,7 @@ export function QuantumPage() {
             {sovereigntyResult && (
               <div className="rounded-lg bg-[var(--bg-card)] p-3 border border-[var(--border-secondary)] font-mono text-[9px] text-[var(--text-secondary)] space-y-1.5 animate-fade-in">
                 <div className="text-[10px] font-bold text-[var(--text-primary)] border-b border-[var(--border-secondary)] pb-1 uppercase">Sovereignty Resolution</div>
-                <div>RESOLVED JURISDICTION: <span className="font-bold text-eshodha-500 uppercase">{sovereigntyResult.resolved_region}</span></div>
+                <div>RESOLVED JURISDICTION: <span className="font-bold text-credit-line-500 uppercase">{sovereigntyResult.resolved_region}</span></div>
                 <div>REGULATORY STATUTE: <span className="font-bold text-[var(--text-primary)]">{sovereigntyResult.compliance_framework}</span></div>
                 <div>LOCALIZATION MANDATE: <span className="font-bold">{sovereigntyResult.pii_localization_required ? 'REQUIRED (SHARDED LOCAL)' : 'CROSS-BORDER ALLOWED'}</span></div>
                 <div>ENCRYPTION REQUIRED: <span className="font-bold">{sovereigntyResult.encryption_required ? 'YES (PQC HYBRID SHIELD)' : 'STANDARD SSL'}</span></div>
@@ -2439,7 +2439,7 @@ export function InfrastructurePage() {
         {/* GAN Adversarial Stress Tester */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <Cpu size={14} className="text-eshodha-500" />
+            <Cpu size={14} className="text-credit-line-500" />
             <span>GAN Adversarial Perturbation stress tester</span>
           </div>
           <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
@@ -2456,7 +2456,7 @@ export function InfrastructurePage() {
                 <input
                   type="range" min="50" max="500" step="50" value={perturbedSamples}
                   onChange={(e) => setPerturbedSamples(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500"
+                  className="mt-1 w-full accent-credit-line-500"
                 />
               </div>
 
@@ -2626,7 +2626,7 @@ export function PaymentsIntelligencePage() {
           {/* Limit settings */}
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Sliders size={14} className="text-eshodha-500" />
+              <Sliders size={14} className="text-credit-line-500" />
               <span>Clearing Ingress Parameters</span>
             </div>
 
@@ -2639,7 +2639,7 @@ export function PaymentsIntelligencePage() {
                 <input
                   type="range" min="10000" max="250000" step="5000" value={limitCap}
                   onChange={(e) => handleLimitChange(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500 cursor-pointer"
+                  className="mt-1 w-full accent-credit-line-500 cursor-pointer"
                 />
               </div>
 
@@ -2651,7 +2651,7 @@ export function PaymentsIntelligencePage() {
                 <input
                   type="range" min="1" max="60" value={velocityWindow}
                   onChange={(e) => setVelocityWindow(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500 cursor-pointer"
+                  className="mt-1 w-full accent-credit-line-500 cursor-pointer"
                 />
               </div>
 
@@ -2663,7 +2663,7 @@ export function PaymentsIntelligencePage() {
                   onClick={() => handleToggleOffshore(!blockOffshore)}
                   className={cn(
                     'relative w-9 h-5 rounded-full transition-colors flex items-center p-0.5',
-                    blockOffshore ? 'bg-eshodha-500' : 'bg-[var(--bg-tertiary)]'
+                    blockOffshore ? 'bg-credit-line-500' : 'bg-[var(--bg-tertiary)]'
                   )}
                 >
                   <div className={cn(
@@ -2681,7 +2681,7 @@ export function PaymentsIntelligencePage() {
                   onClick={() => handleToggle3ds(!force3ds)}
                   className={cn(
                     'relative w-9 h-5 rounded-full transition-colors flex items-center p-0.5',
-                    force3ds ? 'bg-eshodha-500' : 'bg-[var(--bg-tertiary)]'
+                    force3ds ? 'bg-credit-line-500' : 'bg-[var(--bg-tertiary)]'
                   )}
                 >
                   <div className={cn(
@@ -2745,7 +2745,7 @@ export function PaymentsIntelligencePage() {
                         setDisputeStep('DRAFT');
                         setDisputeLogs([]);
                       }}
-                      className="px-2 py-0.5 text-[10px] font-bold border border-eshodha-500 rounded bg-eshodha-500/5 text-[var(--text-primary)] hover:bg-eshodha-500 hover:text-[var(--text-inverse)] transition-all"
+                      className="px-2 py-0.5 text-[10px] font-bold border border-credit-line-500 rounded bg-credit-line-500/5 text-[var(--text-primary)] hover:bg-credit-line-500 hover:text-[var(--text-inverse)] transition-all"
                     >
                       Audit Dispute
                     </button>
@@ -2755,7 +2755,7 @@ export function PaymentsIntelligencePage() {
 
               {/* Dispute Drawer Overlay */}
               {selectedTx ? (
-                <div className="rounded-xl border border-eshodha-500/30 bg-eshodha-500/5 p-4 space-y-4 animate-fade-in">
+                <div className="rounded-xl border border-credit-line-500/30 bg-credit-line-500/5 p-4 space-y-4 animate-fade-in">
                   <div className="flex items-center justify-between border-b border-[var(--border-secondary)]/50 pb-2">
                     <span className="text-xs font-bold text-[var(--text-primary)]">Dispute Audit: {selectedTx.id}</span>
                     <button onClick={() => setSelectedTx(null)} className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]">
@@ -2766,7 +2766,7 @@ export function PaymentsIntelligencePage() {
                   <div className="space-y-2 text-[10px] text-[var(--text-secondary)] font-mono">
                     <div>RAIL: {selectedTx.rail}</div>
                     <div>AMOUNT: ₹{selectedTx.amount.toLocaleString()}</div>
-                    <div>STATUS: <span className="font-bold text-eshodha-500">{disputeStep}</span></div>
+                    <div>STATUS: <span className="font-bold text-credit-line-500">{disputeStep}</span></div>
                   </div>
 
                   {disputeStep === 'DRAFT' && (
@@ -2983,7 +2983,7 @@ export function WealthRiskPage() {
           {/* Sliders suitability */}
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Sliders size={14} className="text-eshodha-500" />
+              <Sliders size={14} className="text-credit-line-500" />
               <span>MiFID II Suitability Validator</span>
             </div>
 
@@ -2996,7 +2996,7 @@ export function WealthRiskPage() {
                 <input
                   type="range" min="1" max="20" value={horizon}
                   onChange={(e) => setHorizon(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500 cursor-pointer"
+                  className="mt-1 w-full accent-credit-line-500 cursor-pointer"
                 />
               </div>
 
@@ -3008,7 +3008,7 @@ export function WealthRiskPage() {
                 <input
                   type="range" min="10" max="100" value={tolerance}
                   onChange={(e) => setTolerance(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500 cursor-pointer"
+                  className="mt-1 w-full accent-credit-line-500 cursor-pointer"
                 />
               </div>
 
@@ -3020,7 +3020,7 @@ export function WealthRiskPage() {
                 <input
                   type="range" min="0" max="100" value={targetEquity}
                   onChange={(e) => setTargetEquity(Number(e.target.value))}
-                  className="mt-1 w-full accent-eshodha-500 cursor-pointer"
+                  className="mt-1 w-full accent-credit-line-500 cursor-pointer"
                 />
               </div>
             </div>
@@ -3065,7 +3065,7 @@ export function WealthRiskPage() {
           {/* Screening Input Panel */}
           <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
             <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-              <Globe size={14} className="text-eshodha-500" />
+              <Globe size={14} className="text-credit-line-500" />
               <span>Sanctions & PEP Global Screener</span>
             </div>
 
@@ -3087,7 +3087,7 @@ export function WealthRiskPage() {
                       className={cn(
                         'p-2 rounded border font-bold uppercase transition-all',
                         clientGroup === group
-                          ? 'border-eshodha-500 bg-eshodha-500/10 text-[var(--text-primary)]'
+                          ? 'border-credit-line-500 bg-credit-line-500/10 text-[var(--text-primary)]'
                           : 'border-[var(--border-secondary)] bg-[var(--bg-card)]'
                       )}
                     >
@@ -3138,7 +3138,7 @@ export function WealthRiskPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>RISK MULTIPLIER:</span>
-                      <span className="font-bold text-eshodha-500">{screeningResult.risk_multiplier}</span>
+                      <span className="font-bold text-credit-line-500">{screeningResult.risk_multiplier}</span>
                     </div>
                   </>
                 )}
@@ -3167,7 +3167,7 @@ export function WealthRiskPage() {
             </div>
             <div className="space-y-1">
               <h4 className="text-sm font-bold text-[var(--text-primary)] uppercase tracking-widest">MiFID II / KYC Suitability Attestation</h4>
-              <p className="text-[9px] text-[var(--text-tertiary)]">CREDLINE COMPLIANCE LEDGER · REGISTER REF: KYC-{Math.floor(100000 + Math.random() * 900000)}</p>
+              <p className="text-[9px] text-[var(--text-tertiary)]">Credit Line COMPLIANCE LEDGER · REGISTER REF: KYC-{Math.floor(100000 + Math.random() * 900000)}</p>
             </div>
             <div className="max-w-md mx-auto text-left text-[10px] text-[var(--text-secondary)] space-y-2 border-y border-[var(--border-secondary)] py-4">
               <div>CLIENT TRUST: {clientSearch.toUpperCase()}</div>
@@ -3182,7 +3182,7 @@ export function WealthRiskPage() {
         {/* Portfolio stress tester */}
         <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-4 space-y-4">
           <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-            <LineChart size={14} className="text-eshodha-500" />
+            <LineChart size={14} className="text-credit-line-500" />
             <span>Portfolio Market-Shock & Stress Tester</span>
           </div>
 
@@ -3237,7 +3237,7 @@ export function WealthRiskPage() {
                   <div className="flex justify-between"><span>LIQUID CASH:</span><span className="font-bold">{stressOutput.allocation.cash}%</span></div>
                 </div>
 
-                <div className="border-t border-[var(--border-secondary)]/50 pt-2 text-[9px] leading-relaxed italic text-eshodha-400">
+                <div className="border-t border-[var(--border-secondary)]/50 pt-2 text-[9px] leading-relaxed italic text-credit-line-400">
                   {stressOutput.desc}
                 </div>
               </div>
@@ -3328,7 +3328,7 @@ export function RegTechConsolePage() {
     const envelope = {
       sar_document: 'SAR-FORM-2026',
       alert_id: selectedAmlAlert[0],
-      filer: 'Credline FIU-Officer-Dilithium',
+      filer: 'Credit Line FIU-Officer-Dilithium',
       subject: {
         id: selectedAmlAlert[2],
         name: selectedAmlAlert[5],
@@ -3414,7 +3414,7 @@ export function RegTechConsolePage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between border-b border-[var(--border-secondary)]/60 pb-2">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--text-primary)]">
-                    <FileText size={14} className="text-eshodha-500" />
+                    <FileText size={14} className="text-credit-line-500" />
                     <span>Autonomous SAR Narrative Filer: {selectedAmlAlert[0]}</span>
                   </div>
                   <button
@@ -3447,7 +3447,7 @@ export function RegTechConsolePage() {
                     <textarea
                       value={sarDraft}
                       onChange={(e) => setSarDraft(e.target.value)}
-                      className="w-full h-40 bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-xl p-3 font-mono text-[10px] text-[var(--text-secondary)] leading-relaxed focus:outline-none focus:border-eshodha-500"
+                      className="w-full h-40 bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-xl p-3 font-mono text-[10px] text-[var(--text-secondary)] leading-relaxed focus:outline-none focus:border-credit-line-500"
                     />
                   </div>
                 )}

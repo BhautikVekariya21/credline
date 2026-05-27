@@ -24,6 +24,9 @@ import {
 import Dashboard from './pages/admin/Dashboard';
 import Settings from './pages/admin/Settings';
 import TaxCommandCenter from './pages/admin/TaxCommandCenter';
+import ExecutiveStrategyRoom from './pages/admin/ExecutiveStrategyRoom';
+import TreasuryAndAuditPortal from './pages/admin/TreasuryAndAuditPortal';
+import OmniMonopolyDashboard from './pages/admin/OmniMonopolyDashboard';
 import DatabaseConnectorPage from './pages/admin/DatabaseConnectorPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 import AuditLogPage from './pages/admin/AuditLogPage';
@@ -73,6 +76,9 @@ export default function App() {
         <Route path="/admin/infra" element={<InfrastructurePage />} />
         <Route path="/admin/database" element={<DatabaseConnectorPage />} />
         <Route path="/admin/tax" element={<TaxCommandCenter />} />
+        <Route path="/admin/strategy" element={<ExecutiveStrategyRoom />} />
+        <Route path="/admin/treasury" element={<TreasuryAndAuditPortal />} />
+        <Route path="/admin/ceo" element={<OmniMonopolyDashboard />} />
 
         <Route path="/admin/payments" element={<PaymentsIntelligencePage />} />
         <Route path="/admin/wealth" element={<WealthRiskPage />} />

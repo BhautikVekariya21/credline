@@ -79,9 +79,9 @@ function Hero() {
     <section className="relative overflow-hidden pt-32 pb-24 border-b border-[var(--border-secondary)]">
       {/* Background Gradient Mesh */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[60%] rounded-full bg-gradient-to-tr from-eshodha-500/10 to-brand-soft/20 blur-[130px] dark:from-eshodha-600/15 dark:to-brand-soft/5" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[65%] h-[70%] rounded-full bg-gradient-to-br from-brand-green/8 via-eshodha-400/5 to-transparent blur-[160px] dark:from-brand-green/5" />
-        <div className="absolute top-[20%] right-[10%] w-[45%] h-[50%] rounded-full bg-eshodha-300/10 blur-[110px] dark:bg-eshodha-200/10" />
+        <div className="absolute top-[-20%] left-[-10%] w-[55%] h-[60%] rounded-full bg-gradient-to-tr from-credit-line-500/10 to-brand-soft/20 blur-[130px] dark:from-credit-line-600/15 dark:to-brand-soft/5" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[65%] h-[70%] rounded-full bg-gradient-to-br from-brand-green/8 via-credit-line-400/5 to-transparent blur-[160px] dark:from-brand-green/5" />
+        <div className="absolute top-[20%] right-[10%] w-[45%] h-[50%] rounded-full bg-credit-line-300/10 blur-[110px] dark:bg-credit-line-200/10" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,var(--bg-primary)_85%)]" />
         <div className="absolute inset-0 bg-grid-white/[0.02] dark:bg-grid-black/[0.02]" />
       </div>
@@ -89,8 +89,8 @@ function Hero() {
       <div className="public-wrap relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
         <div className="lg:col-span-6 space-y-6">
           {/* Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-eshodha-500/20 text-xs font-semibold text-eshodha-500 shadow-sm hover:border-eshodha-500/40 transition-colors">
-            <span className="w-2 h-2 rounded-full bg-eshodha-500 animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[var(--bg-card)] border border-credit-line-500/20 text-xs font-semibold text-credit-line-500 shadow-sm hover:border-credit-line-500/40 transition-colors">
+            <span className="w-2 h-2 rounded-full bg-credit-line-500 animate-pulse" />
             <span className="font-mono tracking-wide text-[10px] text-[var(--text-secondary)]">SYSTEM REVENUE VELOCITY:</span>
             <span className="font-mono font-extrabold">₹{totalVolume.toLocaleString('en-IN')}</span>
           </div>
@@ -98,15 +98,15 @@ function Hero() {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.08] font-display text-[var(--text-primary)]">
             Autonomous <br />
             FinOps & Sovereign <br />
-            <span className="bg-gradient-to-r from-eshodha-500 via-[#d3827b] to-[#f0c8b8] bg-clip-text text-transparent drop-shadow-sm">Corporate Ledgers.</span>
+            <span className="bg-gradient-to-r from-credit-line-500 via-[#d3827b] to-[#f0c8b8] bg-clip-text text-transparent drop-shadow-sm">Corporate Ledgers.</span>
           </h1>
 
           <p className="text-base sm:text-lg text-[var(--text-secondary)] leading-relaxed max-w-xl font-normal">
-            <strong>eshodha fintech solution</strong> shifts enterprise financial operations into an absolute, autonomous monopoly. Continuous double-entry verification loops compile journals, reconcile purchases, and forecast liquidity runaways with board-ready attributions.
+            <strong>Credit Line Fintech Solution</strong> shifts enterprise financial operations into an absolute, autonomous monopoly. Continuous double-entry verification loops compile journals, reconcile purchases, and forecast liquidity runaways with board-ready attributions.
           </p>
 
           <div className="flex flex-wrap items-center gap-3.5 pt-2">
-            <Link to="/admin" className="px-6 py-3.5 rounded-xl bg-eshodha-500 hover:bg-eshodha-600 text-white font-bold text-sm shadow-md hover:shadow-lg hover:shadow-eshodha-500/10 transition-all duration-200 flex items-center gap-2 group">
+            <Link to="/admin" className="px-6 py-3.5 rounded-xl bg-credit-line-500 hover:bg-credit-line-600 text-white font-bold text-sm shadow-md hover:shadow-lg hover:shadow-credit-line-500/10 transition-all duration-200 flex items-center gap-2 group">
               Start Admin Console <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
             <Link to="/services" className="px-6 py-3.5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-bold text-sm transition-all duration-200 flex items-center gap-1.5">
@@ -155,14 +155,14 @@ function DashboardPreview() {
     { id: 'JRN-48092', label: 'GST CGST/SGST Split Verified', status: 'Balanced', value: '₹12,45,000.00', color: 'text-risk-low' },
     { id: 'JRN-11029', label: 'GSTR-2B Fuzzy Match Complete', status: 'Reconciled', value: '₹5,82,500.00', color: 'text-risk-low' },
     { id: 'CTA-88301', label: 'Payment: Blacklisted Vendor Blocked', status: 'Auto-Hold', value: '₹4,50,000.00', color: 'text-risk-high' },
-    { id: 'JRN-55102', label: 'ITR-6 Schedule BS Aggregated', status: 'GAAP Valid', value: '₹75,00,000.00', color: 'text-eshodha-500' },
+    { id: 'JRN-55102', label: 'ITR-6 Schedule BS Aggregated', status: 'GAAP Valid', value: '₹75,00,000.00', color: 'text-credit-line-500' },
   ];
   const active = tick % entries.length;
 
   return (
     <div className="relative group w-full max-w-md">
       {/* Visual background glow around dashboard */}
-      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-eshodha-500 to-brand-soft opacity-20 blur-lg group-hover:opacity-30 transition-opacity duration-300" />
+      <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-credit-line-500 to-brand-soft opacity-20 blur-lg group-hover:opacity-30 transition-opacity duration-300" />
       
       <div className="relative w-full rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] shadow-2xl overflow-hidden font-mono text-[11px] backdrop-blur-md">
         {/* Header bar */}
@@ -172,7 +172,7 @@ function DashboardPreview() {
             <span className="w-2.5 h-2.5 rounded-full bg-[#d4a84b]" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#4eba7a]" />
           </div>
-          <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] tracking-widest uppercase">ESHODHA FINOPS COCKPIT</span>
+          <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] tracking-widest uppercase">Credit Line FINOPS COCKPIT</span>
           <div className="flex items-center gap-1.5 text-[9px] text-[#4eba7a] font-bold bg-[#4eba7a]/8 border border-[#4eba7a]/20 px-2 py-0.5 rounded-full">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4eba7a] animate-ping" />
             LIVE CDC
@@ -214,7 +214,7 @@ function DashboardPreview() {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-[9px] text-[var(--text-tertiary)] font-bold">
               <span>CDC WRITE-AHEAD LOG STREAM</span>
-              <span className="text-eshodha-500">PQC SIGNED</span>
+              <span className="text-credit-line-500">PQC SIGNED</span>
             </div>
             <div className="space-y-2">
               {entries.map((item, idx) => (
@@ -223,14 +223,14 @@ function DashboardPreview() {
                   className={cn(
                     'p-3 rounded-xl border transition-all duration-300 flex items-center justify-between', 
                     idx === active 
-                      ? 'bg-eshodha-500/5 border-eshodha-500/30 scale-[1.02] shadow-sm' 
+                      ? 'bg-credit-line-500/5 border-credit-line-500/30 scale-[1.02] shadow-sm' 
                       : 'bg-transparent border-transparent opacity-45'
                   )}
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-extrabold text-[var(--text-primary)]">{item.id}</span>
-                      <span className={cn('text-[9px] px-1.5 py-0.5 rounded-full font-bold font-sans', idx === active ? 'bg-eshodha-500/10 text-eshodha-500 border border-eshodha-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
+                      <span className={cn('text-[9px] px-1.5 py-0.5 rounded-full font-bold font-sans', idx === active ? 'bg-credit-line-500/10 text-credit-line-500 border border-credit-line-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
                         {item.status}
                       </span>
                     </div>
@@ -300,14 +300,14 @@ function ValueSimulatorSection() {
     <section ref={ref as React.RefObject<HTMLElement>} className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-card)] reveal">
       <div className="public-wrap grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         <div className="lg:col-span-5 space-y-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500">
+          <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500">
             Interactive Control Center
           </p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
             Adjust risk boundaries. Optimize revenue flow.
           </h2>
           <p className="text-sm sm:text-base text-[var(--text-secondary)] leading-relaxed">
-            Drag the slider to adjust **eshodha’s** target risk threshold. See how our machine learning models balance customer transaction approvals against security and regulatory loss mitigations.
+            Drag the slider to adjust **Credit Line’s** target risk threshold. See how our machine learning models balance customer transaction approvals against security and regulatory loss mitigations.
           </p>
           <div className="p-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] space-y-2">
             <span className="text-[10px] font-bold text-[var(--text-tertiary)] block">Sovereign Decision Matrix</span>
@@ -323,7 +323,7 @@ function ValueSimulatorSection() {
             <div className="space-y-2">
               <div className="flex justify-between text-xs font-bold text-[var(--text-primary)]">
                 <span>Target Risk Threshold: {(threshold * 100).toFixed(0)}%</span>
-                <span className="text-eshodha-500">{(100 - threshold * 100).toFixed(0)}% Risk Tolerance</span>
+                <span className="text-credit-line-500">{(100 - threshold * 100).toFixed(0)}% Risk Tolerance</span>
               </div>
               <input
                 type="range"
@@ -332,7 +332,7 @@ function ValueSimulatorSection() {
                 step="0.01"
                 value={threshold}
                 onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                className="w-full h-2 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-eshodha-500"
+                className="w-full h-2 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500"
               />
               <div className="flex justify-between text-[10px] text-[var(--text-tertiary)] font-semibold">
                 <span>Aggressive (Frictionless)</span>
@@ -372,13 +372,13 @@ function ValueSimulatorSection() {
             </div>
 
             {/* Overall bottom line savings */}
-            <div className="p-4 rounded-2xl bg-eshodha-500/5 border border-eshodha-500/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="p-4 rounded-2xl bg-credit-line-500/5 border border-credit-line-500/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div>
-                <span className="text-[10px] font-bold text-eshodha-500 uppercase tracking-widest block">Projected FinOps Savings</span>
+                <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest block">Projected FinOps Savings</span>
                 <span className="text-xs text-[var(--text-secondary)]">Optimized aggregate cost recovery</span>
               </div>
               <div className="text-right sm:text-right">
-                <span className="text-2xl font-extrabold text-eshodha-500 font-mono">₹{annualSavings.toLocaleString('en-IN')}/yr</span>
+                <span className="text-2xl font-extrabold text-credit-line-500 font-mono">₹{annualSavings.toLocaleString('en-IN')}/yr</span>
               </div>
             </div>
           </div>
@@ -458,7 +458,7 @@ function AgentOrchestrationSection() {
     <section ref={ref as React.RefObject<HTMLElement>} className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10 reveal">
       <div className="public-wrap">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500 font-mono">Autonomous Ledger Control</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500 font-mono">Autonomous Ledger Control</p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
             Replace legacy processes with Sovereign Multi-Agent AI
           </h2>
@@ -477,11 +477,11 @@ function AgentOrchestrationSection() {
                 className={cn(
                   'w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-start gap-4 hover:bg-[var(--bg-card-hover)]',
                   activeAgent === idx
-                    ? 'bg-[var(--bg-card)] border-eshodha-500 shadow-md text-[var(--text-primary)]'
+                    ? 'bg-[var(--bg-card)] border-credit-line-500 shadow-md text-[var(--text-primary)]'
                     : 'bg-transparent border-transparent text-[var(--text-secondary)]'
                 )}
               >
-                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors', activeAgent === idx ? 'bg-eshodha-500/10 text-eshodha-500 border border-eshodha-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
+                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors', activeAgent === idx ? 'bg-credit-line-500/10 text-credit-line-500 border border-credit-line-500/20' : 'bg-[var(--bg-secondary)] text-[var(--text-tertiary)]')}>
                   <Bot size={18} />
                 </div>
                 <div>
@@ -496,7 +496,7 @@ function AgentOrchestrationSection() {
           <div className="lg:col-span-7 space-y-4">
             <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-xl min-h-[300px] flex flex-col justify-between">
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-eshodha-500">
+                <div className="flex items-center gap-2 text-credit-line-500">
                   <Cpu size={20} />
                   <span className="text-xs font-bold tracking-wider uppercase font-mono">Agent Status: ACTIVE</span>
                 </div>
@@ -516,7 +516,7 @@ function AgentOrchestrationSection() {
                 </div>
                 {agents[activeAgent].log.map((line, lIdx) => (
                   <div key={lIdx} className="flex items-center gap-2">
-                    <span className="text-eshodha-500">&gt;&gt;</span>
+                    <span className="text-credit-line-500">&gt;&gt;</span>
                     <span className="truncate">{line}</span>
                   </div>
                 ))}
@@ -529,7 +529,7 @@ function AgentOrchestrationSection() {
         <div className="card p-5 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg mt-8 font-mono text-[11px]">
           <div className="flex items-center justify-between border-b border-[var(--border-secondary)] pb-3 mb-3">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-eshodha-500" />
+              <span className="w-2.5 h-2.5 rounded-full bg-credit-line-500" />
               <span className="font-extrabold text-[var(--text-primary)]">COGNITIVE MULTI-AGENT NETWORK MONITOR</span>
             </div>
             <span className="text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">PORT 50051 streaming</span>
@@ -537,7 +537,7 @@ function AgentOrchestrationSection() {
           <div className="space-y-1.5 max-h-36 overflow-y-auto">
             {consoleLogs.map((log, index) => (
               <div key={index} className="flex items-start gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-                <span className="text-eshodha-500 flex-shrink-0">&gt;</span>
+                <span className="text-credit-line-500 flex-shrink-0">&gt;</span>
                 <span className="leading-relaxed">{log}</span>
               </div>
             ))}
@@ -614,7 +614,7 @@ function PlatformShowcase() {
     <section className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-card)] reveal" ref={ref as React.RefObject<HTMLElement>}>
       <div className="public-wrap">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500">System Integration Console</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500">System Integration Console</p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
             One platform. Combined capabilities.
           </h2>
@@ -633,7 +633,7 @@ function PlatformShowcase() {
                 className={cn(
                   'px-5 py-3 text-xs font-bold uppercase tracking-wider border-b-2 transition-all duration-200 flex items-center gap-2',
                   active === i
-                    ? 'border-eshodha-500 text-eshodha-500 font-extrabold'
+                    ? 'border-credit-line-500 text-credit-line-500 font-extrabold'
                     : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                 )}
               >
@@ -647,7 +647,7 @@ function PlatformShowcase() {
         {/* Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-6 space-y-6">
-            <div className="w-10 h-10 rounded-2xl bg-eshodha-500/10 flex items-center justify-center text-eshodha-500">
+            <div className="w-10 h-10 rounded-2xl bg-credit-line-500/10 flex items-center justify-center text-credit-line-500">
               <tab.icon size={20} />
             </div>
             <h3 className="text-2xl font-extrabold tracking-tight text-[var(--text-primary)] font-display">{tab.headline}</h3>
@@ -711,13 +711,13 @@ function ServicesGrid() {
       <div className="public-wrap">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <div className="space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500">Service Verticals</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500">Service Verticals</p>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
               Integrated Services. Shared Control.
             </h2>
           </div>
           <p className="text-sm text-[var(--text-secondary)] leading-relaxed max-w-md">
-            Execute operations across multiple financial roles using eshodha’s unified data plane, matching strict enterprise standards.
+            Execute operations across multiple financial roles using Credit Line’s unified data plane, matching strict enterprise standards.
           </p>
         </div>
 
@@ -728,10 +728,10 @@ function ServicesGrid() {
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center text-white mb-4" style={{ background: s.color }}>
                   <s.icon size={16} />
                 </div>
-                <h4 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-eshodha-500 transition-colors font-display">{s.title}</h4>
+                <h4 className="text-sm font-bold text-[var(--text-primary)] group-hover:text-credit-line-500 transition-colors font-display">{s.title}</h4>
                 <p className="text-xs text-[var(--text-secondary)] mt-2 leading-relaxed">{s.sub}</p>
               </div>
-              <span className="text-xs font-bold text-eshodha-500 mt-4 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+              <span className="text-xs font-bold text-credit-line-500 mt-4 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
                 Configure module <ArrowRight size={12} />
               </span>
             </Link>
@@ -746,7 +746,7 @@ function ServicesGrid() {
    HOW IT WORKS
    ═══════════════════════════════════════════════════════════════════════ */
 const HOW_STEPS = [
-  { num: '01', icon: Database, title: 'CDC Ingest', body: 'Connect databases directly. eshodha streams transaction segments from logical WAL logs to down-stream pipelines.' },
+  { num: '01', icon: Database, title: 'CDC Ingest', body: 'Connect databases directly. Credit Line streams transaction segments from logical WAL logs to down-stream pipelines.' },
   { num: '02', icon: Sparkles, title: 'Agent Scoring', body: 'Cognitive agent loops score transactions, allocate CGST/SGST, and balance double-entry accounts in parallel.' },
   { num: '03', icon: FileCheck2, title: 'Invariance Verifications', body: 'Verifies double-entry equations, check first-digit stats (Benford), and checks risk criticality limits.' },
   { num: '04', icon: SovereignLogo, title: 'Action & File', body: 'Autonomous filing to tax portals (GSTR, TDS), pushes mobile alerts, or routes to playbooks.' },
@@ -762,16 +762,16 @@ function HowItWorks() {
     <section className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-card)] reveal" ref={ref as React.RefObject<HTMLElement>}>
       <div className="public-wrap">
         <div className="max-w-3xl mx-auto text-center space-y-4 mb-12">
-          <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500">Operation Mechanics</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500">Operation Mechanics</p>
           <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight font-display text-[var(--text-primary)]">
-            How eshodha Secures Ledger Integrity
+            How Credit Line Secures Ledger Integrity
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {HOW_STEPS.map((s) => (
             <div key={s.num} className="relative space-y-4">
-              <div className="text-5xl font-extrabold font-mono text-eshodha-500 opacity-20">{s.num}</div>
-              <div className="w-10 h-10 rounded-2xl bg-eshodha-500/10 flex items-center justify-center text-eshodha-500">
+              <div className="text-5xl font-extrabold font-mono text-credit-line-500 opacity-20">{s.num}</div>
+              <div className="w-10 h-10 rounded-2xl bg-credit-line-500/10 flex items-center justify-center text-credit-line-500">
                 <s.icon size={20} />
               </div>
               <h3 className="text-base font-bold text-[var(--text-primary)] font-display">{s.title}</h3>
@@ -789,7 +789,7 @@ function HowItWorks() {
    ═══════════════════════════════════════════════════════════════════════ */
 const TESTIMONIALS = [
   {
-    quote: "Moving to eshodha’s autonomous tax filing saved our staff accountants 400+ hours. The GSTR-2B fuzzy reconciliation matches records perfectly.",
+    quote: "Moving to Credit Line’s autonomous tax filing saved our staff accountants 400+ hours. The GSTR-2B fuzzy reconciliation matches records perfectly.",
     name: 'Director of Taxation', org: 'Enterprise NBFC Group',
     avatar: '#b75d57',
   },
@@ -819,7 +819,7 @@ function Testimonials() {
   return (
     <section className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10 reveal" ref={ref as React.RefObject<HTMLElement>}>
       <div className="public-wrap max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500 text-center mb-8">Client Testimonials</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500 text-center mb-8">Client Testimonials</p>
         <div className="text-center space-y-6">
           <blockquote className="text-xl sm:text-2xl font-extrabold italic text-[var(--text-primary)] leading-normal font-display">
             "{t.quote}"
@@ -839,7 +839,7 @@ function Testimonials() {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={cn('w-2 h-2 rounded-full transition-all duration-200', i === active ? 'bg-eshodha-500 w-5' : 'bg-[var(--border-primary)]')}
+              className={cn('w-2 h-2 rounded-full transition-all duration-200', i === active ? 'bg-credit-line-500 w-5' : 'bg-[var(--border-primary)]')}
               aria-label={`Testimonial ${i + 1}`}
             />
           ))}
@@ -872,7 +872,7 @@ function IntegrationLogos() {
   return (
     <section className="py-20 border-b border-[var(--border-secondary)] bg-[var(--bg-card)] reveal" ref={ref as React.RefObject<HTMLElement>}>
       <div className="public-wrap">
-        <p className="text-xs font-bold uppercase tracking-widest text-eshodha-500 text-center">System Connectors</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-credit-line-500 text-center">System Connectors</p>
         <h2 className="text-3xl font-extrabold tracking-tight text-[var(--text-primary)] text-center font-display mt-2 mb-10">
           Native integration ecosystem
         </h2>
@@ -897,11 +897,11 @@ function FinalCTA() {
   return (
     <section className="relative overflow-hidden py-24 bg-[var(--bg-secondary)] border-b border-[var(--border-secondary)] reveal" ref={ref as React.RefObject<HTMLElement>}>
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-        <div className="absolute bottom-[-20%] left-[-15%] w-[60%] h-[70%] rounded-full bg-eshodha-500/10 blur-[130px]" />
+        <div className="absolute bottom-[-20%] left-[-15%] w-[60%] h-[70%] rounded-full bg-credit-line-500/10 blur-[130px]" />
       </div>
 
       <div className="public-wrap relative z-10 max-w-2xl mx-auto text-center space-y-6">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-eshodha-500/10 border border-eshodha-500/20 text-xs font-bold text-eshodha-500">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-credit-line-500/10 border border-credit-line-500/20 text-xs font-bold text-credit-line-500">
           <Zap size={12} /> Live sandbox access
         </div>
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--text-primary)] font-display leading-tight">
@@ -911,7 +911,7 @@ function FinalCTA() {
           Configure direct CDC observers, run fuzzy tax reconciliation passes, and secure GAAP-verified invariance checks immediately.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-          <Link to="/admin" className="px-6 py-3 rounded-xl bg-eshodha-500 hover:bg-eshodha-600 text-white font-bold text-sm shadow-md transition-all duration-200 flex items-center gap-1">
+          <Link to="/admin" className="px-6 py-3 rounded-xl bg-credit-line-500 hover:bg-credit-line-600 text-white font-bold text-sm shadow-md transition-all duration-200 flex items-center gap-1">
             Access Command Panel <ArrowUpRight size={16} />
           </Link>
           <Link to="/services" className="px-6 py-3 rounded-xl bg-[var(--bg-card)] border border-[var(--border-primary)] text-[var(--text-primary)] hover:bg-[var(--bg-card-hover)] font-bold text-sm transition-all duration-200">

@@ -1,5 +1,5 @@
 /**
- * Credline Risk Intelligence - Tax Command Center.
+ * Credit Line Risk Intelligence - Tax Command Center.
  *
  * Shows GST liability, ITC available, PDF invoice intake, filing status,
  * and a live feed of tax-sensitive transactions needing approval.
@@ -256,7 +256,7 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={cn('px-4 py-2 text-sm font-semibold rounded-xl transition-all', active ? 'bg-eshodha-500 text-white' : 'btn-secondary')}
+      className={cn('px-4 py-2 text-sm font-semibold rounded-xl transition-all', active ? 'bg-credit-line-500 text-white' : 'btn-secondary')}
       type="button"
     >
       {label}
@@ -283,7 +283,7 @@ function OverviewTab({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard icon={IndianRupee} label="GST Liability" value={fmt(data.liability.total)} color="text-risk-high" bg="bg-risk-high/8" />
         <KPICard icon={TrendingUp} label="ITC Available" value={fmt(data.itc_available.total)} color="text-risk-low" bg="bg-risk-low/8" />
-        <KPICard icon={Receipt} label="Net Payable" value={fmt(data.net_payable)} color="text-eshodha-500" bg="bg-eshodha-500/8" />
+        <KPICard icon={Receipt} label="Net Payable" value={fmt(data.net_payable)} color="text-credit-line-500" bg="bg-credit-line-500/8" />
         <KPICard icon={Clock} label="Filing Deadline" value={`${data.days_remaining} days`} color="text-risk-medium" bg="bg-risk-medium/8" sub={new Date(data.filing_deadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} />
       </div>
 
@@ -291,7 +291,7 @@ function OverviewTab({
         <div className="col-span-12 lg:col-span-5">
           <div className="card p-6">
             <h3 className="text-base font-bold text-[var(--text-primary)] mb-4 flex items-center gap-2">
-              <FileText size={18} className="text-eshodha-500" /> Tax Breakdown
+              <FileText size={18} className="text-credit-line-500" /> Tax Breakdown
             </h3>
             <div className="space-y-3">
               {[
@@ -307,9 +307,9 @@ function OverviewTab({
                   </div>
                 </div>
               ))}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-eshodha-500/5 border border-eshodha-500/15">
-                <span className="text-sm font-bold text-eshodha-500">NET PAYABLE</span>
-                <span className="text-lg font-extrabold text-eshodha-500">{fmt(data.net_payable)}</span>
+              <div className="flex items-center justify-between p-3 rounded-xl bg-credit-line-500/5 border border-credit-line-500/15">
+                <span className="text-sm font-bold text-credit-line-500">NET PAYABLE</span>
+                <span className="text-lg font-extrabold text-credit-line-500">{fmt(data.net_payable)}</span>
               </div>
             </div>
           </div>
@@ -329,7 +329,7 @@ function OverviewTab({
                       <div className="w-3 rounded-t-md bg-risk-high/30 transition-all" style={{ height: `${liabH}%` }} title={`Liability: ${fmt(month.liability)}`} />
                       <div className="w-3 rounded-t-md bg-risk-low/40 transition-all" style={{ height: `${itcH}%` }} title={`ITC: ${fmt(month.itc)}`} />
                     </div>
-                    <span className={cn('text-[10px] font-semibold', index === data.monthly_trend.length - 1 ? 'text-eshodha-500' : 'text-[var(--text-tertiary)]')}>{month.month}</span>
+                    <span className={cn('text-[10px] font-semibold', index === data.monthly_trend.length - 1 ? 'text-credit-line-500' : 'text-[var(--text-tertiary)]')}>{month.month}</span>
                   </div>
                 );
               })}
@@ -401,15 +401,15 @@ function FilingTab({
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-4">
           <div className="card p-6 h-full">
-            <div className="w-12 h-12 rounded-2xl bg-eshodha-500/10 flex items-center justify-center mb-4">
-              <UploadCloud size={24} className="text-eshodha-500" />
+            <div className="w-12 h-12 rounded-2xl bg-credit-line-500/10 flex items-center justify-center mb-4">
+              <UploadCloud size={24} className="text-credit-line-500" />
             </div>
             <h3 className="text-lg font-bold text-[var(--text-primary)]">Upload invoice PDFs</h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
-              Add sales or purchase invoice PDFs. Credline extracts HSN/SAC, taxable value, supply type, and ITC direction, then prepares the GST filing payload.
+              Add sales or purchase invoice PDFs. Credit Line extracts HSN/SAC, taxable value, supply type, and ITC direction, then prepares the GST filing payload.
             </p>
-            <label className="mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-5 text-center transition-colors hover:border-eshodha-500/50">
-              {isParsingPdf ? <Loader2 size={26} className="animate-spin text-eshodha-500" /> : <FileText size={26} className="text-eshodha-500" />}
+            <label className="mt-5 flex min-h-36 cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-5 text-center transition-colors hover:border-credit-line-500/50">
+              {isParsingPdf ? <Loader2 size={26} className="animate-spin text-credit-line-500" /> : <FileText size={26} className="text-credit-line-500" />}
               <span className="mt-3 text-sm font-bold text-[var(--text-primary)]">Select PDF invoices</span>
               <span className="mt-1 text-xs text-[var(--text-tertiary)]">Multiple PDF files supported</span>
               <input type="file" accept="application/pdf,.pdf" multiple className="hidden" onChange={onPdfUpload} />
@@ -429,7 +429,7 @@ function FilingTab({
                 <input
                   value={gstin}
                   onChange={(event) => onGstinChange(event.target.value.toUpperCase())}
-                  className="w-full rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-eshodha-500"
+                  className="w-full rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-credit-line-500"
                   placeholder="29ABCDE1234F1Z5"
                 />
               </label>
@@ -438,7 +438,7 @@ function FilingTab({
                 <input
                   value={period}
                   onChange={(event) => onPeriodChange(event.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-eshodha-500"
+                  className="w-full rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2 text-sm font-semibold text-[var(--text-primary)] outline-none focus:border-credit-line-500"
                   placeholder="052026"
                 />
               </label>

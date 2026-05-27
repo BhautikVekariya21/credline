@@ -16,6 +16,7 @@ import {
   KeyRound,
   Landmark,
   Layers3,
+  Loader2,
   LineChart,
   LockKeyhole,
   Network,
@@ -27,93 +28,148 @@ import {
   Workflow,
   Zap,
 } from 'lucide-react';
-import type { ElementType, ReactNode } from 'react';
+import { useState, useEffect, useRef, type ElementType, type ReactNode } from 'react';
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SHARED PRIMITIVES
 ═══════════════════════════════════════════════════════════════════════════ */
 
-function PublicShell({ eyebrow, title, description, children, preview, cta }: {
+function PublicShell({ eyebrow, title, description, children, preview, cta, themeClass = 'lending' }: {
   eyebrow: string; title: string; description: string;
-  children: ReactNode; preview?: ReactNode; cta?: ReactNode;
+  children: ReactNode; preview?: ReactNode; cta?: ReactNode; themeClass?: string;
 }) {
+  let blob1 = 'bg-credit-line-500/10 dark:bg-credit-line-500/15';
+  let blob2 = 'bg-brand-soft/20 dark:bg-brand-soft/5';
+  
+  if (themeClass === 'payments') {
+    blob1 = 'bg-blue-500/10 dark:bg-blue-500/15';
+    blob2 = 'bg-teal-500/20 dark:bg-teal-500/5';
+  } else if (themeClass === 'wealth') {
+    blob1 = 'bg-[#4eba7a]/10 dark:bg-[#4eba7a]/15';
+    blob2 = 'bg-blue-400/20 dark:bg-blue-400/5';
+  } else if (themeClass === 'insurance') {
+    blob1 = 'bg-[#d4a84b]/10 dark:bg-[#d4a84b]/15';
+    blob2 = 'bg-[#e07060]/20 dark:bg-[#e07060]/5';
+  } else if (themeClass === 'openbanking') {
+    blob1 = 'bg-purple-500/10 dark:bg-purple-500/15';
+    blob2 = 'bg-blue-500/20 dark:bg-blue-500/5';
+  } else if (themeClass === 'regtech' || themeClass === 'security' || themeClass === 'platform') {
+    blob1 = 'bg-slate-500/10 dark:bg-slate-500/15';
+    blob2 = 'bg-credit-line-500/20 dark:bg-credit-line-500/5';
+  }
+
   return (
-    <div className="public-page">
-      <section className="public-section public-section-top">
-        <div className="public-wrap py-20 md:py-24">
+    <div className="public-page bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
+      <section className="relative overflow-hidden pt-32 pb-20 border-b border-[var(--border-secondary)]">
+        {/* Background Gradient Mesh */}
+        <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+          <div className={`absolute top-[-20%] left-[-10%] w-[55%] h-[60%] rounded-full blur-[130px] ${blob1}`} />
+          <div className={`absolute bottom-[-10%] right-[-10%] w-[65%] h-[70%] rounded-full blur-[160px] ${blob2}`} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,var(--bg-primary)_85%)]" />
+          <div className="absolute inset-0 bg-grid-white/[0.015] dark:bg-grid-black/[0.015]" />
+        </div>
+
+        <div className="public-wrap relative z-10">
           <div className="page-hero-grid">
-            <div>
-              <p className="public-pill-title">{eyebrow}</p>
-              <h1>{title}</h1>
-              <p>{description}</p>
-              {cta && <div className="hero-buttons" style={{ marginTop: '1.75rem' }}>{cta}</div>}
+            <div className="space-y-6">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-credit-line-500/10 border border-credit-line-500/20 text-xs font-semibold text-credit-line-500 shadow-sm uppercase tracking-wider font-mono">
+                {eyebrow}
+              </span>
+              <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight leading-[1.1] font-display text-[var(--text-primary)]">
+                {title}
+              </h1>
+              <p className="text-base text-[var(--text-secondary)] leading-relaxed max-w-xl">
+                {description}
+              </p>
+              {cta && <div className="flex flex-wrap items-center gap-3 pt-2">{cta}</div>}
             </div>
-            {preview}
+            {preview && (
+              <div className="relative group">
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-credit-line-500 to-brand-soft opacity-15 blur-lg group-hover:opacity-25 transition-opacity duration-300" />
+                <div className="relative">
+                  {preview}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
-      {children}
+      <div className="relative z-10">
+        {children}
+      </div>
     </div>
   );
 }
 
 function SH({ title, body, action }: { title: ReactNode; body: string; action?: ReactNode }) {
   return (
-    <div className="section-head">
-      <div className="section-title-block"><h2>{title}</h2></div>
-      <div className="section-head-aside"><p>{body}</p>{action}</div>
+    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+      <div className="space-y-3">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] font-display tracking-tight leading-tight">{title}</h2>
+        <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed max-w-2xl">{body}</p>
+      </div>
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
   );
 }
 
 function FeatureRow({ icon: Icon, title, body, meta }: { icon: ElementType; title: string; body: string; meta: string }) {
   return (
-    <div className="feature-row">
-      <div className="feature-row-title">
-        <span className="cell-icon"><Icon size={18} /></span>
-        <strong>{title}</strong>
+    <div className="group relative flex flex-col md:flex-row md:items-start gap-4 p-6 border-b border-[var(--border-secondary)] hover:bg-[var(--bg-secondary)]/30 transition-all duration-300">
+      <div className="flex items-center gap-3 md:w-[240px] flex-shrink-0">
+        <div className="w-10 h-10 rounded-xl bg-credit-line-500/10 text-credit-line-500 border border-credit-line-500/20 flex items-center justify-center group-hover:bg-credit-line-500 group-hover:text-white transition-all duration-300">
+          <Icon size={18} />
+        </div>
+        <strong className="text-sm font-bold text-[var(--text-primary)] font-display">{title}</strong>
       </div>
-      <p>{body}</p>
-      <span>{meta}</span>
+      <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed flex-1 md:pr-10">{body}</p>
+      <span className="text-[10px] font-bold font-mono tracking-wider text-[var(--text-tertiary)] uppercase bg-[var(--bg-secondary)] border border-[var(--border-secondary)] px-2.5 py-1 rounded-full mt-2 md:mt-0">{meta}</span>
     </div>
   );
 }
 
 function ProofPanel({ title, items }: { title: string; items: string[] }) {
   return (
-    <article className="proof-panel">
-      <h3>{title}</h3>
-      <div>{items.map((item) => <p key={item}><CheckCircle2 size={16} />{item}</p>)}</div>
+    <article className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-primary)] shadow-sm hover:shadow-md transition-all duration-200">
+      <h3 className="text-sm font-extrabold text-[var(--text-primary)] mb-4 font-display uppercase tracking-wider">{title}</h3>
+      <div className="space-y-3">
+        {items.map((item) => (
+          <p key={item} className="flex items-start gap-2 text-xs text-[var(--text-secondary)] leading-relaxed">
+            <CheckCircle2 size={14} className="text-[#4eba7a] flex-shrink-0 mt-0.5" />
+            <span>{item}</span>
+          </p>
+        ))}
+      </div>
     </article>
   );
 }
 
 function PagePreview({ rows }: { rows: Array<[string, string]> }) {
   return (
-    <div className="page-preview" aria-hidden="true">
-      <p className="mock-label">Credline workspace</p>
-      {rows.map(([label, value]) => (
-        <div key={label} className="preview-row"><span>{label}</span><strong>{value}</strong></div>
-      ))}
+    <div className="w-full max-w-sm rounded-2xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-5 shadow-2xl font-mono text-[11px] backdrop-blur-md">
+      <p className="text-[9px] font-bold text-credit-line-500 uppercase tracking-widest border-b border-[var(--border-secondary)] pb-2 mb-3">Credit Line workspace</p>
+      <div className="space-y-2">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex items-center justify-between py-1.5 border-b border-[var(--border-secondary)]/50 last:border-b-0">
+            <span className="text-[10px] text-[var(--text-secondary)]">{label}</span>
+            <strong className="text-[var(--text-primary)] font-extrabold">{value}</strong>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
-/** Full-width number strip */
 function StatStrip({ stats }: { stats: Array<{ value: string; label: string; sub?: string }> }) {
   return (
-    <section className="public-section" style={{ borderBottom: '1px solid var(--border-secondary)' }}>
-      <div className="public-wrap" style={{ paddingBlock: '2.5rem' }}>
-        <div className="metric-grid">
+    <section className="border-y border-[var(--border-secondary)] bg-[var(--bg-secondary)]/20 backdrop-blur-sm">
+      <div className="public-wrap py-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((s) => (
-            <div key={s.label} className="metric-cell">
-              <strong style={{ fontSize: '2.4rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-primary)' }}>
-                {s.value}
-              </strong>
-              <span style={{ display: 'block', marginTop: '0.25rem', color: 'var(--text-primary)', fontWeight: 700, fontSize: '0.9rem' }}>
-                {s.label}
-              </span>
-              {s.sub && <span style={{ display: 'block', marginTop: '0.15rem', color: 'var(--text-tertiary)', fontSize: '0.75rem' }}>{s.sub}</span>}
+            <div key={s.label} className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-secondary)] space-y-1.5 shadow-sm hover:shadow-md transition-shadow">
+              <strong className="block text-2xl lg:text-3xl font-black font-mono text-[var(--text-primary)] leading-none">{s.value}</strong>
+              <span className="block text-xs font-bold text-[var(--text-secondary)] font-sans">{s.label}</span>
+              {s.sub && <span className="block text-[10px] text-[var(--text-tertiary)] leading-tight">{s.sub}</span>}
             </div>
           ))}
         </div>
@@ -122,103 +178,733 @@ function StatStrip({ stats }: { stats: Array<{ value: string; label: string; sub
   );
 }
 
-/** Numbered how-it-works steps */
 function HowItWorks({ steps }: { steps: Array<{ num: string; title: string; body: string }> }) {
+  const lgCols = steps.length === 5 ? 'lg:grid-cols-5' : 'lg:grid-cols-4';
   return (
-    <div className="step-grid" style={{ marginTop: '2rem' }}>
+    <div className={`grid grid-cols-1 md:grid-cols-2 ${lgCols} gap-6 mt-8`}>
       {steps.map((s) => (
-        <div key={s.num}>
-          <span>{s.num}</span>
-          <strong style={{ marginTop: '3rem' }}>{s.title}</strong>
-          <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>{s.body}</p>
+        <div key={s.num} className="p-5 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-secondary)] shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between min-h-48 group">
+          <div>
+            <span className="text-3xl font-black font-mono text-credit-line-500 opacity-25 group-hover:opacity-40 transition-opacity">{s.num}</span>
+            <strong className="block text-sm font-extrabold text-[var(--text-primary)] font-display mt-4">{s.title}</strong>
+          </div>
+          <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-2">{s.body}</p>
         </div>
       ))}
     </div>
   );
 }
 
-/** Capability table */
 function CapabilityTable({ rows }: { rows: Array<{ cap: string; detail: string; tag: string }> }) {
   return (
-    <div style={{ border: '1px solid var(--border-secondary)', marginTop: '2rem' }}>
-      {rows.map((r, i) => (
-        <div key={r.cap} style={{
-          display: 'grid',
-          gridTemplateColumns: '220px 1fr auto',
-          alignItems: 'start',
-          gap: '1.25rem',
-          padding: '1.1rem 1.5rem',
-          borderTop: i === 0 ? 'none' : '1px solid var(--border-secondary)',
-          background: 'var(--bg-primary)',
-        }}>
-          <strong style={{ color: 'var(--text-primary)', fontSize: '0.88rem', fontWeight: 700 }}>{r.cap}</strong>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6, margin: 0 }}>{r.detail}</p>
-          <span style={{
-            display: 'inline-block',
-            border: '1px solid var(--border-secondary)',
-            borderRadius: '999px',
-            padding: '0.2rem 0.65rem',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.65rem',
-            fontWeight: 700,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            color: 'var(--text-tertiary)',
-            whiteSpace: 'nowrap',
-          }}>{r.tag}</span>
+    <div className="border border-[var(--border-primary)] rounded-2xl overflow-hidden bg-[var(--bg-card)] mt-8 divide-y divide-[var(--border-secondary)] shadow-sm">
+      {rows.map((r) => (
+        <div key={r.cap} className="grid grid-cols-1 md:grid-cols-12 gap-4 p-5 items-center hover:bg-[var(--bg-secondary)]/20 transition-colors">
+          <div className="md:col-span-3">
+            <strong className="text-sm font-extrabold text-[var(--text-primary)] font-display">{r.cap}</strong>
+          </div>
+          <div className="md:col-span-7">
+            <p className="text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed">{r.detail}</p>
+          </div>
+          <div className="md:col-span-2 text-left md:text-right">
+            <span className="inline-block border border-[var(--border-secondary)] bg-[var(--bg-secondary)]/50 rounded-full px-3 py-1 font-mono text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
+              {r.tag}
+            </span>
+          </div>
         </div>
       ))}
     </div>
   );
 }
 
-/** FAQ accordion (static, no animation for simplicity) */
 function FAQ({ items }: { items: Array<{ q: string; a: string }> }) {
   return (
-    <div style={{ border: '1px solid var(--border-secondary)', marginTop: '2rem' }}>
-      {items.map((item, i) => (
-        <details key={item.q} style={{
-          borderTop: i === 0 ? 'none' : '1px solid var(--border-secondary)',
-          background: 'var(--bg-primary)',
-        }}>
-          <summary style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '1.1rem 1.5rem',
-            cursor: 'pointer',
-            color: 'var(--text-primary)',
-            fontSize: '0.92rem',
-            fontWeight: 700,
-            listStyle: 'none',
-          }}>
-            {item.q}
-            <span style={{ color: 'var(--text-tertiary)', fontSize: '1.1rem', flexShrink: 0 }}>+</span>
+    <div className="space-y-3 mt-8">
+      {items.map((item) => (
+        <details key={item.q} className="group border border-[var(--border-secondary)] rounded-2xl bg-[var(--bg-card)] overflow-hidden transition-all duration-200 open:border-credit-line-500/30 open:shadow-md">
+          <summary className="flex items-center justify-between p-5 cursor-pointer text-sm font-extrabold text-[var(--text-primary)] list-none outline-none select-none hover:bg-[var(--bg-secondary)]/30 font-display">
+            <span>{item.q}</span>
+            <span className="text-credit-line-500 text-lg transition-transform duration-200 group-open:rotate-45">+</span>
           </summary>
-          <p style={{
-            padding: '0 1.5rem 1.25rem',
-            color: 'var(--text-secondary)',
-            fontSize: '0.88rem',
-            lineHeight: 1.7,
-            margin: 0,
-          }}>{item.a}</p>
+          <p className="px-5 pb-5 text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed bg-[var(--bg-primary)]/10">
+            {item.a}
+          </p>
         </details>
       ))}
     </div>
   );
 }
 
-/** Use-case card grid */
 function UseCaseGrid({ cases }: { cases: Array<{ icon: ElementType; title: string; body: string }> }) {
   return (
-    <div className="operations-grid" style={{ marginTop: '2rem' }}>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
       {cases.map(({ icon: Icon, title, body }) => (
-        <article key={title} className="operation-card">
-          <span className="cell-icon"><Icon size={18} /></span>
-          <h3>{title}</h3>
-          <p>{body}</p>
+        <article key={title} className="p-6 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-secondary)] shadow-sm hover:shadow-md hover:border-credit-line-500/20 transition-all duration-200 flex flex-col justify-between min-h-48 group">
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-credit-line-500/10 text-credit-line-500 border border-credit-line-500/20 flex items-center justify-center group-hover:bg-credit-line-500 group-hover:text-white transition-all duration-300 mb-4">
+              <Icon size={18} />
+            </div>
+            <h3 className="text-sm font-bold text-[var(--text-primary)] font-display">{title}</h3>
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-2">{body}</p>
+          </div>
         </article>
       ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTERACTIVE SIMULATORS (Phase 13 Premium Modernization)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export function LendingSimulator() {
+  const [bureau, setBureau] = useState(650);
+  const [simAge, setSimAge] = useState(12);
+  const [utilityRate, setUtilityRate] = useState(90);
+  const [graphRisk, setGraphRisk] = useState<'low' | 'medium' | 'high'>('low');
+
+  const altScore = Math.min(850, Math.max(300, Math.round(
+    bureau * 0.45 +
+    simAge * 8 +
+    (utilityRate / 100) * 140 +
+    (graphRisk === 'low' ? 80 : graphRisk === 'medium' ? -30 : -140)
+  )));
+
+  let decision = 'REFER TO MANUAL REVIEW';
+  let decColor = 'text-risk-medium border-risk-medium/20 bg-risk-medium/5';
+  if (altScore >= 720) {
+    decision = 'AUTO-APPROVE';
+    decColor = 'text-risk-low border-risk-low/20 bg-risk-low/5';
+  } else if (altScore < 600) {
+    decision = 'AUTO-DECLINE';
+    decColor = 'text-risk-high border-risk-high/20 bg-risk-high/5';
+  }
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8">
+      <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider mb-4 flex items-center gap-2">
+        <CreditCard className="text-credit-line-500" size={18} /> Underwriting Decision Engine Sandbox
+      </h3>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Modify Bureau details and alternative data streams below. The Credit Line engine computes alternative scores and applies decision filters in real time.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Inputs */}
+        <div className="md:col-span-7 space-y-5">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold text-[var(--text-primary)]">Base Bureau Score</span>
+              <span className="font-mono text-credit-line-500 font-bold">{bureau}</span>
+            </div>
+            <input type="range" min="300" max="850" value={bureau} onChange={e => setBureau(Number(e.target.value))} className="w-full h-1 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold text-[var(--text-primary)]">SIM Tenure (Months)</span>
+              <span className="font-mono text-credit-line-500 font-bold">{simAge} months</span>
+            </div>
+            <input type="range" min="1" max="36" value={simAge} onChange={e => setSimAge(Number(e.target.value))} className="w-full h-1 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold text-[var(--text-primary)]">Utility Payment Consistency</span>
+              <span className="font-mono text-credit-line-500 font-bold">{utilityRate}%</span>
+            </div>
+            <input type="range" min="10" max="100" value={utilityRate} onChange={e => setUtilityRate(Number(e.target.value))} className="w-full h-1 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="block text-xs font-bold text-[var(--text-primary)]">Entity Risk Graph Link</span>
+            <div className="grid grid-cols-3 gap-2">
+              {(['low', 'medium', 'high'] as const).map(level => (
+                <button
+                  key={level}
+                  type="button"
+                  onClick={() => setGraphRisk(level)}
+                  className={`text-xs py-2 rounded-xl border font-bold capitalize transition-all ${
+                    graphRisk === level 
+                      ? 'border-credit-line-500 bg-credit-line-500/10 text-credit-line-600' 
+                      : 'border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]/80'
+                  }`}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Output Panel */}
+        <div className="md:col-span-5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] p-5 flex flex-col justify-between h-full min-h-[300px]">
+          <div className="space-y-4">
+            <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest font-mono">underwriting report</span>
+            
+            <div className="space-y-1">
+              <span className="text-xs text-[var(--text-secondary)]">Calculated Trust Score</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-black font-mono text-[var(--text-primary)]">{altScore}</span>
+                <span className="text-xs text-[var(--text-tertiary)]">/ 850</span>
+              </div>
+            </div>
+
+            {/* Score progress bar */}
+            <div className="h-2 bg-[var(--bg-card)] rounded-full overflow-hidden border border-[var(--border-primary)]">
+              <div 
+                className="h-full bg-gradient-to-r from-risk-high via-risk-medium to-risk-low transition-all duration-500" 
+                style={{ width: `${((altScore - 300) / 550) * 100}%` }} 
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-[var(--border-primary)]">
+            <div className="space-y-1">
+              <span className="text-xs text-[var(--text-secondary)]">System Recommendation</span>
+              <div className={`border text-xs rounded-xl py-3 px-4 font-bold text-center tracking-wider ${decColor}`}>
+                {decision}
+              </div>
+            </div>
+
+            <div className="text-[10px] leading-normal text-[var(--text-tertiary)] flex items-start gap-1.5 font-mono">
+              <ShieldCheck size={12} className="text-risk-low flex-shrink-0 mt-0.5" />
+              <span>FCRA Adverse Action notice drafted automatically on decline.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface MockTransaction {
+  id: string;
+  time: string;
+  rail: string;
+  amount: number;
+  risk: number;
+  status: 'CLEARED' | 'HELD' | 'FLAGGED';
+}
+
+export function PaymentsTicker() {
+  const [txs, setTxs] = useState<MockTransaction[]>([]);
+  const timerRef = useRef<any>(null);
+
+  useEffect(() => {
+    const rails = ['UPI (GPay)', 'SWIFT Transfer', 'Card Clearing', 'IMPS Rail', 'RuPay Network'];
+    const initial: MockTransaction[] = Array.from({ length: 5 }, (_, i) => {
+      const risk = Math.round(Math.random() * 85);
+      return {
+        id: `TX-${Math.floor(100000 + Math.random() * 900000)}`,
+        time: new Date(Date.now() - i * 15000).toLocaleTimeString(),
+        rail: rails[Math.floor(Math.random() * rails.length)],
+        amount: Math.round(Math.random() * 250000),
+        risk,
+        status: risk > 75 ? 'HELD' : risk > 45 ? 'FLAGGED' : 'CLEARED',
+      };
+    });
+    setTxs(initial);
+
+    timerRef.current = setInterval(() => {
+      const risk = Math.round(Math.random() * 98);
+      const newTx: MockTransaction = {
+        id: `TX-${Math.floor(100000 + Math.random() * 900000)}`,
+        time: new Date().toLocaleTimeString(),
+        rail: rails[Math.floor(Math.random() * rails.length)],
+        amount: Math.round(Math.random() * 150000),
+        risk,
+        status: risk > 75 ? 'HELD' : risk > 45 ? 'FLAGGED' : 'CLEARED',
+      };
+      setTxs(prev => [newTx, ...prev.slice(0, 4)]);
+    }, 2500);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8 font-sans">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider flex items-center gap-2">
+          <Banknote className="text-credit-line-500" size={18} /> Real-Time Payment Stream Auditor
+        </h3>
+        <span className="text-[10px] text-risk-low bg-risk-low/10 border border-risk-low/20 rounded-full px-2 py-0.5 animate-pulse font-mono font-bold">
+          LIVE STREAM ACTIVE (1270 tx/s)
+        </span>
+      </div>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Simulation of transactions intercepted directly at gateway channels, scored and enriched in &lt;10ms. Toggles automated SOAR hold scripts on compliance breaches.</p>
+
+      <div className="space-y-2">
+        {txs.map(tx => (
+          <div key={tx.id} className="flex items-center justify-between p-3.5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] hover:bg-[var(--bg-secondary)]/70 transition-colors animate-fade-in">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-[10px] font-mono ${
+                tx.status === 'CLEARED' ? 'bg-risk-low/10 text-risk-low' : tx.status === 'HELD' ? 'bg-risk-high/10 text-risk-high' : 'bg-risk-medium/10 text-risk-medium'
+              }`}>
+                {tx.rail[0]}
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-bold text-[var(--text-primary)] font-mono">{tx.id}</span>
+                <span className="block text-[10px] text-[var(--text-tertiary)]">{tx.rail} · {tx.time}</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="text-right">
+                <span className="text-xs font-black text-[var(--text-primary)] font-mono">INR {tx.amount.toLocaleString()}</span>
+                <span className="block text-[9px] text-[var(--text-tertiary)] font-mono">Risk score: {tx.risk}</span>
+              </div>
+              <span className={`badge text-[9px] px-2.5 py-0.5 rounded-full font-bold border ${
+                tx.status === 'CLEARED' ? 'text-risk-low bg-risk-low/8 border-risk-low/15' : tx.status === 'HELD' ? 'text-risk-high bg-risk-high/8 border-risk-high/15' : 'text-risk-medium bg-risk-medium/8 border-risk-medium/15'
+              }`}>
+                {tx.status}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function WealthStressTester() {
+  const [profile, setProfile] = useState<'conservative' | 'balanced' | 'aggressive'>('balanced');
+  const [shock, setShock] = useState<'none' | 'equity' | 'interest' | 'energy'>('none');
+  const [vol, setVol] = useState(30);
+
+  const baseVaR = profile === 'conservative' ? 3.5 : profile === 'balanced' ? 8.2 : 18.6;
+  const volFactor = vol * 0.12;
+  const shockFactor = shock === 'equity' ? 12.5 : shock === 'interest' ? 5.8 : shock === 'energy' ? 7.6 : 0.0;
+  const varEstimate = Math.min(99.9, baseVaR + volFactor + shockFactor);
+
+  let status = 'COMPLIANT (MiFID II Matches)';
+  let statusColor = 'text-risk-low border-risk-low/20 bg-risk-low/5';
+  if (varEstimate > 25.0) {
+    status = 'HIGH RISK (Re-assessment Required)';
+    statusColor = 'text-risk-high border-risk-high/20 bg-risk-high/5';
+  } else if (varEstimate > 12.0) {
+    status = 'PORTFOLIO DRIFT WARNING';
+    statusColor = 'text-risk-medium border-risk-medium/20 bg-risk-medium/5';
+  }
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8">
+      <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider mb-4 flex items-center gap-2">
+        <LineChart className="text-credit-line-500" size={18} /> Portfolio stress-testing & VaR sandbox
+      </h3>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Select account profiles and apply global market shocks to see real-time calculated Value-at-Risk (VaR) estimations and suitability status updates.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Inputs */}
+        <div className="md:col-span-7 space-y-5">
+          <div className="space-y-2">
+            <span className="block text-xs font-bold text-[var(--text-primary)]">Investor Risk Profile</span>
+            <div className="grid grid-cols-3 gap-2">
+              {(['conservative', 'balanced', 'aggressive'] as const).map(p => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setProfile(p)}
+                  className={`text-xs py-2 rounded-xl border font-bold capitalize transition-all ${
+                    profile === p 
+                      ? 'border-credit-line-500 bg-credit-line-500/10 text-credit-line-600' 
+                      : 'border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]/80'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold text-[var(--text-primary)]">Market Volatility (Proxy VIX)</span>
+              <span className="font-mono text-credit-line-500 font-bold">{vol}%</span>
+            </div>
+            <input type="range" min="10" max="90" value={vol} onChange={e => setVol(Number(e.target.value))} className="w-full h-1 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="block text-xs font-bold text-[var(--text-primary)]">Select Market Shock Scenario</span>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              {[
+                { id: 'none', label: 'No Active Shock' },
+                { id: 'equity', label: 'Equities Correction -30%' },
+                { id: 'interest', label: 'Interest Rates Hike +3%' },
+                { id: 'energy', label: 'Energy Supply Crises' }
+              ].map(s => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setShock(s.id as any)}
+                  className={`py-2 px-3 rounded-xl border font-bold transition-all text-left ${
+                    shock === s.id 
+                      ? 'border-credit-line-500 bg-credit-line-500/10 text-credit-line-600' 
+                      : 'border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]/80'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Output Panel */}
+        <div className="md:col-span-5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] p-5 flex flex-col justify-between h-full min-h-[300px]">
+          <div className="space-y-4">
+            <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest font-mono">telemetry dashboard</span>
+            
+            <div className="space-y-1">
+              <span className="text-xs text-[var(--text-secondary)] font-sans">Projected Value-at-Risk (99% VaR)</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-4xl font-black font-mono text-[var(--text-primary)]">{varEstimate.toFixed(1)}%</span>
+                <span className="text-xs text-[var(--text-tertiary)]">portfolio value</span>
+              </div>
+            </div>
+
+            {/* Gauge bar */}
+            <div className="h-2 bg-[var(--bg-card)] rounded-full overflow-hidden border border-[var(--border-primary)]">
+              <div 
+                className="h-full bg-gradient-to-r from-risk-low via-risk-medium to-risk-high transition-all duration-500" 
+                style={{ width: `${varEstimate}%` }} 
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-[var(--border-primary)]">
+            <div className="space-y-1">
+              <span className="text-xs text-[var(--text-secondary)]">Regulatory Suitability Status</span>
+              <div className={`border text-[10px] rounded-xl py-3 px-2 font-bold text-center tracking-wider uppercase ${statusColor}`}>
+                {status}
+              </div>
+            </div>
+
+            <div className="text-[10px] leading-normal text-[var(--text-tertiary)] flex items-start gap-1.5 font-mono">
+              <ShieldCheck size={12} className="text-risk-low flex-shrink-0 mt-0.5" />
+              <span>Certified audit log entry created under SEBI/MiFID II protocol rules.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ClaimTriageSimulator() {
+  const [scenario, setScenario] = useState<number>(0);
+  const [running, setRunning] = useState(false);
+  const [step, setStep] = useState(0);
+  const [result, setResult] = useState<any>(null);
+
+  const presets = [
+    { title: 'Windshield Storm Damage Claim', amt: 12000, desc: 'Genuine claim submitted. Single photo verified, vehicle matches location at time of event.', targetRisk: 12 },
+    { title: 'Suspicious Motor Claim Collision', amt: 480000, desc: 'Adjuster and local workshop account connection. Multiple prior claim link correlations.', targetRisk: 87 },
+    { title: 'Divergent Medical Invoice Claim', amt: 185000, desc: 'Multiple procedures charged, but no matching admission logs registered.', targetRisk: 58 }
+  ];
+
+  const handleAudit = () => {
+    setRunning(true);
+    setStep(0);
+    setResult(null);
+
+    const interval = setInterval(() => {
+      setStep(prev => {
+        if (prev >= 3) {
+          clearInterval(interval);
+          setRunning(false);
+          const current = presets[scenario];
+          setResult({
+            risk: current.targetRisk,
+            rec: current.targetRisk > 75 ? 'ROUTE TO SIU SPECIAL AUDIT' : current.targetRisk > 40 ? 'REFER TO ADJUSTER QUEUE' : 'AUTO-APPROVE PAYOUT'
+          });
+          return 4;
+        }
+        return prev + 1;
+      });
+    }, 800);
+  };
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8">
+      <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider mb-4 flex items-center gap-2">
+        <Shield size={18} className="text-credit-line-500" /> FNOL Claims Triage Triage Simulator
+      </h3>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Select a mock scenario below and trigger the forensic verification engine to watch claims scoring pipelines identify potential insurance fraud.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Inputs */}
+        <div className="md:col-span-7 space-y-4">
+          <span className="block text-xs font-bold text-[var(--text-primary)]">Select Claim Event Scenario</span>
+          <div className="space-y-2">
+            {presets.map((p, idx) => (
+              <button
+                key={p.title}
+                type="button"
+                onClick={() => { setScenario(idx); setResult(null); setStep(0); }}
+                className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
+                  scenario === idx 
+                    ? 'border-credit-line-500 bg-credit-line-500/10 text-credit-line-600' 
+                    : 'border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]/80'
+                }`}
+                disabled={running}
+              >
+                <strong className="block text-xs text-[var(--text-primary)]">{p.title}</strong>
+                <span className="block text-[10px] text-[var(--text-secondary)] mt-1">{p.desc}</span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleAudit}
+            disabled={running}
+            className="w-full text-xs py-3 rounded-2xl font-bold bg-credit-line-500 text-white hover:bg-credit-line-600 shadow-sm flex items-center justify-center gap-2 transition-all mt-4"
+          >
+            {running && <Loader2 size={14} className="animate-spin" />}
+            {running ? 'Inspecting Claim Files...' : 'Execute Forensic Claim Inspection'}
+          </button>
+        </div>
+
+        {/* Right Output Panel */}
+        <div className="md:col-span-5 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] p-5 flex flex-col justify-between h-full min-h-[300px]">
+          <div className="space-y-4">
+            <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest font-mono">triage checklist</span>
+            
+            <div className="space-y-2 text-xs font-mono text-[var(--text-secondary)]">
+              <div className="flex items-center gap-2">
+                <span className={step > 0 ? "text-risk-low" : "text-[var(--text-tertiary)]"}>✓</span>
+                <span>Metadata validation</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={step > 1 ? "text-risk-low" : "text-[var(--text-tertiary)]"}>✓</span>
+                <span>Cross-claim frequency checks</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={step > 2 ? "text-risk-low" : "text-[var(--text-tertiary)]"}>✓</span>
+                <span>Entity risk graph lookup</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={step > 3 ? "text-risk-low" : "text-[var(--text-tertiary)]"}>✓</span>
+                <span>Compile scoring thresholds</span>
+              </div>
+            </div>
+          </div>
+
+          {result && (
+            <div className="space-y-4 pt-4 border-t border-[var(--border-primary)] animate-scale-in">
+              <div className="space-y-1">
+                <span className="text-xs text-[var(--text-secondary)]">Claim Fraud Probability</span>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-4xl font-black font-mono ${
+                    result.risk > 70 ? 'text-risk-high' : result.risk > 40 ? 'text-risk-medium' : 'text-risk-low'
+                  }`}>{result.risk}%</span>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-xs text-[var(--text-secondary)]">Routing Recommendation</span>
+                <div className={`border text-[10px] rounded-xl py-2 px-1 font-bold text-center tracking-wider ${
+                  result.risk > 70 ? 'text-risk-high border-risk-high/20 bg-risk-high/5' : result.risk > 40 ? 'text-risk-medium border-risk-medium/20 bg-risk-medium/5' : 'text-risk-low border-risk-low/20 bg-risk-low/5'
+                }`}>
+                  {result.rec}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ConsentSandbox() {
+  const [scopes, setScopes] = useState({
+    identity: true,
+    balances: true,
+    transactions: true,
+    recurring: false
+  });
+  const [expiry, setExpiry] = useState(90);
+  const [payload, setPayload] = useState<string | null>(null);
+
+  const handleGenerate = () => {
+    const claims = {
+      iss: "credit-line-identity-federation",
+      sub: "usr-ob-7a4f3b2c",
+      aud: "rbi-account-aggregator",
+      exp: Math.floor(Date.now() / 1000) + (expiry * 86400),
+      scopes: Object.keys(scopes).filter(k => scopes[k as keyof typeof scopes]),
+      data_residency: "ap-south-1"
+    };
+    
+    const mockToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.' + 
+      btoa(JSON.stringify(claims)) + 
+      '.signed_by_dilithium_envelope_ml_dsa';
+
+    setPayload(JSON.stringify({
+      access_token: mockToken,
+      token_type: "Bearer",
+      expires_in: expiry * 86400,
+      consent_id: `CNS-${Math.floor(100000 + Math.random() * 900000)}`,
+      scope_parameters: claims
+    }, null, 2));
+  };
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8">
+      <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider mb-4 flex items-center gap-2">
+        <Globe2 className="text-credit-line-500" size={18} /> Open Banking Consent Sandbox
+      </h3>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Select consent permissions below to establish OAuth consent flows and generate signed PSD2 JSON access token envelopes.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Inputs */}
+        <div className="md:col-span-6 space-y-4">
+          <span className="block text-xs font-bold text-[var(--text-primary)]">Consent Scopes</span>
+          <div className="space-y-2">
+            {[
+              { id: 'identity', label: 'Read Customer Identity Profile', desc: 'Full KYC matching attributes' },
+              { id: 'balances', label: 'Read Account Balance (Real-time)', desc: 'Current ledger checks' },
+              { id: 'transactions', label: 'Read Transaction History (90 Days)', desc: 'Calculates DTI and affordability' },
+              { id: 'recurring', label: 'Read Recurring Bills & Subscriptions', desc: 'Opex tracking metrics' }
+            ].map(s => (
+              <label key={s.id} className="flex items-start gap-3 p-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)]/50 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={scopes[s.id as keyof typeof scopes]} 
+                  onChange={e => setScopes(prev => ({ ...prev, [s.id]: e.target.checked }))}
+                  className="mt-1 accent-credit-line-500 rounded" 
+                />
+                <div>
+                  <span className="text-xs font-bold text-[var(--text-primary)] block">{s.label}</span>
+                  <span className="text-[10px] text-[var(--text-tertiary)] block mt-0.5">{s.desc}</span>
+                </div>
+              </label>
+            ))}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
+              <span className="font-bold text-[var(--text-primary)]">Consent Duration</span>
+              <span className="font-mono text-credit-line-500 font-bold">{expiry} days</span>
+            </div>
+            <input type="range" min="30" max="365" step="30" value={expiry} onChange={e => setExpiry(Number(e.target.value))} className="w-full h-1 bg-[var(--bg-secondary)] rounded-lg appearance-none cursor-pointer accent-credit-line-500" />
+          </div>
+
+          <button
+            type="button"
+            onClick={handleGenerate}
+            className="w-full text-xs py-3 rounded-2xl font-bold bg-credit-line-500 text-white hover:bg-credit-line-600 transition-colors shadow-sm flex items-center justify-center gap-2"
+          >
+            <KeyRound size={14} /> Establish Consent Pipeline & Fetch Token
+          </button>
+        </div>
+
+        {/* Right Output Panel */}
+        <div className="md:col-span-6 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] p-5 flex flex-col justify-between h-full min-h-[380px]">
+          <div>
+            <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest font-mono block mb-3">API payload response</span>
+            {payload ? (
+              <pre className="text-[10px] font-mono text-[var(--text-secondary)] bg-[var(--bg-card)] border border-[var(--border-primary)] p-3.5 rounded-xl overflow-x-auto max-h-[300px]">
+                <code>{payload}</code>
+              </pre>
+            ) : (
+              <div className="flex items-center justify-center py-24 text-center border border-dashed border-[var(--border-primary)] rounded-xl bg-[var(--bg-card)]/50">
+                <p className="text-xs text-[var(--text-tertiary)]">Establish consent above to generate mock API returns.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SARTypologyMatcher() {
+  const [typology, setTypology] = useState<string>('smurfing');
+
+  const getFlowData = () => {
+    if (typology === 'smurfing') {
+      return {
+        nodes: ['Acct 1 (₹45k)', 'Acct 2 (₹42k)', 'Acct 3 (₹48k)', 'Mule Core (₹135k)', 'Target Corp Account'],
+        narrative: `SUMMARY OF SUSPICIOUS FINDINGS:\n\nMultiple structured cash deposits below reporting threshold (₹50k limit) made at three different ATMs within a 2-hour window. Funds aggregated into Mule Core account and wired to Target Corp within 12 hours. Indicates Structuring/Smurfing pattern.`
+      };
+    } else if (typology === 'offshore') {
+      return {
+        nodes: ['Parent Co', 'Shell Corp A (Delaware)', 'Shell Corp B (Mauritius)', 'Parent Co Ledger'],
+        narrative: `SUMMARY OF SUSPICIOUS FINDINGS:\n\nRound-trip wiring transfer sequence detected. Funds sourced from Parent Co routed through off-shore Shell Corp B (Mauritius) and Shell Corp A (Delaware), subsequently entering Parent Co ledger as simulated loan receipts. Indicates tax-evasion circular flow.`
+      };
+    } else {
+      return {
+        nodes: ['Settlement Gate', 'Acct Alpha', 'Acct Beta', 'Acct Gamma', 'Crypto Bridge Account'],
+        narrative: `SUMMARY OF SUSPICIOUS FINDINGS:\n\nRapid transaction fan-out matching money laundering parameters. Inbound wire partitioned immediately into four separate beneficiary bank transfer operations, routed to external crypto bridge platforms. Exceeds velocity baseline bounds.`
+      };
+    }
+  };
+
+  const flow = getFlowData();
+
+  return (
+    <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-3xl shadow-lg max-w-4xl mx-auto my-8">
+      <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display uppercase tracking-wider mb-4 flex items-center gap-2">
+        <FileText className="text-credit-line-500" size={18} /> AML Typology Matcher & SAR Draft Sandbox
+      </h3>
+      <p className="text-xs text-[var(--text-secondary)] mb-6">Select active money laundering typologies to visualize entities, trace fund flow paths, and compile automated compliance report narratives.</p>
+
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Inputs */}
+        <div className="md:col-span-5 space-y-4">
+          <span className="block text-xs font-bold text-[var(--text-primary)]">Select Active AML Typology</span>
+          <div className="space-y-2">
+            {[
+              { id: 'smurfing', label: 'Smurfing / Structured Deposits', desc: 'Frequent sub-threshold cash transfers' },
+              { id: 'offshore', label: 'Offshore Round-Tripping', desc: 'Circular transfers mimicking loan returns' },
+              { id: 'fanout', label: 'Rapid Account Fan-Out', desc: 'Fast partitioning to crypto wallets' }
+            ].map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setTypology(t.id)}
+                className={`w-full text-left p-3.5 rounded-2xl border transition-all ${
+                  typology === t.id 
+                    ? 'border-credit-line-500 bg-credit-line-500/10 text-credit-line-600' 
+                    : 'border-[var(--border-primary)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)]/80'
+                }`}
+              >
+                <strong className="block text-xs text-[var(--text-primary)]">{t.label}</strong>
+                <span className="block text-[10px] text-[var(--text-secondary)] mt-1">{t.desc}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Right Output Panel */}
+        <div className="md:col-span-7 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] p-5 flex flex-col justify-between h-full min-h-[350px]">
+          <div className="space-y-4">
+            <span className="text-[10px] font-bold text-credit-line-500 uppercase tracking-widest font-mono">transaction entity flow map</span>
+            
+            {/* Simple Visual Flow Diagram using Flex */}
+            <div className="flex flex-wrap items-center justify-center gap-2 py-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border-primary)] px-2 font-mono text-[9px] text-[var(--text-secondary)]">
+              {flow.nodes.map((node, i) => (
+                <div key={node} className="flex items-center gap-1.5">
+                  <span className="border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-2 py-1 rounded font-bold text-[var(--text-primary)]">{node}</span>
+                  {i < flow.nodes.length - 1 && <span className="text-credit-line-500 font-black">➔</span>}
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-xs text-[var(--text-secondary)]">Auto-Drafted SAR Narrative (Regulatory Format)</span>
+              <textarea 
+                readOnly 
+                value={flow.narrative} 
+                className="w-full h-32 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-card)] p-3 text-[10px] font-mono text-[var(--text-secondary)] leading-relaxed focus:outline-none select-all"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -232,9 +918,10 @@ export function PlatformPage() {
     <PublicShell
       eyebrow="Platform"
       title="A single decision fabric across fraud, credit, and compliance."
-      description="Credline connects ingestion, model scoring, human review, SOAR response, and regulatory evidence so lending teams can move quickly without losing control."
+      description="Credit Line connects ingestion, model scoring, human review, SOAR response, and regulatory evidence so lending teams can move quickly without losing control."
       preview={<PagePreview rows={[['Graph risk', '0.92'], ['Credit review', '684'], ['Evidence', 'signed']]} />}
       cta={<><Link to="/admin" className="btn-dark">Open console <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="platform"
     >
       <StatStrip stats={[
         { value: '<10ms', label: 'Decision latency', sub: 'end-to-end scoring pipeline' },
@@ -266,7 +953,7 @@ export function PlatformPage() {
       </section>
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Five operating steps. One evidence loop." body="Credline's operating loop is simple: ingest, resolve context, explain, route, and monitor. Each step leaves a reviewable, signed artifact." />
+          <SH title="Five operating steps. One evidence loop." body="Credit Line's operating loop is simple: ingest, resolve context, explain, route, and monitor. Each step leaves a reviewable, signed artifact." />
           <HowItWorks steps={[
             { num: '01', title: 'Ingest', body: 'Normalise all transaction, device, identity, and behavioral streams into the shared data plane with sub-second latency.' },
             { num: '02', title: 'Score', body: 'Run fraud, credit, biometric, graph, and adversarial models in parallel. Each model output carries a confidence interval and feature attribution.' },
@@ -292,9 +979,10 @@ export function SecurityPage() {
     <PublicShell
       eyebrow="Security"
       title="Controls for institutions that cannot treat trust as decoration."
-      description="Security, sovereignty, and explainability are designed into the Credline operating layer instead of being bolted on after launch."
+      description="Security, sovereignty, and explainability are designed into the Credit Line operating layer instead of being bolted on after launch."
       preview={<PagePreview rows={[['PQC posture', 'ready'], ['Region policy', 'resolved'], ['Audit event', 'signed']]} />}
       cta={<><Link to="/admin" className="btn-dark">Open console</Link><Link to="/services/regtech" className="btn-light">RegTech details</Link></>}
+      themeClass="security"
     >
       <StatStrip stats={[
         { value: 'ML-KEM-768', label: 'Key encapsulation', sub: 'NIST PQC standard' },
@@ -348,7 +1036,7 @@ export function SecurityPage() {
 
 export function AboutPage() {
   const principles: Array<{ icon: ElementType; label: string; body: string }> = [
-    { icon: Landmark, label: 'Built for regulated lenders', body: 'Financial institutions need fast decisions without losing defensibility. Credline is designed for the compliance overhead that real lenders face, not the simplified version shown in demos.' },
+    { icon: Landmark, label: 'Built for regulated lenders', body: 'Financial institutions need fast decisions without losing defensibility. Credit Line is designed for the compliance overhead that real lenders face, not the simplified version shown in demos.' },
     { icon: ShieldCheck, label: 'Designed for evidence', body: 'Every model output needs context, reason codes, controls, and review state. We treat explainability as a first-class feature, not an afterthought added for regulators.' },
     { icon: Workflow, label: 'Made for daily operations', body: 'The product favors repeatable, auditable workflows over decorative one-off dashboards. Operators should be able to run a shift without referring to a manual.' },
   ];
@@ -359,9 +1047,10 @@ export function AboutPage() {
   return (
     <PublicShell
       eyebrow="Company"
-      title="Credline makes lending decisions faster, fairer, and easier to defend."
+      title="Credit Line makes lending decisions faster, fairer, and easier to defend."
       description="We build infrastructure for institutions serving customers whose risk and credit profiles cannot be understood through legacy systems alone."
       preview={<PagePreview rows={[['Operating mode', 'reviewable'], ['Primary user', 'risk teams'], ['Build posture', 'production']]} />}
+      themeClass="platform"
     >
       <section className="public-section">
         <div className="public-wrap py-20">
@@ -387,7 +1076,7 @@ export function AboutPage() {
             </div>
             <div className="split-panel-copy">
               <h2>A practical stack for live financial intelligence.</h2>
-              <p>Credline connects risk, credit, security, and compliance teams so institutions can move quickly without creating disconnected review silos.</p>
+              <p>Credit Line connects risk, credit, security, and compliance teams so institutions can move quickly without creating disconnected review silos.</p>
               <Link to="/platform" className="btn-primary">See the platform <ArrowRight size={16} /></Link>
             </div>
           </div>
@@ -414,14 +1103,27 @@ const ALL_SERVICES = [
 
 function ServiceCard({ icon: Icon, title, body, path, tag }: { icon: ElementType; title: string; body: string; path: string; tag: string }) {
   return (
-    <Link to={path} className="service-card">
-      <div className="service-card-head">
-        <span className="service-card-icon"><Icon size={18} /></span>
-        <span className="service-card-tag">{tag}</span>
+    <Link to={path} className="group p-6 rounded-3xl border border-[var(--border-secondary)] bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] hover:border-credit-line-500/30 hover:shadow-xl transition-all duration-300 flex flex-col justify-between min-h-56 relative overflow-hidden">
+      {/* Glow border decoration */}
+      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-credit-line-500/10 to-transparent rounded-bl-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity" />
+      
+      <div>
+        <div className="flex items-center justify-between">
+          <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-secondary)] flex items-center justify-center group-hover:bg-credit-line-500 group-hover:text-white group-hover:border-credit-line-600 transition-all duration-300">
+            <Icon size={18} />
+          </div>
+          <span className="border border-[var(--border-secondary)] rounded-full px-2.5 py-0.5 font-mono text-[9px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
+            {tag}
+          </span>
+        </div>
+        <h3 className="text-base font-extrabold text-[var(--text-primary)] font-display mt-6 group-hover:text-credit-line-500 transition-colors">{title}</h3>
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed mt-2">{body}</p>
       </div>
-      <h3 className="service-card-title">{title}</h3>
-      <p className="service-card-body">{body}</p>
-      <span className="service-card-arrow"><ArrowUpRight size={14} /></span>
+      
+      <div className="flex items-center gap-1 text-[11px] font-bold text-credit-line-500 mt-6 transform translate-x-0 group-hover:translate-x-1 transition-transform">
+        <span>Configure Service</span>
+        <ArrowRight size={12} />
+      </div>
     </Link>
   );
 }
@@ -433,7 +1135,7 @@ export function ServicesHubPage() {
         <div className="public-wrap py-20 text-center">
           <p className="public-pill-title">All services</p>
           <h1 className="hero-headline">One platform.<br />Every finance problem.</h1>
-          <p className="hero-subcopy">From fraud to lending to wealth management — Credline covers the full financial operations stack with production-grade AI infrastructure, audit trails, and explainability built in.</p>
+          <p className="hero-subcopy">From fraud to lending to wealth management — Credit Line covers the full financial operations stack with production-grade AI infrastructure, audit trails, and explainability built in.</p>
           <div className="hero-buttons">
             <Link to="/admin" className="btn-dark">Open console <ArrowUpRight size={14} /></Link>
             <Link to="/platform" className="btn-light">Explore platform</Link>
@@ -459,7 +1161,7 @@ export function ServicesHubPage() {
 
       <section className="public-section public-band">
         <div className="public-wrap py-20">
-          <SH title="Why a single fabric beats point solutions." body="Disconnected fraud, credit, and compliance tools create evidence gaps, duplicate data contracts, and competing model versions. Credline eliminates that." />
+          <SH title="Why a single fabric beats point solutions." body="Disconnected fraud, credit, and compliance tools create evidence gaps, duplicate data contracts, and competing model versions. Credit Line eliminates that." />
           <CapabilityTable rows={[
             { cap: 'Shared data plane', detail: 'All services read from the same enriched transaction stream. No per-service ETL pipelines or data contracts to maintain.', tag: 'unified' },
             { cap: 'Single model registry', detail: 'Fraud, credit, and AML models share a versioned registry. Champion/challenger promotions apply across all services simultaneously.', tag: 'versioned' },
@@ -511,6 +1213,7 @@ export function LendingPage() {
       description="Score thin-file applicants, generate adverse-action-ready reason codes, automate affordability modeling, and run underwriting workflows with full explainability — from application to funding."
       preview={<PagePreview rows={[['Credit score', '684'], ['Alt data', 'active'], ['Reason codes', 'ready'], ['FCRA notice', 'auto-generated']]} />}
       cta={<><Link to="/admin/credit" className="btn-dark">Open credit engine <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="lending"
     >
       <StatStrip stats={[
         { value: '94%', label: 'Approval accuracy', sub: 'vs bureau-only baseline' },
@@ -523,7 +1226,7 @@ export function LendingPage() {
         <div className="public-wrap py-20">
           <SH title="The full lending lifecycle in one operating layer." body="From application ingestion to underwriting decision to compliance evidence, every step is logged and reviewable. No spreadsheet silos." action={<Link to="/admin/credit" className="btn-dark">Open credit engine</Link>} />
           <div className="feature-rows">
-            <FeatureRow icon={CreditCard} title="Alternative underwriting" body="Score applicants using utility payment history, telco usage patterns, wallet behavior, rental payment records, and open-banking transaction signals alongside traditional bureau data. Credline's feature engine handles normalization so lenders define what matters." meta="inclusive" />
+            <FeatureRow icon={CreditCard} title="Alternative underwriting" body="Score applicants using utility payment history, telco usage patterns, wallet behavior, rental payment records, and open-banking transaction signals alongside traditional bureau data. Credit Line's feature engine handles normalization so lenders define what matters." meta="inclusive" />
             <FeatureRow icon={FileCheck2} title="FCRA-compliant reason codes" body="Every declined application automatically receives a machine-readable reason code set and a human-readable adverse action draft. The notice includes the specific data source, the model feature, and the threshold that caused the decline — ready for mailing or digital delivery." meta="FCRA ready" />
             <FeatureRow icon={TrendingUp} title="Affordability modeling" body="Debt-service coverage ratios, gross income estimates from open-banking data, expense categorization, and stress-test scenarios (rate hike +2%, income shock -20%) are computed at decision time and attached to the underwriting memo." meta="risk-aware" />
             <FeatureRow icon={Bot} title="Underwriting workflow automation" body="Manual review queues are prioritized by risk tier, SLA countdown, and document completeness. Escalation paths, co-signer review, and conditional approval workflows are configured per product without code changes." meta="automated" />
@@ -543,6 +1246,13 @@ export function LendingPage() {
             { num: '04', title: 'Generate evidence', body: 'Reason codes, adverse-action draft, SHAP feature attribution, and regulatory notice are produced automatically before any analyst touches the case.' },
             { num: '05', title: 'Route decision', body: 'Auto-approve, manual review queue, conditional approval, or decline — each path routes to the correct team with all evidence pre-attached.' },
           ]} />
+        </div>
+      </section>
+
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="Interactive Underwriting Sandbox" body="Simulate credit underwriting outcomes and reason code generation dynamically based on alternative credit data inputs." />
+          <LendingSimulator />
         </div>
       </section>
 
@@ -575,13 +1285,13 @@ export function LendingPage() {
 
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Frequently asked questions." body="Real questions from lending teams evaluating Credline." />
+          <SH title="Frequently asked questions." body="Real questions from lending teams evaluating Credit Line." />
           <FAQ items={[
-            { q: 'Can we bring our own credit model instead of using Credline\'s?', a: 'Yes. Credline\'s model registry supports BYOM (bring your own model) via ONNX or Python scoring endpoints. Your model runs alongside Credline\'s in a champion/challenger configuration. Reason codes and FCRA notices are generated from your model\'s feature attributions.' },
-            { q: 'How does alternative data avoid fair lending violations?', a: 'Credline runs continuous disparate impact testing on every alternative data feature before it enters production. Features that produce adverse disparate impact above the 80% rule threshold are flagged and require lender sign-off. The full disparate impact report is available for CFPB examination.' },
+            { q: 'Can we bring our own credit model instead of using Credit Line\'s?', a: 'Yes. Credit Line\'s model registry supports BYOM (bring your own model) via ONNX or Python scoring endpoints. Your model runs alongside Credit Line\'s in a champion/challenger configuration. Reason codes and FCRA notices are generated from your model\'s feature attributions.' },
+            { q: 'How does alternative data avoid fair lending violations?', a: 'Credit Line runs continuous disparate impact testing on every alternative data feature before it enters production. Features that produce adverse disparate impact above the 80% rule threshold are flagged and require lender sign-off. The full disparate impact report is available for CFPB examination.' },
             { q: 'What happens if the open-banking consent is withdrawn mid-application?', a: 'Consent withdrawal is handled in real time. The application is re-scored without the open-banking features and the applicant is notified. If the re-score changes the decision, a new adverse action notice is generated automatically.' },
             { q: 'How quickly can we go live for a new loan product?', a: 'New products are configured through the lender control panel without code changes. Feature selection, threshold settings, workflow routing, and reason code mapping typically take 1–3 business days per product.' },
-            { q: 'Is the mortgage origination workflow MISMO-compliant?', a: 'Yes. Credline outputs MISMO 3.4 XML for loan origination data and supports Fannie Mae DU and Freddie Mac LPA automated underwriting system (AUS) integration for secondary market readiness.' },
+            { q: 'Is the mortgage origination workflow MISMO-compliant?', a: 'Yes. Credit Line outputs MISMO 3.4 XML for loan origination data and supports Fannie Mae DU and Freddie Mac LPA automated underwriting system (AUS) integration for secondary market readiness.' },
           ]} />
         </div>
       </section>
@@ -601,6 +1311,7 @@ export function PaymentsPage() {
       description="Card, bank transfer, wallet, and cross-border payments scored and enriched in under 10ms. Full dispute and chargeback automation with sanctions screening and merchant graph analysis built in."
       preview={<PagePreview rows={[['Rail', 'UPI + SWIFT'], ['Latency', '8.7ms'], ['Dispute', 'auto-filed'], ['Sanctions', 'screened']]} />}
       cta={<><Link to="/admin/payments" className="btn-dark">Open payment console <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="payments"
     >
       <StatStrip stats={[
         { value: '8.7ms', label: 'Average scoring latency', sub: 'end-to-end per transaction' },
@@ -627,7 +1338,7 @@ export function PaymentsPage() {
         <div className="public-wrap py-20">
           <SH title="How a payment is scored." body="From network receipt to cleared or held — every step is enriched, scored, and documented." />
           <HowItWorks steps={[
-            { num: '01', title: 'Receive at rail', body: 'Payment message arrives from the network (UPI, SWIFT, ACH, card). Credline intercepts at the payment gateway or via webhook within 2ms.' },
+            { num: '01', title: 'Receive at rail', body: 'Payment message arrives from the network (UPI, SWIFT, ACH, card). Credit Line intercepts at the payment gateway or via webhook within 2ms.' },
             { num: '02', title: 'Enrich', body: 'Device fingerprint, merchant reputation, velocity history, beneficiary risk, and behavioral signals are appended to the transaction record in parallel.' },
             { num: '03', title: 'Screen', body: 'Sanctions lists, PEP databases, and adverse media are checked. A screening pass/fail with confidence score is attached to the enriched record.' },
             { num: '04', title: 'Score', body: 'Fraud model, AML typology engine, and graph contagion check all run concurrently. Combined risk tier (low/medium/high/critical) is produced.' },
@@ -636,9 +1347,16 @@ export function PaymentsPage() {
         </div>
       </section>
 
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="Payment Velocity & Intelligence Sandbox" body="Observe real-time UPI, SWIFT, and Card transaction velocity scoring and simulated sanctions checking in action." />
+          <PaymentsTicker />
+        </div>
+      </section>
+
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Payment capability deep-dive." body="Technical specifications for payment teams evaluating Credline." />
+          <SH title="Payment capability deep-dive." body="Technical specifications for payment teams evaluating Credit Line." />
           <CapabilityTable rows={[
             { cap: 'Rail coverage', detail: 'UPI, IMPS, NEFT, RTGS (India); SWIFT, SEPA, ACH (international); Visa, Mastercard, RuPay, Amex (card); 40+ digital wallet integrations.', tag: '80+ rails' },
             { cap: 'Scoring latency', detail: 'P50: 6ms, P95: 14ms, P99: 22ms end-to-end including enrichment, sanctions check, and fraud model inference.', tag: 'P99 < 22ms' },
@@ -667,10 +1385,10 @@ export function PaymentsPage() {
         <div className="public-wrap py-20">
           <SH title="Frequently asked questions." body="Payment platform teams ask these most." />
           <FAQ items={[
-            { q: 'Can Credline score transactions in real time without adding latency to the payment path?', a: 'Yes. Credline integrates as an async enrichment layer for batch review or as a synchronous gateway interceptor for real-time block/pass decisions. The synchronous path adds a P95 latency of 14ms, which is within the threshold of most payment networks.' },
-            { q: 'How does multi-rail support work? Do we need separate integrations per rail?', a: 'No. Credline uses a normalised payment message schema that maps from any rail format (ISO 20022, ISO 8583, UPI JSON, ACH NACHA) into a single enriched record. You connect once via webhook or API and coverage extends to all supported rails.' },
-            { q: 'What happens if the sanctions screening service is unavailable?', a: 'Credline has a tiered fallback: cached list check (5-minute TTL), then configurable fail-open or fail-closed behavior. Fail-closed holds the payment and alerts the operations queue. All fallback decisions are flagged in the audit trail for post-hoc review.' },
-            { q: 'How are chargeback evidence packages built?', a: 'Credline assembles the representment package automatically from: original authorisation data, AVS/CVV match results, 3DS authentication status, device fingerprint, customer behavioral biometrics, and the full transaction velocity history. The package is formatted per Visa and Mastercard chargeback reason code specifications.' },
+            { q: 'Can Credit Line score transactions in real time without adding latency to the payment path?', a: 'Yes. Credit Line integrates as an async enrichment layer for batch review or as a synchronous gateway interceptor for real-time block/pass decisions. The synchronous path adds a P95 latency of 14ms, which is within the threshold of most payment networks.' },
+            { q: 'How does multi-rail support work? Do we need separate integrations per rail?', a: 'No. Credit Line uses a normalised payment message schema that maps from any rail format (ISO 20022, ISO 8583, UPI JSON, ACH NACHA) into a single enriched record. You connect once via webhook or API and coverage extends to all supported rails.' },
+            { q: 'What happens if the sanctions screening service is unavailable?', a: 'Credit Line has a tiered fallback: cached list check (5-minute TTL), then configurable fail-open or fail-closed behavior. Fail-closed holds the payment and alerts the operations queue. All fallback decisions are flagged in the audit trail for post-hoc review.' },
+            { q: 'How are chargeback evidence packages built?', a: 'Credit Line assembles the representment package automatically from: original authorisation data, AVS/CVV match results, 3DS authentication status, device fingerprint, customer behavioral biometrics, and the full transaction velocity history. The package is formatted per Visa and Mastercard chargeback reason code specifications.' },
           ]} />
         </div>
       </section>
@@ -690,6 +1408,7 @@ export function WealthPage() {
       description="Protect HNI portfolios with real-time risk scoring, automate KYC/EDD for wealth accounts, enforce MiFID II and SEBI suitability rules at recommendation time, and detect advisor churning — all with a complete audit trail."
       preview={<PagePreview rows={[['KYC status', 'verified'], ['Suitability', 'matched'], ['Portfolio risk', '0.18'], ['AML tier', 'low']]} />}
       cta={<><Link to="/admin/wealth" className="btn-dark">Open wealth console <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="wealth"
     >
       <StatStrip stats={[
         { value: '4,820+', label: 'HNI accounts monitored', sub: 'across wealth platforms' },
@@ -700,7 +1419,7 @@ export function WealthPage() {
 
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Wealth operations need the same rigor as retail banking." body="High-net-worth accounts carry elevated compliance exposure and concentrated portfolio risk. Credline applies the same evidence-first approach to wealth platforms." action={<Link to="/admin/wealth" className="btn-dark">Open wealth console</Link>} />
+          <SH title="Wealth operations need the same rigor as retail banking." body="High-net-worth accounts carry elevated compliance exposure and concentrated portfolio risk. Credit Line applies the same evidence-first approach to wealth platforms." action={<Link to="/admin/wealth" className="btn-dark">Open wealth console</Link>} />
           <div className="feature-rows">
             <FeatureRow icon={LineChart} title="Portfolio risk scoring" body="Real-time concentration risk, drawdown exposure, correlation alerts, and VaR estimates for HNI and institutional portfolios. Thresholds are configurable per client risk profile. Breach events trigger an evidence-backed alert within 500ms." meta="real-time" />
             <FeatureRow icon={ShieldCheck} title="KYC / EDD for wealth" body="Enhanced due diligence workflows handle source-of-wealth verification, PEP screening, adverse media monitoring, and beneficial ownership resolution for wealth accounts. Refresh cycles are triggered automatically by risk tier or tenure." meta="EDD ready" />
@@ -722,6 +1441,13 @@ export function WealthPage() {
             { num: '04', title: 'Evidence package', body: 'A suitability report is generated with the client profile snapshot, instrument risk rating, rules checked, and the advisor sign-off timestamp.' },
             { num: '05', title: 'Ongoing monitoring', body: 'Post-recommendation portfolio drift is monitored continuously. If the portfolio moves outside the client\'s risk tolerance, a re-suitability alert is generated.' },
           ]} />
+        </div>
+      </section>
+
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="Portfolio Suitability & Value-at-Risk Stress Tester" body="Adjust portfolio assets and client risk parameters to dynamically stress-test regulatory compliance suitability and VaR margins." />
+          <WealthStressTester />
         </div>
       </section>
 
@@ -756,10 +1482,10 @@ export function WealthPage() {
         <div className="public-wrap py-20">
           <SH title="Frequently asked questions." body="" />
           <FAQ items={[
-            { q: 'Can Credline integrate with our existing portfolio management system?', a: 'Yes. Credline exposes a REST API for portfolio position feeds and a webhook for real-time risk alerts. Pre-built connectors exist for Temenos WealthSuite, FIS Profile, and SS&C Advent. Custom integrations take 2–4 weeks.' },
+            { q: 'Can Credit Line integrate with our existing portfolio management system?', a: 'Yes. Credit Line exposes a REST API for portfolio position feeds and a webhook for real-time risk alerts. Pre-built connectors exist for Temenos WealthSuite, FIS Profile, and SS&C Advent. Custom integrations take 2–4 weeks.' },
             { q: 'How is suitability documentation stored for MiFID II ex-post reporting?', a: 'Every suitability check is stored as an immutable record with the client profile snapshot at the time of recommendation, the instrument risk rating, the rules evaluated, and the advisor sign-off. Records are retained for the MiFID II mandated 5-year period and are exportable in XML or PDF.' },
             { q: 'How does the KYC refresh cycle work for dormant accounts?', a: 'Dormant accounts (no activity for 12 months) are flagged for a simplified KYC refresh. High-risk accounts (PEP, elevated AML score) are refreshed every 6 months regardless of activity. The refresh workflow sends a digital verification link to the client and escalates to analyst review if the client does not respond within 14 days.' },
-            { q: 'Does Credline support ESG/sustainable investing compliance?', a: 'Yes. Credline integrates with MSCI ESG ratings and provides SFDR Article 8/9 fund classification support. The suitability module can be configured to include ESG preference questions per the EU Sustainability Preferences regime.' },
+            { q: 'Does Credit Line support ESG/sustainable investing compliance?', a: 'Yes. Credit Line integrates with MSCI ESG ratings and provides SFDR Article 8/9 fund classification support. The suitability module can be configured to include ESG preference questions per the EU Sustainability Preferences regime.' },
           ]} />
         </div>
       </section>
@@ -779,6 +1505,7 @@ export function InsurancePage() {
       description="Detect fraudulent claims at FNOL using graph intelligence, score underwriting risk from telematics and behavioral signals, and automate payout decisions with a complete, regulator-ready audit trail."
       preview={<PagePreview rows={[['Claim risk', '0.84'], ['Telematics', 'active'], ['FNOL', 'auto-triaged'], ['STP rate', '67%']]} />}
       cta={<><Link to="/admin" className="btn-dark">Open console <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="insurance"
     >
       <StatStrip stats={[
         { value: '67%', label: 'Straight-through processing rate', sub: 'for low-risk claims' },
@@ -789,13 +1516,13 @@ export function InsurancePage() {
 
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Insurance fraud costs more than any other financial crime." body="Credline brings graph intelligence and behavioral scoring to claims management, underwriting, and payout workflows." />
+          <SH title="Insurance fraud costs more than any other financial crime." body="Credit Line brings graph intelligence and behavioral scoring to claims management, underwriting, and payout workflows." />
           <div className="feature-rows">
             <FeatureRow icon={ShieldCheck} title="FNOL claims fraud scoring" body="First Notice of Loss signals — claimant history, incident location, date/time patterns, adjuster notes, and third-party corroboration — are scored within 90 seconds of submission. The fraud score includes a confidence interval and a list of the top contributing features." meta="real-time" />
             <FeatureRow icon={Network} title="Fraud ring detection" body="Claim farms, staged accidents, organized motor fraud rings, and medical provider collusion networks are exposed through shared-identity graph analysis. A single suspected fraudulent claim triggers a ring expansion check across all connected claimants, providers, and vehicles." meta="graph-aware" />
             <FeatureRow icon={TrendingUp} title="Telematics underwriting" body="Driving behavior data — harsh braking, night driving, speeding frequency, route risk score, and mileage — combined with UBI telematics and device signals produce a behavioral motor risk score without manual inspection." meta="behavioral" />
             <FeatureRow icon={Bot} title="Straight-through payout" body="Low-risk claims (score < 0.25) are processed for payment automatically with evidence attached. Medium-risk claims route to a fast-track adjuster queue. High-risk claims escalate to SIU with a full evidence package." meta="automated" />
-            <FeatureRow icon={FileCheck2} title="Subrogation opportunity detection" body="Credline automatically identifies subrogation opportunities from third-party fault indicators, police report signals, and liability pattern analysis — reducing leakage from uncollected recoveries." meta="recovery" />
+            <FeatureRow icon={FileCheck2} title="Subrogation opportunity detection" body="Credit Line automatically identifies subrogation opportunities from third-party fault indicators, police report signals, and liability pattern analysis — reducing leakage from uncollected recoveries." meta="recovery" />
             <FeatureRow icon={Zap} title="Provider network fraud" body="Medical, auto repair, and legal service provider networks are scored for inflated billing, service-date pattern anomalies, and referral ring relationships. Suspicious providers are flagged before payment is issued." meta="provider" />
           </div>
         </div>
@@ -805,12 +1532,19 @@ export function InsurancePage() {
         <div className="public-wrap py-20">
           <SH title="How a claim is scored from FNOL to payout." body="Every claim follows the same evidence-first path, whether it ends in STP payout or SIU referral." />
           <HowItWorks steps={[
-            { num: '01', title: 'FNOL received', body: 'Claim notification arrives via app, portal, or call centre. Credline captures all available signals immediately: claimant identity, incident details, and policy history.' },
+            { num: '01', title: 'FNOL received', body: 'Claim notification arrives via app, portal, or call centre. Credit Line captures all available signals immediately: claimant identity, incident details, and policy history.' },
             { num: '02', title: 'Graph expansion', body: 'Entity graph checks whether the claimant, vehicle, address, or provider appears in known fraud rings or shares attributes with flagged claims.' },
             { num: '03', title: 'Multi-model scoring', body: 'Claims fraud model, provider fraud model, and staged-incident detection model run in parallel. Combined risk tier is produced within 90 seconds.' },
             { num: '04', title: 'STP or triage', body: 'Low-risk claims go straight to payment queue. Medium-risk to fast-track adjuster. High-risk to SIU with pre-built evidence package (graph expansion, model scores, policy history).' },
             { num: '05', title: 'Outcome & feedback', body: 'Adjuster and SIU outcomes are fed back to the model registry. Confirmed fraud cases update the graph. False positive rates are monitored by claim type.' },
           ]} />
+        </div>
+      </section>
+
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="FNOL Claim Triage & Risk Assessment Simulator" body="Trigger simulated claims and review straight-through processing decisions alongside SIU investigation referrals." />
+          <ClaimTriageSimulator />
         </div>
       </section>
 
@@ -845,10 +1579,10 @@ export function InsurancePage() {
         <div className="public-wrap py-20">
           <SH title="Frequently asked questions." body="" />
           <FAQ items={[
-            { q: 'Can Credline integrate with our existing claims management system?', a: 'Yes. Credline provides a REST API for claim event ingestion and a webhook for risk score delivery. Pre-built connectors exist for Guidewire ClaimCenter, Duck Creek, and Majesco Claims. Integration typically takes 1–3 weeks.' },
-            { q: 'How does the graph expansion work for claims fraud rings?', a: 'When a claim is submitted, Credline checks whether any entity in the claim (claimant, vehicle VIN, address, phone, provider) matches known entities in previously flagged claims. The graph expands one hop at a time until no new connections are found. The expansion result is visualised in the analyst interface and included in the SIU evidence package.' },
-            { q: 'What is the false positive rate on claims fraud alerts?', a: 'Typical false positive rates on Credline-monitored portfolios are 6–9% across all alert types. Staged accident alerts have a slightly higher false positive rate (12%) due to limited corroboration signals. False positive rates are tracked per claim type and model version and are available in the daily analytics report.' },
-            { q: 'Does Credline support property and liability claims in addition to motor?', a: 'Yes. Credline has separate model suites for personal lines (motor, home, travel), commercial lines (property, liability, marine), and specialty lines (D&O, cyber). Each model suite includes claim-type-specific fraud patterns and provider network analysis.' },
+            { q: 'Can Credit Line integrate with our existing claims management system?', a: 'Yes. Credit Line provides a REST API for claim event ingestion and a webhook for risk score delivery. Pre-built connectors exist for Guidewire ClaimCenter, Duck Creek, and Majesco Claims. Integration typically takes 1–3 weeks.' },
+            { q: 'How does the graph expansion work for claims fraud rings?', a: 'When a claim is submitted, Credit Line checks whether any entity in the claim (claimant, vehicle VIN, address, phone, provider) matches known entities in previously flagged claims. The graph expands one hop at a time until no new connections are found. The expansion result is visualised in the analyst interface and included in the SIU evidence package.' },
+            { q: 'What is the false positive rate on claims fraud alerts?', a: 'Typical false positive rates on credit-line-monitored portfolios are 6–9% across all alert types. Staged accident alerts have a slightly higher false positive rate (12%) due to limited corroboration signals. False positive rates are tracked per claim type and model version and are available in the daily analytics report.' },
+            { q: 'Does Credit Line support property and liability claims in addition to motor?', a: 'Yes. Credit Line has separate model suites for personal lines (motor, home, travel), commercial lines (property, liability, marine), and specialty lines (D&O, cyber). Each model suite includes claim-type-specific fraud patterns and provider network analysis.' },
           ]} />
         </div>
       </section>
@@ -868,6 +1602,7 @@ export function OpenBankingPage() {
       description="Connect to 10,000+ banks and fintechs across 50 markets, manage consumer consent with granular scope controls, derive verified financial health scores, and power real-time affordability decisions from live transaction data."
       preview={<PagePreview rows={[['Banks connected', '10,200+'], ['Consent', 'managed'], ['Health score', '74/100'], ['Latency', '180ms']]} />}
       cta={<><Link to="/admin" className="btn-dark">Open console <ArrowUpRight size={14} /></Link><Link to="/services/lending" className="btn-light">Lending integration</Link></>}
+      themeClass="openbanking"
     >
       <StatStrip stats={[
         { value: '10,200+', label: 'Banks & fintechs', sub: 'connected across 50+ markets' },
@@ -878,14 +1613,14 @@ export function OpenBankingPage() {
 
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Open banking data with institution-grade controls." body="Credline's open banking layer combines aggregation, enrichment, consent lifecycle management, and scoring into a single API surface with a full audit trail." />
+          <SH title="Open banking data with institution-grade controls." body="Credit Line's open banking layer combines aggregation, enrichment, consent lifecycle management, and scoring into a single API surface with a full audit trail." />
           <div className="feature-rows">
             <FeatureRow icon={Globe2} title="Multi-market API aggregation" body="Connect to current accounts, savings, credit cards, investments, and pension accounts across EU (PSD2), UK (Open Banking), India (AA framework), Australia (CDR), and US (FinID / FDX). One API, 50+ markets, no per-market integration work." meta="global" />
             <FeatureRow icon={ShieldCheck} title="Consent lifecycle management" body="Customer-first consent flows with granular permission scopes (read transactions, read balance, read identity), expiry management, partial withdrawal, and full revocation. Every consent action is timestamped and audit-logged." meta="consent-first" />
             <FeatureRow icon={TrendingUp} title="Financial health scoring" body="Income stability index, expense-to-income ratio, savings propensity score, debt burden score, and discretionary spend share — all derived from categorised transaction history and explained per data point." meta="enriched" />
             <FeatureRow icon={FileCheck2} title="Real-time affordability" body="Live DTI (debt-to-income), DSCR, rent-to-income, and payment shock analysis computed from actual account data for credit decisioning. Not survey self-report — live verified data." meta="verified" />
             <FeatureRow icon={Database} title="Direct database sync" body="Establish direct secure pipelines to internal database tables (PostgreSQL, MySQL, Snowflake) for instant synchronization. Live analyze transactions on the fly using active polling indices." meta="live database" />
-            <FeatureRow icon={Network} title="Account aggregation for fraud" body="Open banking account data is cross-referenced with the Credline fraud graph. Circular payment flows, mule account patterns, and unusual balance movements are flagged automatically." meta="fraud-aware" />
+            <FeatureRow icon={Network} title="Account aggregation for fraud" body="Open banking account data is cross-referenced with the Credit Line fraud graph. Circular payment flows, mule account patterns, and unusual balance movements are flagged automatically." meta="fraud-aware" />
           </div>
         </div>
       </section>
@@ -894,12 +1629,19 @@ export function OpenBankingPage() {
         <div className="public-wrap py-20">
           <SH title="How open banking consent and data flow works." body="From customer authorisation to scored financial insights — every step is transparent and reversible." />
           <HowItWorks steps={[
-            { num: '01', title: 'Consent request', body: 'Customer receives a consent request with specific data scopes listed in plain language. They authenticate directly with their bank — credentials never touch Credline.' },
-            { num: '02', title: 'Bank authorisation', body: 'The customer\'s bank issues an access token via OAuth 2.0. Credline stores the token in the sovereign region matching the customer\'s jurisdiction.' },
+            { num: '01', title: 'Consent request', body: 'Customer receives a consent request with specific data scopes listed in plain language. They authenticate directly with their bank — credentials never touch Credit Line.' },
+            { num: '02', title: 'Bank authorisation', body: 'The customer\'s bank issues an access token via OAuth 2.0. Credit Line stores the token in the sovereign region matching the customer\'s jurisdiction.' },
             { num: '03', title: 'Data retrieval', body: 'Account data is retrieved via the bank\'s PSD2/Open Banking API. Transactions, balances, and identity data are normalised into a common schema.' },
             { num: '04', title: 'Enrichment & scoring', body: 'Transactions are categorised by the ML engine. Income, expense, and debt signals are extracted. Financial health score and affordability metrics are computed.' },
             { num: '05', title: 'Consent management', body: 'Consent expiry, renewal reminders, and revocation requests are handled automatically. Revocation triggers immediate deletion of retrieved data from all systems.' },
           ]} />
+        </div>
+      </section>
+
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="PSD2 Consent & Data Aggregation Sandbox" body="Initiate a mock secure OAuth flow to generate signed bank aggregation tokens and review normalized transaction payloads." />
+          <ConsentSandbox />
         </div>
       </section>
 
@@ -934,9 +1676,9 @@ export function OpenBankingPage() {
         <div className="public-wrap py-20">
           <SH title="Frequently asked questions." body="" />
           <FAQ items={[
-            { q: 'Does the customer\'s bank login credential ever reach Credline?', a: 'No. Credline uses OAuth 2.0 redirect flows for all PSD2/Open Banking markets. The customer authenticates directly with their bank. Credline receives only an access token, never the username or password.' },
+            { q: 'Does the customer\'s bank login credential ever reach Credit Line?', a: 'No. Credit Line uses OAuth 2.0 redirect flows for all PSD2/Open Banking markets. The customer authenticates directly with their bank. Credit Line receives only an access token, never the username or password.' },
             { q: 'How is GDPR / DPDP data residency enforced?', a: 'Customer account data is stored and processed in the sovereign region matching the customer\'s jurisdiction at consent time. EU data stays in eu-west, India AA data stays in ap-south. Cross-border movement requires explicit operator configuration and is blocked by default at the infrastructure level.' },
-            { q: 'What happens when a customer withdraws consent?', a: 'Consent withdrawal triggers an immediate API call to the bank to revoke the access token, followed by deletion of all retrieved account data from Credline systems within 24 hours (GDPR Art. 17 compliance). The lender or fintech receives a webhook notification and the consent audit log is updated.' },
+            { q: 'What happens when a customer withdraws consent?', a: 'Consent withdrawal triggers an immediate API call to the bank to revoke the access token, followed by deletion of all retrieved account data from Credit Line systems within 24 hours (GDPR Art. 17 compliance). The lender or fintech receives a webhook notification and the consent audit log is updated.' },
             { q: 'How accurate is the transaction categorisation?', a: 'Category accuracy is >94% on held-out validation sets across all supported markets. Accuracy varies by category: income detection is >98%, recurring subscriptions >97%, irregular expenses >89%. Per-market accuracy reports are available in the developer portal.' },
           ]} />
         </div>
@@ -957,6 +1699,7 @@ export function RegTechPage() {
       description="Monitor transactions for money laundering using 214+ typologies, generate SAR/STR reports automatically with narrative drafts, and produce multi-jurisdiction regulatory reports from the same decision data — with zero manual re-entry."
       preview={<PagePreview rows={[['AML alerts', '14 active'], ['SARs filed', '3 this week'], ['Typologies', '214 active'], ['False positives', '6.8%']]} />}
       cta={<><Link to="/admin/regtech" className="btn-dark">Open RegTech console <ArrowUpRight size={14} /></Link><Link to="/services" className="btn-light">All services</Link></>}
+      themeClass="regtech"
     >
       <StatStrip stats={[
         { value: '214+', label: 'AML typologies', sub: 'active monitoring rules' },
@@ -981,14 +1724,21 @@ export function RegTechPage() {
 
       <section className="public-section public-band">
         <div className="public-wrap py-20">
-          <SH title="From alert to filed SAR in under 24 hours." body="The traditional AML workflow takes 10–20 days from alert to SAR filing. Credline compresses it with automation at every step." />
+          <SH title="From alert to filed SAR in under 24 hours." body="The traditional AML workflow takes 10–20 days from alert to SAR filing. Credit Line compresses it with automation at every step." />
           <HowItWorks steps={[
             { num: '01', title: 'Alert generated', body: 'A transaction or pattern matches an AML typology rule or exceeds an ML anomaly threshold. Alert created with risk tier, typology ID, and contributing evidence.' },
             { num: '02', title: 'Case opened', body: 'Alert routes to the appropriate analyst queue based on risk tier, typology, and jurisdiction. Case includes customer profile, transaction history, entity graph, and similar prior cases.' },
             { num: '03', title: 'Investigation', body: 'Analyst reviews the case, adds notes, requests additional documents if needed, and checks related accounts. Investigation actions are timestamped in the audit log.' },
-            { num: '04', title: 'SAR draft generated', body: 'When the analyst marks the case as "suspicious confirmed", Credline auto-generates the SAR narrative, structured data fields, and supporting attachments in the required regulatory format.' },
-            { num: '05', title: 'Review & file', body: 'Compliance officer reviews the SAR draft, makes any edits, and approves. Credline submits via the regulator\'s electronic filing system (FINCEN BSA E-Filing, FCA UKFIU portal) and records the filing confirmation number.' },
+            { num: '04', title: 'SAR draft generated', body: 'When the analyst marks the case as "suspicious confirmed", Credit Line auto-generates the SAR narrative, structured data fields, and supporting attachments in the required regulatory format.' },
+            { num: '05', title: 'Review & file', body: 'Compliance officer reviews the SAR draft, makes any edits, and approves. Credit Line submits via the regulator\'s electronic filing system (FINCEN BSA E-Filing, FCA UKFIU portal) and records the filing confirmation number.' },
           ]} />
+        </div>
+      </section>
+
+      <section className="public-section border-t border-[var(--border-secondary)] bg-[var(--bg-secondary)]/10">
+        <div className="public-wrap py-20">
+          <SH title="AML Typology Matcher & SAR Compiler" body="Select suspicious typologies to map transaction node anomalies and compile regulatory-compliant filing drafts." />
+          <SARTypologyMatcher />
         </div>
       </section>
 
@@ -1010,7 +1760,7 @@ export function RegTechPage() {
 
       <section className="public-section public-band">
         <div className="public-wrap py-20">
-          <SH title="Use cases across compliance teams." body="Credline RegTech supports every compliance function that interacts with transaction monitoring." />
+          <SH title="Use cases across compliance teams." body="Credit Line RegTech supports every compliance function that interacts with transaction monitoring." />
           <UseCaseGrid cases={[
             { icon: FileText, title: 'SAR / STR filing automation', body: 'Compliance teams that previously spent 8–12 hours per SAR on data gathering and narrative writing reduce that to 45-minute review-and-submit workflows.' },
             { icon: Network, title: 'Trade-based money laundering', body: 'TBML typologies check invoice amounts against commodity price benchmarks, over/under-invoicing thresholds, and trade route risk scores — catching what pure payment monitoring misses.' },
@@ -1024,13 +1774,13 @@ export function RegTechPage() {
 
       <section className="public-section">
         <div className="public-wrap py-20">
-          <SH title="Frequently asked questions." body="From compliance officers and MLROs evaluating Credline." />
+          <SH title="Frequently asked questions." body="From compliance officers and MLROs evaluating Credit Line." />
           <FAQ items={[
-            { q: 'How does Credline achieve a 6.8% false positive rate when industry average is 95–99%?', a: 'Three mechanisms work together: (1) an ML triage layer scores each rule-generated alert before it reaches an analyst queue — low-confidence alerts are auto-closed with an explanation; (2) customer context (risk rating, account tenure, historical pattern) adjusts alert thresholds dynamically; (3) analyst feedback on closed alerts retrains the triage model weekly. The result is that analysts only see alerts the system is confident about.' },
-            { q: 'Can we use our own AML typology rules alongside Credline\'s library?', a: 'Yes. Credline\'s rule engine accepts custom typology definitions in a YAML-based rule language. Custom rules can reference any field in the enriched transaction record, customer profile, or entity graph. Custom and library rules run in the same scoring pipeline with no performance difference.' },
-            { q: 'How does the SAR narrative generation work?', a: 'When an analyst marks a case as "suspicious confirmed", Credline fills in the structured SAR data fields automatically from the case record and generates a narrative draft using a template calibrated for the target jurisdiction (FINCEN SAR narrative format, FCA SAR narrative guidance, etc.). The analyst reviews the draft, edits the narrative, and approves. The auto-generated draft typically requires 10–15 minutes of review vs 3–4 hours of composition from scratch.' },
-            { q: 'What is the data retention policy for AML cases and SARs?', a: 'AML cases are retained for 5 years from case closure per FATF Recommendation 11 / EU AMLD retention standards. SAR/STR records are retained for 5 years from filing date. Retention periods are configurable per jurisdiction where local law requires longer retention. Credline generates a retention schedule report per jurisdiction on request.' },
-            { q: 'How does Credline handle correspondent banking monitoring for large banks?', a: 'Credline processes correspondent bank payment flows (SWIFT, CHIPS, Fedwire) at the message level. Nested account detection, unusual payment patterns for the correspondent relationship, and cross-border risk scoring are applied per message. A correspondent bank relationship risk score is updated daily and alerts are generated when the score crosses configurable thresholds.' },
+            { q: 'How does Credit Line achieve a 6.8% false positive rate when industry average is 95–99%?', a: 'Three mechanisms work together: (1) an ML triage layer scores each rule-generated alert before it reaches an analyst queue — low-confidence alerts are auto-closed with an explanation; (2) customer context (risk rating, account tenure, historical pattern) adjusts alert thresholds dynamically; (3) analyst feedback on closed alerts retrains the triage model weekly. The result is that analysts only see alerts the system is confident about.' },
+            { q: 'Can we use our own AML typology rules alongside Credit Line\'s library?', a: 'Yes. Credit Line\'s rule engine accepts custom typology definitions in a YAML-based rule language. Custom rules can reference any field in the enriched transaction record, customer profile, or entity graph. Custom and library rules run in the same scoring pipeline with no performance difference.' },
+            { q: 'How does the SAR narrative generation work?', a: 'When an analyst marks a case as "suspicious confirmed", Credit Line fills in the structured SAR data fields automatically from the case record and generates a narrative draft using a template calibrated for the target jurisdiction (FINCEN SAR narrative format, FCA SAR narrative guidance, etc.). The analyst reviews the draft, edits the narrative, and approves. The auto-generated draft typically requires 10–15 minutes of review vs 3–4 hours of composition from scratch.' },
+            { q: 'What is the data retention policy for AML cases and SARs?', a: 'AML cases are retained for 5 years from case closure per FATF Recommendation 11 / EU AMLD retention standards. SAR/STR records are retained for 5 years from filing date. Retention periods are configurable per jurisdiction where local law requires longer retention. Credit Line generates a retention schedule report per jurisdiction on request.' },
+            { q: 'How does Credit Line handle correspondent banking monitoring for large banks?', a: 'Credit Line processes correspondent bank payment flows (SWIFT, CHIPS, Fedwire) at the message level. Nested account detection, unusual payment patterns for the correspondent relationship, and cross-border risk scoring are applied per message. A correspondent bank relationship risk score is updated daily and alerts are generated when the score crosses configurable thresholds.' },
           ]} />
         </div>
       </section>

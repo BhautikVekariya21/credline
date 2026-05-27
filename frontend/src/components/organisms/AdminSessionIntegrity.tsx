@@ -46,9 +46,9 @@ export default function AdminSessionIntegrity({ children }: { children: React.Re
   if (isLocked) {
     return (
       <div className="fixed inset-0 z-[9999] bg-surface-950 flex items-center justify-center backdrop-blur-xl">
-        <div className="max-w-md w-full p-8 glass rounded-2xl text-center border-t-2 border-t-eshodha-500 shadow-2xl">
-          <div className="w-16 h-16 rounded-2xl bg-eshodha-500/20 flex items-center justify-center mx-auto mb-6 glow-blue">
-            <Lock size={32} className="text-eshodha-400" />
+        <div className="max-w-md w-full p-8 glass rounded-2xl text-center border-t-2 border-t-credit-line-500 shadow-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-credit-line-500/20 flex items-center justify-center mx-auto mb-6 glow-blue">
+            <Lock size={32} className="text-credit-line-400" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">Session Locked</h2>
           <p className="text-white/50 mb-8">
@@ -62,7 +62,7 @@ export default function AdminSessionIntegrity({ children }: { children: React.Re
                 value={pin}
                 onChange={e => setPin(e.target.value)}
                 placeholder="Enter Admin PIN (try 1234)"
-                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-white outline-none focus:border-eshodha-500/50 transition-colors"
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-center text-lg tracking-widest text-white outline-none focus:border-credit-line-500/50 transition-colors"
                 autoFocus
               />
               {error && (
@@ -72,7 +72,7 @@ export default function AdminSessionIntegrity({ children }: { children: React.Re
               )}
               <button
                 type="submit"
-                className="w-full bg-eshodha-600 hover:bg-eshodha-700 text-white font-semibold py-3 rounded-xl transition-colors"
+                className="w-full bg-credit-line-600 hover:bg-credit-line-700 text-white font-semibold py-3 rounded-xl transition-colors"
               >
                 Unlock Session
               </button>

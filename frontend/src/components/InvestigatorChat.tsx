@@ -20,7 +20,7 @@ export default function InvestigatorChat() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'I am the Credline Investigator. Ask me about fraud cases, user risk profiles, graph connections, or system health.\n\nTry: "Why was USR-002 flagged?" or "Show system health".',
+      content: 'I am the Credit Line Investigator. Ask me about fraud cases, user risk profiles, graph connections, or system health.\n\nTry: "Why was USR-002 flagged?" or "Show system health".',
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
@@ -97,8 +97,8 @@ export default function InvestigatorChat() {
               </div>
             </div>
             {msg.role === 'user' && (
-              <div className="w-7 h-7 rounded-lg bg-eshodha-500/20 flex items-center justify-center shrink-0 mt-1">
-                <User size={14} className="text-eshodha-500" />
+              <div className="w-7 h-7 rounded-lg bg-credit-line-500/20 flex items-center justify-center shrink-0 mt-1">
+                <User size={14} className="text-credit-line-500" />
               </div>
             )}
           </div>
@@ -128,7 +128,7 @@ export default function InvestigatorChat() {
             onChange={(event) => setInput(event.target.value)}
             onKeyDown={(event) => event.key === 'Enter' && sendMessage()}
             placeholder="Ask about fraud cases, user risk, graph connections..."
-            className="flex-1 rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)] focus:border-eshodha-500 transition-colors"
+            className="flex-1 rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)] focus:border-credit-line-500 transition-colors"
           />
           <button
             onClick={sendMessage}

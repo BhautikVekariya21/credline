@@ -30,13 +30,13 @@ export default function CommandCenter() {
       <header className="sticky top-0 z-50 glass border-b border-white/10 px-6 py-3">
         <div className="flex items-center justify-between max-w-[1920px] mx-auto">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-eshodha-500 to-accent-purple flex items-center justify-center glow-blue cursor-pointer"
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-credit-line-500 to-accent-purple flex items-center justify-center glow-blue cursor-pointer"
                  onClick={() => window.location.href = '/'}>
               <Shield size={22} className="text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold bg-gradient-to-r from-eshodha-400 to-accent-purple bg-clip-text text-transparent">
-                eshodha Admin
+              <h1 className="text-lg font-bold bg-gradient-to-r from-credit-line-400 to-accent-purple bg-clip-text text-transparent">
+                Credit Line Admin
               </h1>
               <p className="text-xs text-white/40">Enterprise Command Center</p>
             </div>
@@ -49,7 +49,7 @@ export default function CommandCenter() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                   ${activeTab === tab.id
-                    ? 'bg-eshodha-600/20 text-eshodha-400 border border-eshodha-500/30'
+                    ? 'bg-credit-line-600/20 text-credit-line-400 border border-credit-line-500/30'
                     : 'text-white/50 hover:text-white/80 hover:bg-white/5'}`}
               >
                 {tab.icon} {tab.label}
@@ -95,7 +95,7 @@ export default function CommandCenter() {
             <button onClick={toggleShadowMode}
               className={`px-8 py-3 rounded-xl font-semibold transition-all ${shadowMode
                 ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
-                : 'bg-eshodha-600 text-white hover:bg-eshodha-700'}`}>
+                : 'bg-credit-line-600 text-white hover:bg-credit-line-700'}`}>
               {shadowMode ? 'Deactivate Shadow Mode' : 'Activate Shadow Mode'}
             </button>
           </div>

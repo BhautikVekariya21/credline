@@ -5,8 +5,7 @@ import {
   ChevronLeft, ChevronRight, Activity, Globe, Zap,
   Database, AlertTriangle, Receipt, DatabaseZap,
   Banknote, LineChart, FileText, Bell, ClipboardList,
-  Check,
-
+  Check, TrendingUp, ShieldCheck, ShieldAlert
 } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import { useAppStore } from '../../store/useAppStore';
@@ -23,6 +22,9 @@ const NAV_ITEMS = [
   { id: 'infrastructure', label: 'Infrastructure',      icon: Database,        path: '/admin/infra' },
   { id: 'database',       label: 'DB Connector',        icon: DatabaseZap,     path: '/admin/database' },
   { id: 'tax',            label: 'Tax Center',          icon: Receipt,         path: '/admin/tax' },
+  { id: 'strategy',       label: 'CFO Strategy',        icon: TrendingUp,      path: '/admin/strategy' },
+  { id: 'treasury',       label: 'Trust & Treasury',    icon: ShieldCheck,     path: '/admin/treasury' },
+  { id: 'ceo',            label: 'CEO Control Room',    icon: ShieldAlert,     path: '/admin/ceo' },
   // ─── Service Modules ──────────────────────────────
   { id: 'payments',       label: 'Payment Intel',       icon: Banknote,        path: '/admin/payments' },
   { id: 'wealth',         label: 'Wealth Risk',         icon: LineChart,       path: '/admin/wealth' },
@@ -139,7 +141,7 @@ export default function AppLayout() {
           <div className="flex items-center justify-between">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-semibold uppercase text-[var(--text-tertiary)]">Credline</span>
+              <span className="text-xs font-mono font-semibold uppercase text-[var(--text-tertiary)]">Credit Line</span>
               <span className="text-[var(--text-tertiary)]">/</span>
               <span className="text-sm font-semibold text-[var(--text-primary)]">
                 {activeItem.label}
@@ -195,12 +197,12 @@ export default function AppLayout() {
                             key={notif.id}
                             className={cn(
                               'flex items-start gap-3 px-4 py-3 border-b border-[var(--border-secondary)] last:border-0 transition-colors hover:bg-[var(--bg-secondary)]/50',
-                              !notif.read && 'bg-eshodha-500/5'
+                              !notif.read && 'bg-credit-line-500/5'
                             )}
                           >
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-1.5">
-                                {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-eshodha-500 flex-shrink-0" />}
+                                {!notif.read && <span className="h-1.5 w-1.5 rounded-full bg-credit-line-500 flex-shrink-0" />}
                                 <p className={cn('text-xs font-semibold truncate', notif.read ? 'text-[var(--text-secondary)]' : 'text-[var(--text-primary)]')}>
                                   {notif.title}
                                 </p>
@@ -238,7 +240,7 @@ export default function AppLayout() {
 
               {/* Live Indicator */}
               <div className="flex items-center gap-1.5">
-                <Activity size={14} className="text-eshodha-500" />
+                <Activity size={14} className="text-credit-line-500" />
                 <span className="text-xs font-medium text-[var(--text-secondary)]">Live</span>
               </div>
             </div>

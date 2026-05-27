@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 11: Bank Reconciliation Engine.
+Credit Line Fintech Solution — Phase 11: Bank Reconciliation Engine.
 
 Automated matching of internal ledger entries against bank statements.
 Supports:

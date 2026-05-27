@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 12: Live DB Interceptor & CDC Observer.
+Credit Line Fintech Solution — Phase 12: Live DB Interceptor & CDC Observer.
 
 Captures ledger insert events in PostgreSQL/SQL Server, verifies double-entry invariance,
 monitors transaction risk thresholds, and streams events via high-throughput gRPC.

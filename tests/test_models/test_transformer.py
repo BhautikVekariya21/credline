@@ -38,7 +38,10 @@ class TestTransactionTransformer:
     def test_gradient_flow(self, model):
         model.train()
         x = torch.randn(2, 8, 8)
-        out = model(x)
+        td = torch.rand(2, 8)
+        hours = torch.randint(0, 24, (2, 8))
+        days = torch.randint(0, 7, (2, 8))
+        out = model(x, time_deltas=td, hours=hours, days_of_week=days)
         out["embedding"].sum().backward()
         for name, p in model.named_parameters():
             if p.requires_grad:

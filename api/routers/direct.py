@@ -1,5 +1,5 @@
 """
-Direct frontend-facing API routes for the eshodha web app.
+Direct frontend-facing API routes for the Credit Line web app.
 
 These routes intentionally avoid the legacy /api/v1 prefix. They provide
 stable, lightweight dashboard data for the React frontend while preserving
@@ -123,7 +123,7 @@ async def direct_transactions(limit: int = 20) -> list[dict[str, Any]]:
 async def direct_credit_status() -> dict[str, Any]:
     """Return credit engine runtime status for the admin UI."""
     return {
-        "engine": "eshodha alternative credit engine",
+        "engine": "Credit Line alternative credit engine",
         "status": "operational",
         "approval_threshold": 580,
         "score_range": [300, 850],
@@ -393,7 +393,7 @@ async def direct_agent_investigate(req: AgentQuestion) -> dict[str, Any]:
     question = req.query or req.message or "Summarize current risk."
     return {
         "answer": (
-            "eshodha investigator reviewed the current telemetry. "
+            "Credit Line investigator reviewed the current telemetry. "
             "The highest risk is concentrated in device reuse and velocity anomalies; "
             "no circuit-breaker action is required right now."
         ),

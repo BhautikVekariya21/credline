@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 11: Critical Transaction Monitor.
+Credit Line Fintech Solution — Phase 11: Critical Transaction Monitor.
 
 Real-time anomaly detection for tax-sensitive transactions:
   - High-value cash movements

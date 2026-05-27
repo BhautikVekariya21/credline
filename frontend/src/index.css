@@ -21,9 +21,9 @@
   --brand-green: #228052;
   --brand-warn: #9a6a00;
   --brand-danger: #b4433a;
-  --eshodha-blue: var(--brand-accent);
-  --eshodha-blue-hover: #944943;
-  --eshodha-glow: rgba(183, 93, 87, 0.18);
+  --credit-line-blue: var(--brand-accent);
+  --credit-line-blue-hover: #944943;
+  --credit-line-glow: rgba(183, 93, 87, 0.18);
   --shadow-sm: 0 1px 2px rgba(37, 37, 38, 0.04);
   --shadow-md: 0 10px 30px rgba(37, 37, 38, 0.08);
   --shadow-lg: 0 18px 60px rgba(37, 37, 38, 0.12);
@@ -34,18 +34,18 @@
   --font-mono: "SF Mono", "SFMono-Regular", ui-monospace, Menlo, Monaco, monospace;
 
 
-  /* default eshodha color variables */
-  --eshodha-50:  #fbf0ee;
-  --eshodha-100: #f6d8d4;
-  --eshodha-200: #efbbb5;
-  --eshodha-300: #df9189;
-  --eshodha-400: #cc746c;
-  --eshodha-500: #b75d57;
-  --eshodha-600: #944943;
-  --eshodha-700: #753a35;
-  --eshodha-800: #522926;
-  --eshodha-900: #2a1715;
-  --eshodha-shadow: 0 0 0 1px rgba(183, 93, 87, 0.28), 0 4px 16px rgba(183, 93, 87, 0.14);
+  /* default Credit Line color variables */
+  --credit-line-50:  #fbf0ee;
+  --credit-line-100: #f6d8d4;
+  --credit-line-200: #efbbb5;
+  --credit-line-300: #df9189;
+  --credit-line-400: #cc746c;
+  --credit-line-500: #b75d57;
+  --credit-line-600: #944943;
+  --credit-line-700: #753a35;
+  --credit-line-800: #522926;
+  --credit-line-900: #2a1715;
+  --credit-line-shadow: 0 0 0 1px rgba(183, 93, 87, 0.28), 0 4px 16px rgba(183, 93, 87, 0.14);
 }
 
 .dark {
@@ -67,26 +67,26 @@
   --brand-green: #67c587;
   --brand-warn: #e1b96a;
   --brand-danger: #f08d86;
-  --eshodha-blue: var(--brand-accent);
-  --eshodha-blue-hover: #ffd2ce;
-  --eshodha-glow: rgba(240, 176, 170, 0.18);
+  --credit-line-blue: var(--brand-accent);
+  --credit-line-blue-hover: #ffd2ce;
+  --credit-line-glow: rgba(240, 176, 170, 0.18);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.38);
   --shadow-lg: 0 18px 60px rgba(0, 0, 0, 0.45);
   --shadow-xl: 0 24px 80px rgba(0, 0, 0, 0.5);
 
-  /* default dark eshodha color variables */
-  --eshodha-50:  #fbf0ee;
-  --eshodha-100: #f6d8d4;
-  --eshodha-200: #efbbb5;
-  --eshodha-300: #df9189;
-  --eshodha-400: #cc746c;
-  --eshodha-500: #b75d57;
-  --eshodha-600: #944943;
-  --eshodha-700: #753a35;
-  --eshodha-800: #522926;
-  --eshodha-900: #2a1715;
-  --eshodha-shadow: 0 0 0 1px rgba(183, 93, 87, 0.28), 0 4px 16px rgba(183, 93, 87, 0.14);
+  /* default dark Credit Line color variables */
+  --credit-line-50:  #fbf0ee;
+  --credit-line-100: #f6d8d4;
+  --credit-line-200: #efbbb5;
+  --credit-line-300: #df9189;
+  --credit-line-400: #cc746c;
+  --credit-line-500: #b75d57;
+  --credit-line-600: #944943;
+  --credit-line-700: #753a35;
+  --credit-line-800: #522926;
+  --credit-line-900: #2a1715;
+  --credit-line-shadow: 0 0 0 1px rgba(183, 93, 87, 0.28), 0 4px 16px rgba(183, 93, 87, 0.14);
 }
 
 * {
@@ -351,9 +351,9 @@ button {
   --brand-green: #228052;
   --brand-warn: #9a6a00;
   --brand-danger: #b4433a;
-  --eshodha-blue: var(--brand-accent);
-  --eshodha-blue-hover: #944943;
-  --eshodha-glow: rgba(183, 93, 87, 0.18);
+  --credit-line-blue: var(--brand-accent);
+  --credit-line-blue-hover: #944943;
+  --credit-line-glow: rgba(183, 93, 87, 0.18);
   background: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -393,25 +393,25 @@ button {
   --brand-green:     #4eba7a;
   --brand-warn:      #d4a84b;
   --brand-danger:    #e07060;
-  --eshodha-blue:    var(--brand-accent);
-  --eshodha-blue-hover: #db9070;
-  --eshodha-glow:    rgba(199,122,90,0.20);
+  --credit-line-blue:    var(--brand-accent);
+  --credit-line-blue-hover: #db9070;
+  --credit-line-glow:    rgba(199,122,90,0.20);
   --shadow-sm:       0 1px 2px rgba(0,0,0,0.5);
   --shadow-md:       0 8px 24px rgba(0,0,0,0.5);
   --shadow-lg:       0 16px 48px rgba(0,0,0,0.6);
   --shadow-xl:       0 24px 72px rgba(0,0,0,0.7);
 
-  --eshodha-50:  #fdf6f3;
-  --eshodha-100: #f5e0d6;
-  --eshodha-200: #e8bfac;
-  --eshodha-300: #d49a7a;
-  --eshodha-400: #c77a5a;
-  --eshodha-500: #b3603e;
-  --eshodha-600: #8f4a2e;
-  --eshodha-700: #6b3620;
-  --eshodha-800: #472212;
-  --eshodha-900: #240f06;
-  --eshodha-shadow: 0 0 0 1px rgba(199,122,90,0.30), 0 4px 16px rgba(199,122,90,0.18);
+  --credit-line-50:  #fdf6f3;
+  --credit-line-100: #f5e0d6;
+  --credit-line-200: #e8bfac;
+  --credit-line-300: #d49a7a;
+  --credit-line-400: #c77a5a;
+  --credit-line-500: #b3603e;
+  --credit-line-600: #8f4a2e;
+  --credit-line-700: #6b3620;
+  --credit-line-800: #472212;
+  --credit-line-900: #240f06;
+  --credit-line-shadow: 0 0 0 1px rgba(199,122,90,0.30), 0 4px 16px rgba(199,122,90,0.18);
 }
 
 /* ── LIGHT THEME ── */
@@ -435,25 +435,25 @@ button {
   --brand-green:     #228052;
   --brand-warn:      #9a6a00;
   --brand-danger:    #b4433a;
-  --eshodha-blue:    var(--brand-accent);
-  --eshodha-blue-hover: #8f4a2e;
-  --eshodha-glow:    rgba(179,96,62,0.10);
+  --credit-line-blue:    var(--brand-accent);
+  --credit-line-blue-hover: #8f4a2e;
+  --credit-line-glow:    rgba(179,96,62,0.10);
   --shadow-sm:       0 1px 2px rgba(0,0,0,0.05);
   --shadow-md:       0 8px 24px rgba(0,0,0,0.08);
   --shadow-lg:       0 16px 48px rgba(0,0,0,0.12);
   --shadow-xl:       0 24px 72px rgba(0,0,0,0.15);
 
-  --eshodha-50:  #fdf6f3;
-  --eshodha-100: #f5e0d6;
-  --eshodha-200: #e8bfac;
-  --eshodha-300: #d49a7a;
-  --eshodha-400: #c77a5a;
-  --eshodha-500: #b3603e;
-  --eshodha-600: #8f4a2e;
-  --eshodha-700: #6b3620;
-  --eshodha-800: #472212;
-  --eshodha-900: #240f06;
-  --eshodha-shadow: 0 0 0 1px rgba(179,96,62,0.15), 0 4px 16px rgba(179,96,62,0.08);
+  --credit-line-50:  #fdf6f3;
+  --credit-line-100: #f5e0d6;
+  --credit-line-200: #e8bfac;
+  --credit-line-300: #d49a7a;
+  --credit-line-400: #c77a5a;
+  --credit-line-500: #b3603e;
+  --credit-line-600: #8f4a2e;
+  --credit-line-700: #6b3620;
+  --credit-line-800: #472212;
+  --credit-line-900: #240f06;
+  --credit-line-shadow: 0 0 0 1px rgba(179,96,62,0.15), 0 4px 16px rgba(179,96,62,0.08);
 }
 
 /* ── HIGH CONTRAST THEME ── */
@@ -477,25 +477,25 @@ button {
   --brand-green:     #00ff00;
   --brand-warn:      #ffff00;
   --brand-danger:    #ff0000;
-  --eshodha-blue:    #00ffff;
-  --eshodha-blue-hover: #ffffff;
-  --eshodha-glow:    rgba(255,255,255,0.30);
+  --credit-line-blue:    #00ffff;
+  --credit-line-blue-hover: #ffffff;
+  --credit-line-glow:    rgba(255,255,255,0.30);
   --shadow-sm:       0 0 0 1px #ffffff;
   --shadow-md:       0 0 0 2px #ffffff;
   --shadow-lg:       0 0 0 3px #ffffff;
   --shadow-xl:       0 0 0 4px #ffffff;
 
-  --eshodha-50:  #ffffff;
-  --eshodha-100: #ffffff;
-  --eshodha-200: #ffffff;
-  --eshodha-300: #ffffff;
-  --eshodha-400: #ffffff;
-  --eshodha-500: #ffff00;
-  --eshodha-600: #ffff00;
-  --eshodha-700: #ffff00;
-  --eshodha-800: #ffff00;
-  --eshodha-900: #ffff00;
-  --eshodha-shadow: 0 0 0 2px #ffffff;
+  --credit-line-50:  #ffffff;
+  --credit-line-100: #ffffff;
+  --credit-line-200: #ffffff;
+  --credit-line-300: #ffffff;
+  --credit-line-400: #ffffff;
+  --credit-line-500: #ffff00;
+  --credit-line-600: #ffff00;
+  --credit-line-700: #ffff00;
+  --credit-line-800: #ffff00;
+  --credit-line-900: #ffff00;
+  --credit-line-shadow: 0 0 0 2px #ffffff;
 }
 
 /* --- TYPOGRAPHY BINDINGS --- */
@@ -2152,7 +2152,7 @@ button {
   transition: background 0.15s ease;
 }
 
-.footer-form-btn:hover { background: var(--eshodha-600); }
+.footer-form-btn:hover { background: var(--credit-line-600); }
 
 /* Main grid */
 .footer-main { padding-block: 3rem; }
@@ -3685,7 +3685,7 @@ button {
 }
 
 .glow-blue {
-  box-shadow: 0 0 0 1px var(--eshodha-glow);
+  box-shadow: 0 0 0 1px var(--credit-line-glow);
 }
 
 .cursor-trail-layer {
@@ -4144,12 +4144,12 @@ button {
   font-weight: 700;
 }
 
-/* ===== WITH CREDLINE SECTION ===== */
-.with-credline-section {
+/* ===== WITH Credit Line SECTION ===== */
+.with-credit-line-section {
   background: var(--bg-secondary);
 }
 
-.with-credline-row {
+.with-credit-line-row {
   display: grid;
   gap: 1.25rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -4621,7 +4621,7 @@ details > summary span:last-child { display: inline-block; transition: transform
     font-size: 2.6rem;
   }
 
-  .with-credline-row {
+  .with-credit-line-row {
     grid-template-columns: 1fr;
   }
 

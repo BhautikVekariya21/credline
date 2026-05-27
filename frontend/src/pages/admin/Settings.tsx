@@ -71,7 +71,7 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
 
   const toastColors: Record<Toast['type'], string> = {
     success: 'border-risk-low/30 bg-risk-low/10 text-risk-low',
-    info: 'border-eshodha-500/30 bg-eshodha-500/10 text-eshodha-500',
+    info: 'border-credit-line-500/30 bg-credit-line-500/10 text-credit-line-500',
     warning: 'border-risk-medium/30 bg-risk-medium/10 text-risk-medium',
   };
 
@@ -132,7 +132,7 @@ export default function SettingsPage() {
         <div>
           <h2 className="text-2xl font-bold font-display text-[var(--text-primary)]">Preferences</h2>
           <p className="text-sm text-[var(--text-secondary)] mt-1">
-            Configure and customize the Credline operating console.
+            Configure and customize the Credit Line operating console.
           </p>
         </div>
         <button
@@ -190,7 +190,7 @@ function AppearanceSection() {
             className={cn(
               'relative flex flex-col gap-3 rounded-xl border p-4 transition-all text-left w-full hover:bg-[var(--bg-secondary)]/50',
               theme === t.id
-                ? 'border-eshodha-500 bg-eshodha-500/5'
+                ? 'border-credit-line-500 bg-credit-line-500/5'
                 : 'border-[var(--border-secondary)]'
             )}
           >
@@ -208,14 +208,14 @@ function AppearanceSection() {
               </div>
               <div className="flex justify-end">
                 <div className={cn('h-3.5 w-3.5 rounded-full flex items-center justify-center', t.id === 'light' ? 'bg-gray-200' : 'bg-neutral-900')}>
-                  <div className={cn('h-2 w-2 rounded-full', theme === t.id ? 'bg-eshodha-500' : 'bg-transparent')} />
+                  <div className={cn('h-2 w-2 rounded-full', theme === t.id ? 'bg-credit-line-500' : 'bg-transparent')} />
                 </div>
               </div>
             </div>
 
             <div>
               <div className="flex items-center gap-1.5">
-                {theme === t.id && <Check size={14} className="text-eshodha-500 flex-shrink-0" />}
+                {theme === t.id && <Check size={14} className="text-credit-line-500 flex-shrink-0" />}
                 <span className="text-xs font-bold text-[var(--text-primary)]">{t.label}</span>
               </div>
               <p className="mt-1 text-[10px] text-[var(--text-tertiary)] leading-tight">{t.detail}</p>
@@ -249,13 +249,13 @@ function TypographySection() {
             className={cn(
               'relative flex flex-col justify-between gap-3 rounded-xl border p-4 transition-all text-left w-full hover:bg-[var(--bg-secondary)]/50',
               font === f.id
-                ? 'border-eshodha-500 bg-eshodha-500/5'
+                ? 'border-credit-line-500 bg-credit-line-500/5'
                 : 'border-[var(--border-secondary)]'
             )}
           >
             <div className="w-full">
               <div className="flex items-center gap-1.5">
-                {font === f.id && <Check size={14} className="text-eshodha-500 flex-shrink-0" />}
+                {font === f.id && <Check size={14} className="text-credit-line-500 flex-shrink-0" />}
                 <span className="text-xs font-bold text-[var(--text-primary)]">{f.label}</span>
               </div>
               <p className="mt-1 text-[10px] text-[var(--text-tertiary)] leading-tight">{f.detail}</p>
@@ -294,7 +294,7 @@ function NotificationSection() {
             <label className="text-sm font-medium text-[var(--text-primary)]">
               Fraud Alert Threshold
             </label>
-            <span className="text-sm font-bold text-eshodha-500 font-display">
+            <span className="text-sm font-bold text-credit-line-500 font-display">
               {notificationThreshold}%
             </span>
           </div>
@@ -304,7 +304,7 @@ function NotificationSection() {
             max={99}
             value={notificationThreshold}
             onChange={(e) => setNotificationThreshold(Number(e.target.value))}
-            className="w-full h-1.5 rounded-full appearance-none bg-[var(--bg-tertiary)] accent-eshodha-500 cursor-pointer"
+            className="w-full h-1.5 rounded-full appearance-none bg-[var(--bg-tertiary)] accent-credit-line-500 cursor-pointer"
             aria-label="Fraud alert threshold percentage"
           />
           <div className="mt-1 flex justify-between text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-wider">
@@ -468,7 +468,7 @@ function APIKeySection({ toast }: { toast: ToastApi }) {
           {MOCK_API_USAGE.map((d) => (
             <div key={d.day} className="flex-1 flex flex-col items-center gap-1">
               <div
-                className="w-full rounded-t bg-eshodha-500/60 hover:bg-eshodha-500 transition-colors cursor-default"
+                className="w-full rounded-t bg-credit-line-500/60 hover:bg-credit-line-500 transition-colors cursor-default"
                 style={{ height: `${Math.max((d.requests / maxRequests) * 100, 8)}%` }}
                 title={`${d.day}: ${d.requests.toLocaleString()} requests`}
               />
@@ -532,7 +532,7 @@ function RegionSection() {
             className={cn(
               'w-full flex items-center justify-between p-3.5 rounded-xl border transition-all text-left',
               region === r.id
-                ? 'border-eshodha-500 bg-eshodha-500/5'
+                ? 'border-credit-line-500 bg-credit-line-500/5'
                 : 'border-[var(--border-secondary)] hover:border-[var(--border-primary)]'
             )}
           >
@@ -541,7 +541,7 @@ function RegionSection() {
               <p className="text-[10px] text-[var(--text-tertiary)] uppercase tracking-wider font-semibold mt-0.5">{r.law}</p>
             </div>
             {region === r.id && (
-              <div className="w-5 h-5 rounded-full bg-eshodha-500 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-credit-line-500 flex items-center justify-center flex-shrink-0">
                 <Check size={12} className="text-white" />
               </div>
             )}
@@ -611,7 +611,7 @@ function AuditPreferencesSection({ toast }: { toast: ToastApi }) {
               onClick={() => handleToggle(pref.id, pref.label)}
               className={cn(
                 'relative w-10 h-5.5 rounded-full transition-colors flex items-center p-0.5 border border-[var(--border-secondary)] flex-shrink-0',
-                prefs[pref.id] ? 'bg-eshodha-500' : 'bg-[var(--bg-tertiary)]'
+                prefs[pref.id] ? 'bg-credit-line-500' : 'bg-[var(--bg-tertiary)]'
               )}
             >
               <div className={cn(
@@ -642,17 +642,17 @@ interface TeamMember {
 }
 
 const MOCK_TEAM: TeamMember[] = [
-  { id: 'TM-001', name: 'Arjun Mehta', email: 'arjun.m@credline.io', role: 'Admin', lastActive: '2 min ago', status: 'active', avatar: 'AM' },
-  { id: 'TM-002', name: 'Priya Sharma', email: 'priya.s@credline.io', role: 'Compliance Officer', lastActive: '15 min ago', status: 'active', avatar: 'PS' },
-  { id: 'TM-003', name: 'Rahul Gupta', email: 'rahul.g@credline.io', role: 'Analyst', lastActive: '1 hr ago', status: 'active', avatar: 'RG' },
-  { id: 'TM-004', name: 'Sarah Chen', email: 'sarah.c@credline.io', role: 'Analyst', lastActive: '3 hr ago', status: 'active', avatar: 'SC' },
-  { id: 'TM-005', name: 'David Park', email: 'david.p@credline.io', role: 'Viewer', lastActive: '2 days ago', status: 'inactive', avatar: 'DP' },
-  { id: 'TM-006', name: 'Aisha Khan', email: 'aisha.k@credline.io', role: 'Compliance Officer', lastActive: '45 min ago', status: 'active', avatar: 'AK' },
+  { id: 'TM-001', name: 'Arjun Mehta', email: 'arjun.m@creditline.io', role: 'Admin', lastActive: '2 min ago', status: 'active', avatar: 'AM' },
+  { id: 'TM-002', name: 'Priya Sharma', email: 'priya.s@creditline.io', role: 'Compliance Officer', lastActive: '15 min ago', status: 'active', avatar: 'PS' },
+  { id: 'TM-003', name: 'Rahul Gupta', email: 'rahul.g@creditline.io', role: 'Analyst', lastActive: '1 hr ago', status: 'active', avatar: 'RG' },
+  { id: 'TM-004', name: 'Sarah Chen', email: 'sarah.c@creditline.io', role: 'Analyst', lastActive: '3 hr ago', status: 'active', avatar: 'SC' },
+  { id: 'TM-005', name: 'David Park', email: 'david.p@creditline.io', role: 'Viewer', lastActive: '2 days ago', status: 'inactive', avatar: 'DP' },
+  { id: 'TM-006', name: 'Aisha Khan', email: 'aisha.k@creditline.io', role: 'Compliance Officer', lastActive: '45 min ago', status: 'active', avatar: 'AK' },
 ];
 
 const ROLE_COLORS: Record<TeamRole, string> = {
   'Admin': 'bg-accent-purple/15 text-accent-purple border-accent-purple/20',
-  'Analyst': 'bg-eshodha-500/15 text-eshodha-500 border-eshodha-500/20',
+  'Analyst': 'bg-credit-line-500/15 text-credit-line-500 border-credit-line-500/20',
   'Compliance Officer': 'bg-risk-medium/15 text-risk-medium border-risk-medium/20',
   'Viewer': 'bg-[var(--bg-secondary)] text-[var(--text-secondary)] border-[var(--border-secondary)]',
 };
@@ -697,7 +697,7 @@ function TeamRoleManagementSection({ toast }: { toast: ToastApi }) {
               >
                 <td className="px-3 py-2.5">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-eshodha-500/20 flex items-center justify-center text-[10px] font-bold text-eshodha-500 flex-shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-credit-line-500/20 flex items-center justify-center text-[10px] font-bold text-credit-line-500 flex-shrink-0">
                       {member.avatar}
                     </div>
                     <div className="min-w-0">
@@ -779,8 +779,8 @@ function InviteModal({ onClose, onInvite }: { onClose: () => void; onInvite: (na
       <div className="w-full max-w-md mx-4 rounded-2xl border border-[var(--border-secondary)] bg-[var(--bg-card)] p-6 shadow-2xl animate-fade-in">
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-eshodha-500/10 flex items-center justify-center">
-              <UserPlus size={16} className="text-eshodha-500" />
+            <div className="w-8 h-8 rounded-lg bg-credit-line-500/10 flex items-center justify-center">
+              <UserPlus size={16} className="text-credit-line-500" />
             </div>
             <div>
               <h3 className="text-sm font-bold text-[var(--text-primary)]">Invite Member</h3>
@@ -801,7 +801,7 @@ function InviteModal({ onClose, onInvite }: { onClose: () => void; onInvite: (na
               onChange={(e) => setName(e.target.value)}
               placeholder="Jane Doe"
               required
-              className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-eshodha-500"
+              className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-credit-line-500"
               aria-label="Full name"
             />
           </div>
@@ -816,7 +816,7 @@ function InviteModal({ onClose, onInvite }: { onClose: () => void; onInvite: (na
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jane@company.com"
                 required
-                className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] pl-9 pr-3 py-2.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-eshodha-500"
+                className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] pl-9 pr-3 py-2.5 text-xs text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] focus:outline-none focus:border-credit-line-500"
                 aria-label="Email address"
               />
             </div>
@@ -827,7 +827,7 @@ function InviteModal({ onClose, onInvite }: { onClose: () => void; onInvite: (na
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as TeamRole)}
-              className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] font-semibold focus:outline-none focus:border-eshodha-500"
+              className="w-full rounded-lg border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] font-semibold focus:outline-none focus:border-credit-line-500"
               aria-label="Select role"
             >
               <option value="Admin">Admin</option>
@@ -847,7 +847,7 @@ function InviteModal({ onClose, onInvite }: { onClose: () => void; onInvite: (na
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 rounded-lg bg-eshodha-500 text-white text-xs font-bold hover:bg-eshodha-500/90 transition-colors flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-lg bg-credit-line-500 text-white text-xs font-bold hover:bg-credit-line-500/90 transition-colors flex items-center justify-center gap-1.5"
             >
               <Mail size={13} />
               Send Invite
@@ -914,7 +914,7 @@ function DataRetentionSection() {
                   <p className="text-[10px] text-[var(--text-tertiary)] mt-0.5">{policy.description}</p>
                 </div>
                 <div className="text-right flex-shrink-0 ml-4">
-                  <span className="text-sm font-bold text-eshodha-500 font-display">{currentVal}</span>
+                  <span className="text-sm font-bold text-credit-line-500 font-display">{currentVal}</span>
                   <span className="text-[10px] text-[var(--text-tertiary)] ml-1">{policy.unit}</span>
                 </div>
               </div>
@@ -925,7 +925,7 @@ function DataRetentionSection() {
                 max={policy.max}
                 value={currentVal}
                 onChange={(e) => handleChange(policy.id, Number(e.target.value))}
-                className="w-full h-1.5 rounded-full appearance-none bg-[var(--bg-tertiary)] accent-eshodha-500 cursor-pointer mt-3"
+                className="w-full h-1.5 rounded-full appearance-none bg-[var(--bg-tertiary)] accent-credit-line-500 cursor-pointer mt-3"
                 aria-label={`${policy.label} retention period in ${policy.unit}`}
               />
 
@@ -953,12 +953,12 @@ function DataRetentionSection() {
         })}
 
         {/* Total storage estimate */}
-        <div className="flex items-center justify-between p-3 rounded-xl border border-eshodha-500/20 bg-eshodha-500/5">
+        <div className="flex items-center justify-between p-3 rounded-xl border border-credit-line-500/20 bg-credit-line-500/5">
           <div className="flex items-center gap-2">
-            <HardDrive size={14} className="text-eshodha-500" />
+            <HardDrive size={14} className="text-credit-line-500" />
             <span className="text-xs font-bold text-[var(--text-primary)]">Estimated Total Storage</span>
           </div>
-          <span className="text-sm font-bold text-eshodha-500 font-mono">{formatStorage(totalStorage)}</span>
+          <span className="text-sm font-bold text-credit-line-500 font-mono">{formatStorage(totalStorage)}</span>
         </div>
       </div>
     </SettingsCard>
@@ -977,9 +977,9 @@ interface ExportAction {
 }
 
 const EXPORT_ACTIONS: ExportAction[] = [
-  { id: 'settings', label: 'Export All Settings', description: 'Download current platform configuration as encrypted JSON', icon: FileDown, filename: 'credline-settings-export' },
-  { id: 'compliance', label: 'Export Compliance Report', description: 'Generate SOX/SOC2 compliance summary with audit attestation', icon: ClipboardList, filename: 'credline-compliance-report' },
-  { id: 'snapshot', label: 'Create System Snapshot', description: 'Full system state backup including model weights and configs', icon: Camera, filename: 'credline-system-snapshot' },
+  { id: 'settings', label: 'Export All Settings', description: 'Download current platform configuration as encrypted JSON', icon: FileDown, filename: 'credit-line-settings-export' },
+  { id: 'compliance', label: 'Export Compliance Report', description: 'Generate SOX/SOC2 compliance summary with audit attestation', icon: ClipboardList, filename: 'credit-line-compliance-report' },
+  { id: 'snapshot', label: 'Create System Snapshot', description: 'Full system state backup including model weights and configs', icon: Camera, filename: 'credit-line-system-snapshot' },
 ];
 
 function ExportBackupSection({ toast }: { toast: ToastApi }) {
@@ -1005,7 +1005,7 @@ function ExportBackupSection({ toast }: { toast: ToastApi }) {
               className={cn(
                 'w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left',
                 isActive
-                  ? 'border-eshodha-500/30 bg-eshodha-500/5 cursor-wait'
+                  ? 'border-credit-line-500/30 bg-credit-line-500/5 cursor-wait'
                   : 'border-[var(--border-secondary)] hover:border-[var(--border-primary)] hover:bg-[var(--bg-secondary)]/50'
               )}
               aria-label={action.label}
@@ -1013,11 +1013,11 @@ function ExportBackupSection({ toast }: { toast: ToastApi }) {
               <div className={cn(
                 'w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 border',
                 isActive
-                  ? 'bg-eshodha-500/10 border-eshodha-500/20'
+                  ? 'bg-credit-line-500/10 border-credit-line-500/20'
                   : 'bg-[var(--bg-secondary)] border-[var(--border-secondary)]'
               )}>
                 <IconComp size={16} className={cn(
-                  isActive ? 'text-eshodha-500 animate-pulse' : 'text-[var(--text-secondary)]'
+                  isActive ? 'text-credit-line-500 animate-pulse' : 'text-[var(--text-secondary)]'
                 )} />
               </div>
               <div className="flex-1 min-w-0">
@@ -1026,7 +1026,7 @@ function ExportBackupSection({ toast }: { toast: ToastApi }) {
               </div>
               <Download size={14} className={cn(
                 'flex-shrink-0',
-                isActive ? 'text-eshodha-500 animate-bounce' : 'text-[var(--text-tertiary)]'
+                isActive ? 'text-credit-line-500 animate-bounce' : 'text-[var(--text-tertiary)]'
               )} />
             </button>
           );
@@ -1047,12 +1047,12 @@ interface SystemInfoField {
 }
 
 const SYSTEM_INFO: SystemInfoField[] = [
-  { label: 'Platform Version', value: 'Credline v2026.5.0-rc.3' },
+  { label: 'Platform Version', value: 'Credit Line v2026.5.0-rc.3' },
   { label: 'API Version', value: 'v4.2.1-stable', mono: true },
   { label: 'Build Hash', value: 'a9f3c7e2b41d', mono: true },
   { label: 'Environment', value: 'Production', badge: { text: 'LIVE', color: 'bg-risk-low/15 text-risk-low border-risk-low/20' } },
   { label: 'Node Count', value: '12 active / 14 provisioned' },
-  { label: 'Feature Flags', value: '23 enabled / 31 total', badge: { text: 'MANAGED', color: 'bg-eshodha-500/15 text-eshodha-500 border-eshodha-500/20' } },
+  { label: 'Feature Flags', value: '23 enabled / 31 total', badge: { text: 'MANAGED', color: 'bg-credit-line-500/15 text-credit-line-500 border-credit-line-500/20' } },
   { label: 'Last Deployment', value: new Date(Date.now() - 86_400_000 * 3).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) },
   { label: 'Uptime', value: '99.97% (30d rolling)' },
   { label: 'TLS Certificate', value: 'Valid — expires Dec 2026', badge: { text: 'VALID', color: 'bg-risk-low/15 text-risk-low border-risk-low/20' } },
@@ -1117,7 +1117,7 @@ function DiagnosticsSection() {
     { label: 'Backend Layer', value: 'FastAPI 0.115' },
     { label: 'Intelligence Engine', value: 'XGBoost GPU + PyTorch 2.5' },
     { label: 'Cryptographic Suite', value: 'ML-KEM-768 + ML-DSA-65 (NIST)' },
-    { label: 'Operational Version', value: 'Credline v2026.5.0' },
+    { label: 'Operational Version', value: 'Credit Line v2026.5.0' },
   ];
 
   return (
@@ -1196,7 +1196,7 @@ function SettingsCard({ title, description, icon: Icon, children }: SettingsCard
     <div className="card overflow-hidden p-5 bg-[var(--bg-card)] border border-[var(--border-secondary)] rounded-2xl shadow-sm">
       <div className="flex items-center gap-3 mb-5 border-b border-[var(--border-secondary)]/30 pb-4">
         <div className="w-8 h-8 flex-shrink-0 rounded-lg bg-[var(--bg-secondary)] flex items-center justify-center border border-[var(--border-secondary)]">
-          <Icon size={16} className="text-eshodha-500" />
+          <Icon size={16} className="text-credit-line-500" />
         </div>
         <div className="min-w-0">
           <h3 className="text-sm font-bold font-display text-[var(--text-primary)]">{title}</h3>
@@ -1225,7 +1225,7 @@ function ToggleRow({ label, checked, onChange }: ToggleRowProps) {
         onClick={() => onChange(!checked)}
         className={cn(
           'relative w-10 h-5.5 rounded-full transition-colors flex items-center p-0.5 border border-[var(--border-secondary)]',
-          checked ? 'bg-eshodha-500' : 'bg-[var(--bg-tertiary)]'
+          checked ? 'bg-credit-line-500' : 'bg-[var(--bg-tertiary)]'
         )}
       >
         <div className={cn(

@@ -52,7 +52,7 @@ const SOCIAL = [
   { Icon: Github,   label: 'GitHub',     href: '#' },
   { Icon: Linkedin, label: 'LinkedIn',   href: '#' },
   { Icon: Twitter,  label: 'Twitter/X',  href: '#' },
-  { Icon: Mail,     label: 'Email',      href: 'mailto:hello@credline.io' },
+  { Icon: Mail,     label: 'Email',      href: 'mailto:hello@creditline.io' },
 ];
 
 export default function Footer() {
@@ -132,7 +132,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="footer-bottom">
         <div className="public-wrap footer-bottom-inner">
-          <p className="footer-copy">© {new Date().getFullYear()} Credline Technologies. All rights reserved.</p>
+          <p className="footer-copy">© {new Date().getFullYear()} Credit Line Technologies. All rights reserved.</p>
           <p className="footer-copy footer-copy-right">
             Built for regulated institutions ·{' '}
             <Link to="/security" className="footer-bottom-link">Privacy</Link>

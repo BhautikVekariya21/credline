@@ -47,7 +47,7 @@ export default function CreditPortal() {
               <p className="public-pill-title">Credit portal</p>
               <h1>A fairer trust profile for thin-file applicants.</h1>
               <p>
-                Credline explains alternative credit signals in plain language while keeping
+                Credit Line explains alternative credit signals in plain language while keeping
                 customer data inside the right regional controls.
               </p>
             </div>

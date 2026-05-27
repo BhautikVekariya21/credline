@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════════════════════
-// eshodha fintech solution — Phase 10: High-Frequency Transaction Engine
+// Credit Line Fintech Solution — Phase 10: High-Frequency Transaction Engine
 //
 // Rust Kafka consumer processing 10K+ TPS with concurrent:
 //   1. Neo4j graph upserts (Nodes + Edges via UNWIND batching)
@@ -305,13 +305,13 @@ async fn main() -> Result<()> {
         .with_env_filter("info")
         .init();
 
-    info!("eshodha_core_engine_starting");
+    info!("Credit Line_core_engine_starting");
 
     let engine = Arc::new(CoreEngine::new());
 
     // Kafka consumer config
     let consumer: StreamConsumer = ClientConfig::new()
-        .set("group.id", "eshodha-core-engine")
+        .set("group.id", "credit-line-core-engine")
         .set("bootstrap.servers", "localhost:9092")
         .set("enable.auto.commit", "false")
         .set("auto.offset.reset", "latest")

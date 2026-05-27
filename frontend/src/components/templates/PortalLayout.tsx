@@ -1,5 +1,5 @@
 /**
- * eshodha fintech solution — Consumer Portal Layout.
+ * Credit Line Fintech Solution — Consumer Portal Layout.
  *
  * Clean, accessible, Apple-esque layout for unbanked credit applicants.
  * WCAG 2.2 AA compliant with SF Pro typography.
@@ -20,12 +20,12 @@ export default function PortalLayout() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-eshodha-500 flex items-center justify-center shadow-lg">
+            <div className="w-11 h-11 rounded-2xl bg-credit-line-500 flex items-center justify-center shadow-lg">
               <Shield size={24} className="text-white" aria-hidden="true" />
             </div>
             <div>
               <h1 className="text-lg font-bold font-display text-[var(--text-primary)] tracking-tight">
-                eshodha
+                Credit Line
               </h1>
               <p className="text-[10px] font-medium text-[var(--text-tertiary)] uppercase tracking-[0.2em]">
                 fintech solution
@@ -68,13 +68,13 @@ export default function PortalLayout() {
       <footer className="border-t border-[var(--border-secondary)] mt-16">
         <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Shield size={16} className="text-eshodha-500" />
+            <Shield size={16} className="text-credit-line-500" />
             <span className="text-sm font-semibold text-[var(--text-primary)] font-display">
-              eshodha fintech solution
+              Credit Line Fintech Solution
             </span>
           </div>
           <p className="text-xs text-[var(--text-tertiary)]">
-            © 2026 eshodha. Inclusive credit scoring for everyone.
+            © 2026 Credit Line. Inclusive credit scoring for everyone.
             <span className="mx-2">·</span>
             Quantum-safe · FCRA compliant · WCAG 2.2 AA
           </p>

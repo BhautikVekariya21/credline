@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 11: Compliance API Router.
+Credit Line Fintech Solution — Phase 11: Compliance API Router.
 
 Endpoints for GST filing, reconciliation, critical alerts,
 and automated reporting.

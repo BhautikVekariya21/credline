@@ -22,7 +22,7 @@ interface AuditEvent {
 
 /* ─── Mock data generator ────────────────────────────────────────── */
 
-const ACTORS = ['admin@credline.io', 'analyst.sharma@credline.io', 'system.scheduler', 'ml.pipeline', 'soar.orchestrator', 'compliance.bot', 'api.gateway'];
+const ACTORS = ['admin@creditline.io', 'analyst.sharma@creditline.io', 'system.scheduler', 'ml.pipeline', 'soar.orchestrator', 'compliance.bot', 'api.gateway'];
 const ACTIONS = [
   'fraud.alert.created', 'fraud.alert.escalated', 'fraud.alert.resolved',
   'credit.score.computed', 'credit.batch.completed', 'credit.adverse.sent',
@@ -34,7 +34,7 @@ const ACTIONS = [
   'quantum.key.rotated', 'quantum.failover.triggered',
   'api.rate.limit.exceeded', 'circuit.breaker.tripped', 'circuit.breaker.reset',
 ];
-const TARGETS = ['FA-001', 'FA-002', 'USR-IN-7a4f', 'USR-EU-3b2c', 'model-v2.4.1', 'credline_prod.transactions', 'SAR-2026-Q2-014', 'graph-cluster-7', 'ML-KEM-768-key-42'];
+const TARGETS = ['FA-001', 'FA-002', 'USR-IN-7a4f', 'USR-EU-3b2c', 'model-v2.4.1', 'Credit Line_prod.transactions', 'SAR-2026-Q2-014', 'graph-cluster-7', 'ML-KEM-768-key-42'];
 const MODULES = ['fraud', 'credit', 'graph', 'soar', 'compliance', 'system', 'quantum', 'database', 'auth'];
 const REGIONS = ['ap-south-1', 'eu-west-1', 'us-east-1', 'ap-southeast-1'];
 const IPS = ['10.0.1.42', '10.0.2.18', '172.16.0.5', '192.168.1.100', '10.0.3.77', '0.0.0.0 (system)'];
@@ -86,7 +86,7 @@ const MODULE_ICONS: Record<string, typeof Shield> = {
 const SEVERITY_COLORS: Record<string, string> = {
   critical: 'bg-risk-high/15 text-risk-high border-risk-high/20',
   warning: 'bg-risk-medium/15 text-risk-medium border-risk-medium/20',
-  info: 'bg-eshodha-500/15 text-eshodha-500 border-eshodha-500/20',
+  info: 'bg-credit-line-500/15 text-credit-line-500 border-credit-line-500/20',
 };
 
 const PAGE_SIZE = 20;
@@ -149,7 +149,7 @@ export default function AuditLogPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `credline-audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `credit-line-audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, [filtered]);
@@ -225,7 +225,7 @@ export default function AuditLogPage() {
           {timelineBuckets.map((v, i) => (
             <div
               key={i}
-              className="flex-1 rounded-t-sm bg-eshodha-500/60 transition-all duration-300 hover:bg-eshodha-500"
+              className="flex-1 rounded-t-sm bg-credit-line-500/60 transition-all duration-300 hover:bg-credit-line-500"
               style={{ height: `${Math.max(v * 100, 4)}%` }}
               title={`${23 - i}h ago — ${Math.round(v * Math.max(...timelineBuckets.map((b) => b * events.length)))} events`}
             />
@@ -292,7 +292,7 @@ export default function AuditLogPage() {
                         <span className="font-mono text-xs text-[var(--text-primary)]">{event.action}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-eshodha-500">{event.target}</td>
+                    <td className="px-4 py-3 font-mono text-xs text-credit-line-500">{event.target}</td>
                     <td className="px-4 py-3">
                       <span className="rounded-full border border-[var(--border-secondary)] bg-[var(--bg-secondary)] px-2 py-0.5 text-[9px] font-semibold capitalize">
                         {event.module}
@@ -393,7 +393,7 @@ export default function AuditLogPage() {
 
             <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">
               <p className="text-[10px] uppercase font-bold text-[var(--text-tertiary)]">Action</p>
-              <p className="mt-1 font-mono text-sm font-semibold text-eshodha-500">{selectedEvent.action}</p>
+              <p className="mt-1 font-mono text-sm font-semibold text-credit-line-500">{selectedEvent.action}</p>
             </div>
 
             <div className="rounded-xl border border-[var(--border-secondary)] bg-[var(--bg-secondary)] p-3">

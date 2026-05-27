@@ -1,7 +1,7 @@
 import { Shield, TrendingUp, AlertTriangle, Users } from 'lucide-react';
 
 const metrics = [
-  { label: 'Transactions / sec', value: '4,827', delta: '+12%', icon: <TrendingUp size={20} />, color: 'from-eshodha-500 to-blue-500' },
+  { label: 'Transactions / sec', value: '4,827', delta: '+12%', icon: <TrendingUp size={20} />, color: 'from-credit-line-500 to-blue-500' },
   { label: 'Fraud Blocked', value: '2,341', delta: '+8 today', icon: <Shield size={20} />, color: 'from-red-500 to-orange-500' },
   { label: 'Active Alerts', value: '7', delta: '-3 vs avg', icon: <AlertTriangle size={20} />, color: 'from-amber-500 to-yellow-500' },
   { label: 'Credit Scores Issued', value: '18,472', delta: '+340 today', icon: <Users size={20} />, color: 'from-green-500 to-emerald-500' },

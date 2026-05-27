@@ -13,7 +13,7 @@ export default function RiskChart() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-white/70 uppercase tracking-wider">Transaction Risk (24h)</h3>
         <div className="flex gap-4 text-xs">
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-eshodha-500" /> Normal</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-credit-line-500" /> Normal</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Fraud</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Blocked</span>
         </div>

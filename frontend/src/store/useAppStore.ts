@@ -121,7 +121,7 @@ export const useAppStore = create<AppState>()(
       }),
     }),
     {
-      name: 'credline-store',
+      name: 'credit-line-store',
     }
   )
 );

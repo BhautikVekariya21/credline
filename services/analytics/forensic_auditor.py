@@ -1,9 +1,9 @@
 """
-eshodha fintech solution — Phase 12: Forensic Auditor & Analytics Engine.
+Credit Line Fintech Solution — Phase 13: Algorithmic Forensic Auditor & Financial Modeler.
 
-Applies Benford's Law statistical tests to detect artificial ledger transaction patterns,
-compiles financial statements (P&L, Balance Sheet, Cash Flow), and generates
-unfiltered LLM-driven CFO executive summaries.
+Applies Benford's Law Chi-Squared test with exact p-value determination (k=8 degrees of freedom)
+to identify anomalous billing patterns, aggregates ledger data into standard corporate reports,
+and generates financial narratives.
 """
 
 from __future__ import annotations
@@ -22,44 +22,60 @@ logger = get_logger(__name__)
 # Expected first-digit distribution according to Benford's Law
 # P(d) = log10(1 + 1/d) for d in [1..9]
 BENFORD_DISTRIBUTION = {
-    1: 0.3010,
-    2: 0.1761,
-    3: 0.1249,
-    4: 0.0969,
-    5: 0.0792,
-    6: 0.0669,
-    7: 0.0580,
-    8: 0.0512,
-    9: 0.0458
+    1: 0.30103,
+    2: 0.17609,
+    3: 0.12494,
+    4: 0.09691,
+    5: 0.07918,
+    6: 0.06695,
+    7: 0.05799,
+    8: 0.05115,
+    9: 0.04576
 }
 
 
-# ─── Benford's Law Forensic Auditor ──────────────────────────────────────────
+class ForensicAuditor:
+    """
+    Forensic audit suite conducting Chi-Squared tests against Benford's distribution
+    with exact closed-form p-value evaluation, along with corporate metrics synthesis.
+    """
 
-class BenfordAuditor:
-    """
-    Tests ledger transactions using a Chi-Squared (X^2) goodness-of-fit test
-    against Benford's Law first-digit distribution.
-    """
     def __init__(self, significance_level: float = 0.05):
         self.significance_level = significance_level
 
     @staticmethod
     def get_first_digit(amount: float) -> int | None:
-        """Extracts the first non-zero digit of an amount."""
+        """Extracts the first non-zero digit of a transaction amount."""
         val = abs(amount)
         if val == 0:
             return None
-        # Convert to string and find first digit between 1 and 9
-        s = f"{val:.8f}".replace(".", "")
+        # Convert scientific or floating notation to clean digit string
+        s = f"{val:.10f}".replace(".", "")
         for char in s:
             if char in "123456789":
                 return int(char)
         return None
 
+    def calculate_chi_squared_p_value(self, chi_sq: float) -> float:
+        """
+        Calculates the exact p-value for a Chi-Squared statistic with 8 degrees of freedom.
+        Degrees of freedom (df) = 9 (bins for digits 1-9) - 1 = 8.
+        Since df is even (8), the survival function S(x; 8) has a clean closed-form:
+        S(x; 8) = e^(-x/2) * (1 + x/2 + x^2/8 + x^3/48)
+        """
+        if chi_sq <= 0:
+            return 1.0
+        
+        half_x = chi_sq / 2.0
+        # S(x; 8) terms
+        term = 1.0 + half_x + (chi_sq ** 2) / 8.0 + (chi_sq ** 3) / 48.0
+        p_val = math.exp(-half_x) * term
+        return min(max(p_val, 0.0), 1.0)
+
     def analyze(self, transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Runs the Benford's Law validation test on a list of transaction objects.
+        Runs the Benford's Law analysis on ledger amounts and returns Chi-squared metrics
+        and p-value significance bounds.
         """
         counts = {d: 0 for d in range(1, 10)}
         total_valid = 0
@@ -71,17 +87,18 @@ class BenfordAuditor:
                 counts[fd] += 1
                 total_valid += 1
 
-        if total_valid < 30:
-            # Insufficient sample size for statistical significance
+        if total_valid < 40:
+            # Sample size is too small for meaningful statistical inference
             return {
                 "success": True,
                 "chi_squared": 0.0,
-                "critical_value": 15.51,  # Critical value for 8 degrees of freedom at alpha = 0.05
+                "p_value": 1.0,
+                "critical_value": 15.507,
                 "is_anomalous": False,
                 "insufficient_data": True,
                 "total_samples": total_valid,
-                "actual_distribution": {d: 0.0 for d in range(1, 10)},
-                "expected_distribution": BENFORD_DISTRIBUTION
+                "actual_distribution": {str(d): 0.0 for d in range(1, 10)},
+                "expected_distribution": {str(k): v for k, v in BENFORD_DISTRIBUTION.items()}
             }
 
         chi_sq = 0.0
@@ -89,94 +106,104 @@ class BenfordAuditor:
         for d in range(1, 10):
             observed = counts[d]
             expected = total_valid * BENFORD_DISTRIBUTION[d]
-            actual_dist[d] = float(observed) / total_valid if total_valid > 0 else 0.0
+            actual_dist[str(d)] = float(observed) / total_valid
 
-            # X^2 term = (Observed - Expected)^2 / Expected
+            # Chi-Squared term = (O - E)^2 / E
             term = ((observed - expected) ** 2) / expected
             chi_sq += term
 
-        # Degrees of freedom = 9 bins - 1 = 8
-        # Chi-Squared critical value at df=8, alpha=0.05 is 15.507
-        critical_val = 15.507
-        is_anomalous = chi_sq > critical_val
+        p_value = self.calculate_chi_squared_p_value(chi_sq)
+        is_anomalous = p_value < self.significance_level
+        critical_val = 15.507  # Alpha = 0.05, df = 8
 
-        logger.info("benford_audit_run", total_samples=total_valid, chi_squared=round(chi_sq, 4), is_anomalous=is_anomalous)
+        logger.info(
+            "benford_audit_calculated",
+            total_samples=total_valid,
+            chi_squared=round(chi_sq, 4),
+            p_value=round(p_value, 6),
+            is_anomalous=is_anomalous
+        )
 
         return {
             "success": True,
             "chi_squared": round(chi_sq, 4),
+            "p_value": round(p_value, 6),
             "critical_value": critical_val,
             "is_anomalous": is_anomalous,
             "insufficient_data": False,
             "total_samples": total_valid,
             "actual_distribution": actual_dist,
-            "expected_distribution": BENFORD_DISTRIBUTION
+            "expected_distribution": {str(k): v for k, v in BENFORD_DISTRIBUTION.items()}
         }
 
 
-# ─── Boardroom Financial Statement Compiler ──────────────────────────────────
-
 class FinancialStatementCompiler:
     """
-    Computes boardroom-ready Balance Sheets, P&L statements, and Cash Flows
-    from transaction history records.
+    Parses ledger records and compiles core statements (P&L, Balance Sheet, Cash Flow)
+    and computes primary corporate financial ratios.
     """
-    def __init__(self):
-        pass
 
     def compile_reports(self, transactions: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Parses ledgers and aggregates figures to build P&L and Balance Sheet summaries.
-        """
-        revenue = Decimal("0")
-        cogs = Decimal("0")
-        salaries = Decimal("0")
-        opex = Decimal("0")
-        interest = Decimal("0")
-        taxes = Decimal("0")
+        revenue = Decimal("0.0")
+        cogs = Decimal("0.0")
+        salaries = Decimal("0.0")
+        opex = Decimal("0.0")
+        interest = Decimal("0.0")
+        taxes = Decimal("0.0")
 
-        cash = Decimal("5000000.0")  # Opening balance
-        receivables = Decimal("0")
-        payables = Decimal("0")
+        cash = Decimal("2325000.0")  # Start cash balance
+        receivables = Decimal("0.0")
+        payables = Decimal("0.0")
 
         for tx in transactions:
             amt = Decimal(str(tx.get("amount", 0)))
             cat = tx.get("category", "general").lower()
             tx_type = tx.get("transaction_type", "DEBIT").upper()
 
-            if cat == "revenue" or cat == "sales":
+            if cat in ("revenue", "sales"):
                 revenue += amt
                 cash += amt
-            elif cat == "cogs" or cat == "inventory":
+            elif cat in ("cogs", "inventory"):
                 cogs += amt
                 cash -= amt
-            elif cat == "salary" or cat == "payroll":
+            elif cat in ("salary", "payroll"):
                 salaries += amt
                 cash -= amt
-            elif cat == "opex" or cat == "marketing" or cat == "rent":
+            elif cat in ("opex", "marketing", "rent", "utility"):
                 opex += amt
                 cash -= amt
             elif cat == "interest":
                 interest += amt
                 cash -= amt
-            elif cat == "tax" or cat == "gst":
+            elif cat in ("tax", "gst"):
                 taxes += amt
                 cash -= amt
             else:
-                # Capital transactions
                 if tx_type == "DEBIT":
                     cash += amt
                 else:
                     cash -= amt
 
-        net_profit_before_tax = revenue - cogs - salaries - opex - interest
-        income_tax_expense = (net_profit_before_tax * Decimal("0.25")).quantize(Decimal("0.01")) if net_profit_before_tax > 0 else Decimal("0")
-        net_profit = net_profit_before_tax - income_tax_expense
+        # Calculations
+        gross_profit = revenue - cogs
+        net_profit_before_tax = gross_profit - salaries - opex - interest
+        tax_rate = Decimal("0.25")
+        income_tax = (net_profit_before_tax * tax_rate).quantize(Decimal("0.01")) if net_profit_before_tax > 0 else Decimal("0.0")
+        net_profit = net_profit_before_tax - income_tax
 
-        # Current closing assets/equity/liabilities balances (simulated drift)
-        fixed_assets = Decimal("1500000.0")
-        share_capital = Decimal("2000000.0")
-        retained_earnings = net_profit
+        # Ratios
+        gross_profit_margin = float(gross_profit / revenue) if revenue > 0 else 0.0
+        net_profit_margin = float(net_profit / revenue) if revenue > 0 else 0.0
+
+        current_assets = cash + (revenue * Decimal("0.12"))  # simulate accounts receivable
+        current_liabilities = (cogs * Decimal("0.08")) + income_tax  # simulate payables + current tax liability
+        
+        # Liquidity runway ratio
+        liquidity_ratio = float(current_assets / current_liabilities) if current_liabilities > 0 else 99.0
+        
+        # Monthly burn opex proxy
+        monthly_burn = salaries + opex
+        runway_months = float(cash / monthly_burn) if monthly_burn > 0 else 24.0
 
         return {
             "timestamp": datetime.utcnow().isoformat(),
@@ -187,59 +214,57 @@ class FinancialStatementCompiler:
                 "operational_expenses": float(opex),
                 "interest_expenses": float(interest),
                 "net_income_before_tax": float(net_profit_before_tax),
-                "income_tax_expense": float(income_tax_expense),
-                "net_income": float(net_profit)
+                "income_tax_expense": float(income_tax),
+                "net_income": float(net_profit),
+                "gross_profit_margin": gross_profit_margin,
+                "net_profit_margin": net_profit_margin
             },
             "balance_sheet": {
-                "fixed_assets": float(fixed_assets),
+                "fixed_assets": 1250000.0,
                 "cash_and_cash_equivalents": float(cash),
-                "accounts_receivable": float(revenue * Decimal("0.10")),
-                "share_capital": float(share_capital),
-                "retained_earnings": float(retained_earnings),
-                "accounts_payable": float(cogs * Decimal("0.05"))
+                "accounts_receivable": float(revenue * Decimal("0.12")),
+                "total_current_assets": float(current_assets),
+                "share_capital": 2000000.0,
+                "retained_earnings": float(net_profit),
+                "accounts_payable": float(cogs * Decimal("0.08")),
+                "total_current_liabilities": float(current_liabilities),
+                "liquidity_ratio": liquidity_ratio,
+                "runway_months": min(runway_months, 36.0)
             },
             "cash_flows": {
-                "operating_cash_flow": float(net_profit + DepreciationMock()),
-                "investing_cash_flow": float(-Decimal("200000")),
-                "financing_cash_flow": float(Decimal("500000")),
-                "net_change_in_cash": float(net_profit + DepreciationMock() - Decimal("200000") + Decimal("500000"))
+                "operating_cash_flow": float(net_profit + Decimal("50000")),  # add simulated depreciation
+                "investing_cash_flow": -150000.0,
+                "financing_cash_flow": 300000.0,
+                "net_change_in_cash": float(net_profit + Decimal("50000") - Decimal("150000") + Decimal("300000"))
             }
         }
 
 
-def DepreciationMock() -> Decimal:
-    return Decimal("50000.0")
-
-
-# ─── LLM CFO Executive Narrative Synthesizer ─────────────────────────────────
-
 class CFOExecutiveNarrative:
     """
-    Connects to local vLLM / external API to run strategic inference over financial outputs.
+    Summarizes ledger analysis into strategic strategic guidance narratives, calling
+    an external LLM service or defaulting to highly contextualized local templates.
     """
+
     def __init__(self, endpoint: str = "http://localhost:8000/v1/chat/completions", api_key: str = "placeholder"):
         self.endpoint = endpoint
         self.api_key = api_key
 
     async def generate_summary(self, financial_data: Dict[str, Any], anomaly_report: Dict[str, Any]) -> str:
-        """
-        Sends aggregated report data to the LLM to compile an uncensored CFO strategic review.
-        """
         pl = financial_data.get("profit_loss", {})
         bs = financial_data.get("balance_sheet", {})
         
         prompt = (
-            f"You are the Sovereign CFO AI for eshodha fintech solutions. Review the corporate metrics:\n"
+            f"You are the Sovereign CFO AI for Credit Line Fintech Solutions. Review the corporate metrics:\n"
             f"- Revenue: ₹{pl.get('revenue', 0):,.2f}\n"
             f"- Net Income: ₹{pl.get('net_income', 0):,.2f}\n"
             f"- Cash Balance: ₹{bs.get('cash_and_cash_equivalents', 0):,.2f}\n"
-            f"- Benford's Law Chi-Squared Test: Score={anomaly_report.get('chi_squared', 0)}, Anomalous={anomaly_report.get('is_anomalous', False)}\n\n"
+            f"- Benford's Law Chi-Squared Test: Score={anomaly_report.get('chi_squared', 0)}, p-value={anomaly_report.get('p_value', 1.0)}\n\n"
             f"Write an uncensored, strategic boardroom summary on corporate performance, "
             f"liquidity runway, audit integrity flags, and actionable strategic directives."
         )
 
         try:
-            # Simulate endpoint query - fall back to high-fidelity template rule if server is local or offline
             payload = {
                 "model": "Llama-3-70B",
                 "messages": [{"role": "user", "content": prompt}],
@@ -256,25 +281,30 @@ class CFOExecutiveNarrative:
         except Exception:
             pass
 
-        # High-quality offline boardroom fallback builder
-        runway = bs.get("cash_and_cash_equivalents", 0) / max(1, pl.get("operational_expenses", 0))
-        runway_months = round(min(runway, 24.0), 1)
-
+        # Robust programmatic fallback narrative construction
+        runway = bs.get("runway_months", 18.4)
+        gp_margin = pl.get("gross_profit_margin", 0.0) * 100
+        p_val = anomaly_report.get("p_value", 1.0)
+        
         narrative = (
-            f"**ESHODHA SYSTEM EXECUTIVE EXECUTIVE BRIEFING (CONFIDENTIAL)**\n\n"
-            f"1. **Liquidity Analysis**: Current cash reserves stand at ₹{bs.get('cash_and_cash_equivalents', 0):,.2f}. "
-            f"Based on current opex velocity, our liquidity runway is secure at approximately **{runway_months} months**. "
-            f"Recommendation: Freeze variable marketing spend in Sector B to conserve capital.\n\n"
-            f"2. **Forensic Audit Status**: Benford's Law Chi-Squared test completed with a score of `{anomaly_report.get('chi_squared', 0)}` "
-            f"against critical threshold `{anomaly_report.get('critical_value', 15.507)}`. "
+            f"**Credit Line SYSTEM EXECUTIVE EXECUTIVE BRIEFING (CONFIDENTIAL)**\n\n"
+            f"1. **Liquidity & Runway**: Core cash reserves are stable at ₹{bs.get('cash_and_cash_equivalents', 0):,.2f}. "
+            f"Calculated runway ratio indicates **{runway:.1f} months** of standard operations before funding threshold requirements. "
+            f"Our gross margin of **{gp_margin:.1f}%** is within healthy targets for our sector.\n\n"
+            f"2. **Forensic Integrity Analysis**: Benford's Law distribution test completed. "
+            f"Chi-Squared statistic is `{anomaly_report.get('chi_squared', 0)}` with p-value `{p_val}`. "
         )
 
         if anomaly_report.get("is_anomalous", False):
             narrative += (
-                f"**ALERT**: Anomalous ledger distribution detected. Digit frequencies indicate structured invoicing patterns or "
-                f"round-sum manipulation. Forensic audit lock recommended for vendor accounts immediately."
+                f"**ALERT**: Significant statistical anomaly detected (p-value={p_val} < 0.05). "
+                f"There is a high probability of transaction rounding or artificially structured invoices. "
+                f"Immediate forensic ledger verification is required for vendor disbursement channels."
             )
         else:
-            narrative += "No anomalous first-digit structuring pattern detected. Integrity index stands at 99.4% (GAAP compliant)."
+            narrative += (
+                f"Transaction digits conform to standard Benford logarithmic ratios (p-value={p_val} >= 0.05). "
+                f"No structural anomalies or manufactured clustering patterns detected."
+            )
 
         return narrative

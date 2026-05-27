@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 10: SubGraph Extractor.
+Credit Line Fintech Solution — Phase 10: SubGraph Extractor.
 
 Lightning-fast 3-hop neighborhood extraction from Neo4j for GNN inference.
 Formats raw Cypher results into torch_geometric.data.Data objects

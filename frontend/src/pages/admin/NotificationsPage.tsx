@@ -22,7 +22,7 @@ const NOTIFICATION_TEMPLATES: Array<Omit<AppNotification, 'id' | 'timestamp' | '
   { type: 'model', severity: 'warning', title: 'Model drift signal', message: 'KS statistic for transaction_amount feature: 0.18 (threshold: 0.15). Monitoring escalated.', source: '/admin/infra' },
   { type: 'model', severity: 'info', title: 'Experiment logged', message: 'MLflow experiment #19 recorded. XGBoost hyperparameter sweep completed with 42 trials.', source: '/admin/infra' },
   { type: 'fraud', severity: 'info', title: 'Graph scan completed', message: 'Neo4j topology scan: 18,420 nodes, 74,830 edges. 7 risk clusters identified. 2 poisoning alerts.', source: '/admin/graph' },
-  { type: 'system', severity: 'info', title: 'Database sync active', message: 'PostgreSQL ingestion stream processing at 1,240 rows/sec. Latency: 18ms. Schema: credline_prod.', source: '/admin/database' },
+  { type: 'system', severity: 'info', title: 'Database sync active', message: 'PostgreSQL ingestion stream processing at 1,240 rows/sec. Latency: 18ms. Schema: Credit Line_prod.', source: '/admin/database' },
   { type: 'compliance', severity: 'warning', title: 'PEP screening match', message: 'Client WM-0042 matched against OFAC SDN list entry. Manual review required before account clearance.', source: '/admin/wealth' },
 ];
 
@@ -36,7 +36,7 @@ const TYPE_ICONS: Record<string, typeof Bell> = {
 
 const TYPE_COLORS: Record<string, string> = {
   fraud: 'text-risk-high',
-  credit: 'text-eshodha-500',
+  credit: 'text-credit-line-500',
   system: 'text-accent-purple',
   compliance: 'text-risk-medium',
   model: 'text-risk-low',
@@ -45,7 +45,7 @@ const TYPE_COLORS: Record<string, string> = {
 const SEVERITY_BADGES: Record<string, string> = {
   critical: 'bg-risk-high/15 text-risk-high border-risk-high/20',
   warning: 'bg-risk-medium/15 text-risk-medium border-risk-medium/20',
-  info: 'bg-eshodha-500/15 text-eshodha-500 border-eshodha-500/20',
+  info: 'bg-credit-line-500/15 text-credit-line-500 border-credit-line-500/20',
 };
 
 type FilterType = 'all' | 'fraud' | 'credit' | 'system' | 'compliance' | 'model';
@@ -112,7 +112,7 @@ export default function NotificationsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `credline-notifications-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `credit-line-notifications-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }, [sorted]);
@@ -123,7 +123,7 @@ export default function NotificationsPage() {
       <section className="rounded-2xl border border-[var(--border-secondary)] bg-[var(--bg-card)] p-5 md:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex gap-4">
-            <div className="grid h-12 w-12 place-items-center rounded-xl bg-eshodha-500/10 text-eshodha-500">
+            <div className="grid h-12 w-12 place-items-center rounded-xl bg-credit-line-500/10 text-credit-line-500">
               <Bell size={24} />
             </div>
             <div>
@@ -217,7 +217,7 @@ export default function NotificationsPage() {
           <div key={s.label} className="rounded-2xl border border-[var(--border-secondary)] bg-[var(--bg-card)] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--text-tertiary)]">{s.label}</p>
             <p className={cn('mt-3 text-2xl font-semibold', {
-              'text-eshodha-500': s.tone === 'blue',
+              'text-credit-line-500': s.tone === 'blue',
               'text-risk-high': s.tone === 'red',
               'text-risk-medium': s.tone === 'amber',
               'text-accent-purple': s.tone === 'purple',
@@ -258,7 +258,7 @@ export default function NotificationsPage() {
                     notif.read
                       ? 'border-[var(--border-secondary)] bg-[var(--bg-secondary)]/50'
                       : 'border-[var(--border-secondary)] bg-[var(--bg-card)] shadow-sm',
-                    notif.pinned && 'border-eshodha-500/30 bg-eshodha-500/5'
+                    notif.pinned && 'border-credit-line-500/30 bg-credit-line-500/5'
                   )}
                 >
                   {/* Left icon */}
@@ -279,13 +279,13 @@ export default function NotificationsPage() {
                         {notif.type}
                       </span>
                       {!notif.read && (
-                        <span className="h-2 w-2 rounded-full bg-eshodha-500 flex-shrink-0" />
+                        <span className="h-2 w-2 rounded-full bg-credit-line-500 flex-shrink-0" />
                       )}
                     </div>
                     <p className="mt-1 text-xs leading-5 text-[var(--text-secondary)]">{notif.message}</p>
                     <p className="mt-1.5 text-[10px] font-mono text-[var(--text-tertiary)]">
                       {new Date(notif.timestamp).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })}
-                      {notif.source && <span className="ml-2 text-eshodha-500">→ {notif.source}</span>}
+                      {notif.source && <span className="ml-2 text-credit-line-500">→ {notif.source}</span>}
                     </p>
                   </div>
 
@@ -302,7 +302,7 @@ export default function NotificationsPage() {
                     )}
                     <button
                       onClick={() => togglePin(notif.id)}
-                      className="rounded-lg p-1.5 text-[var(--text-tertiary)] hover:bg-[var(--bg-secondary)] hover:text-eshodha-500"
+                      className="rounded-lg p-1.5 text-[var(--text-tertiary)] hover:bg-[var(--bg-secondary)] hover:text-credit-line-500"
                       title={notif.pinned ? 'Unpin' : 'Pin'}
                     >
                       {notif.pinned ? <PinOff size={14} /> : <Pin size={14} />}

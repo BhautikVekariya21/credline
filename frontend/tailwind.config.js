@@ -10,17 +10,17 @@ export default {
         mono: ['"SF Mono"', 'Menlo', 'Monaco', '"Cascadia Code"', 'monospace'],
       },
       colors: {
-        eshodha: {
-          50:  'var(--eshodha-50)',
-          100: 'var(--eshodha-100)',
-          200: 'var(--eshodha-200)',
-          300: 'var(--eshodha-300)',
-          400: 'var(--eshodha-400)',
-          500: 'var(--eshodha-500)',
-          600: 'var(--eshodha-600)',
-          700: 'var(--eshodha-700)',
-          800: 'var(--eshodha-800)',
-          900: 'var(--eshodha-900)',
+        'credit-line': {
+          50:  'var(--credit-line-50)',
+          100: 'var(--credit-line-100)',
+          200: 'var(--credit-line-200)',
+          300: 'var(--credit-line-300)',
+          400: 'var(--credit-line-400)',
+          500: 'var(--credit-line-500)',
+          600: 'var(--credit-line-600)',
+          700: 'var(--credit-line-700)',
+          800: 'var(--credit-line-800)',
+          900: 'var(--credit-line-900)',
         },
         surface: {
           0:   '#FFFFFF',
@@ -59,7 +59,7 @@ export default {
         'glass-dark': '0 8px 32px rgba(0, 0, 0, 0.4)',
         'card': '0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06)',
         'card-hover': '0 10px 40px rgba(0, 0, 0, 0.08)',
-        'eshodha': 'var(--eshodha-shadow)',
+        'credit-line': 'var(--credit-line-shadow)',
       },
       animation: {
         'fade-in': 'fadeIn 0.4s ease-out',

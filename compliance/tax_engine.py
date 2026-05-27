@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 11: GST Tax Logic Engine.
+Credit Line Fintech Solution — Phase 11: GST Tax Logic Engine.
 
 Categorizes every transaction into Indian GST slabs (5%, 12%, 18%, 28%)
 based on HSN/SAC code mapping. Handles:

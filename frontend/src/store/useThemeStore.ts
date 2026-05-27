@@ -10,7 +10,7 @@ interface ThemeState {
 
 const getStoredTheme = (): Theme => {
   if (typeof window === 'undefined') return 'light';
-  const stored = localStorage.getItem('eshodha-theme');
+  const stored = localStorage.getItem('credit-line-theme');
   if (stored === 'light' || stored === 'dark') return stored;
   return 'light';
 };
@@ -22,7 +22,7 @@ const applyTheme = (theme: Theme) => {
   } else {
     root.classList.remove('dark');
   }
-  localStorage.setItem('eshodha-theme', theme);
+  localStorage.setItem('credit-line-theme', theme);
 };
 
 export const useThemeStore = create<ThemeState>((set) => {

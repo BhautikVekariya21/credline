@@ -1,5 +1,5 @@
 """
-eshodha fintech solution — Phase 10: Transaction Controller.
+Credit Line Fintech Solution — Phase 10: Transaction Controller.
 
 The "brain" of the Core Engine. Orchestrates parallel ML scoring
 within a strict 150ms SLA:

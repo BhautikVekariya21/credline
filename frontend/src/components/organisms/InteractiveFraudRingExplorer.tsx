@@ -121,7 +121,7 @@ export default function InteractiveFraudRingExplorer() {
       <div className="pointer-events-none absolute left-0 right-0 top-0 z-10 flex items-center justify-between border-b border-[var(--border-secondary)] bg-[var(--bg-overlay)] p-4">
         <div>
           <h3 className="pointer-events-auto flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
-            <Network size={16} className="text-eshodha-500" />
+            <Network size={16} className="text-credit-line-500" />
             Interactive Fraud Ring Explorer
           </h3>
           <p className="pointer-events-auto mt-1 text-xs text-[var(--text-tertiary)]">
