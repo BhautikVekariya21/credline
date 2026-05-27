@@ -5,7 +5,7 @@ import {
   ChevronLeft, ChevronRight, Activity, Globe, Zap,
   Database, AlertTriangle, Receipt, DatabaseZap,
   Banknote, LineChart, FileText, Bell, ClipboardList,
-  Check, TrendingUp, ShieldCheck, ShieldAlert, Code
+  Check, TrendingUp, ShieldCheck, ShieldAlert, Code, Scale
 } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import { useAppStore } from '../../store/useAppStore';
@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { id: 'ceo',            label: 'CEO Control Room',    icon: ShieldAlert,     path: '/admin/ceo' },
   { id: 'godseye',        label: 'God\'s Eye Resiliency', icon: Activity,        path: '/admin/godseye' },
   { id: 'developers',     label: 'Developer Portal',    icon: Code,            path: '/admin/developers' },
+  { id: 'institutional',  label: 'Institutional RWA',   icon: Scale,           path: '/admin/institutional' },
   // ─── Service Modules ──────────────────────────────
   { id: 'payments',       label: 'Payment Intel',       icon: Banknote,        path: '/admin/payments' },
   { id: 'wealth',         label: 'Wealth Risk',         icon: LineChart,       path: '/admin/wealth' },

@@ -123,6 +123,10 @@ def create_app() -> FastAPI:
     from api.routers.embedded_finance import router as embedded_finance_router
     app.include_router(embedded_finance_router)
 
+    # Phase 20: Real-World Asset (RWA) Vaults, Self-Sovereign Identity (DID) & Dynamic Liquidity AMM
+    from api.routers.institutional import router as institutional_router
+    app.include_router(institutional_router)
+
     # Phase 10: Core Transaction Engine
     from core_engine.transaction_controller import router as core_router
     app.include_router(core_router)

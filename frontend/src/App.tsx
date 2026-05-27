@@ -32,6 +32,7 @@ import CreditLineDevPortal from './pages/admin/CreditLineDevPortal';
 import DatabaseConnectorPage from './pages/admin/DatabaseConnectorPage';
 import NotificationsPage from './pages/admin/NotificationsPage';
 import AuditLogPage from './pages/admin/AuditLogPage';
+import RwaInstitutionalPortal from './pages/admin/RwaInstitutionalPortal';
 import {
   CreditEnginePage,
   FederationPage,
@@ -83,6 +84,7 @@ export default function App() {
         <Route path="/admin/ceo" element={<OmniMonopolyDashboard />} />
         <Route path="/admin/godseye" element={<GodsEyeResiliency />} />
         <Route path="/admin/developers" element={<CreditLineDevPortal />} />
+        <Route path="/admin/institutional" element={<RwaInstitutionalPortal />} />
 
         <Route path="/admin/payments" element={<PaymentsIntelligencePage />} />
         <Route path="/admin/wealth" element={<WealthRiskPage />} />

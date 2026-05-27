@@ -1,23 +1,23 @@
-[2026-05-27 19:23:57.051] Logs cleared. Autonomous Healer Daemon active.
-[2026-05-27 19:23:57.058] Simulated Vendor API Schema change injected in vendor_client.py
-[2026-05-27 19:23:57.058] CRITICAL: Microservice 'tax-orchestrator' crashed.
-[2026-05-27 19:23:57.058] Failing Payload: {'tax_identifier': 'TX-9983-A', 'amount': 25000.0, 'timestamp': '2026-05-27T09:00:00'}
-[2026-05-27 19:23:57.062] Traceback caught:
-[2026-05-27 19:23:57.062]   Traceback (most recent call last):
-[2026-05-27 19:23:57.062]     File "E:\credit line\infrastructure\auto_remediation\healer_agent.py", line 109, in remediate_error
-[2026-05-27 19:23:57.062]       vendor_client.process_vendor_response(failing_payload)
-[2026-05-27 19:23:57.062]     File "E:\credit line\infrastructure\auto_remediation\vendor_client.py", line 8, in process_vendor_response
-[2026-05-27 19:23:57.062]       tax_id = data["tax_id"]
-[2026-05-27 19:23:57.062]                ~~~~^^^^^^^^^^
-[2026-05-27 19:23:57.062]   KeyError: 'tax_id'
-[2026-05-27 19:23:57.062] Invoking LangChain Ollama [Model: Llama-3-Sovereign-8B]...
-[2026-05-27 19:23:57.062] Sending prompt to locally hosted LLM engine...
-[2026-05-27 19:23:57.062] LLM Thought: The KeyError is caused by data['tax_id'] when payload only provides 'tax_identifier'.
-[2026-05-27 19:23:57.062] LLM Thought: I will rewrite the schema parser to fallback to 'tax_identifier' or use get() defaults.
-[2026-05-27 19:23:57.062] Generating syntactic code patch...
-[2026-05-27 19:23:57.062] Patch written to vendor_client.py.
-[2026-05-27 19:23:57.062] Running isolated PyTest suite...
-[2026-05-27 19:23:57.831] Test Execution Output: ============================= test session starts =============================
+[2026-05-27 19:36:56.477] Logs cleared. Autonomous Healer Daemon active.
+[2026-05-27 19:36:56.485] Simulated Vendor API Schema change injected in vendor_client.py
+[2026-05-27 19:36:56.485] CRITICAL: Microservice 'tax-orchestrator' crashed.
+[2026-05-27 19:36:56.485] Failing Payload: {'tax_identifier': 'TX-9983-A', 'amount': 25000.0, 'timestamp': '2026-05-27T09:00:00'}
+[2026-05-27 19:36:56.487] Traceback caught:
+[2026-05-27 19:36:56.487]   Traceback (most recent call last):
+[2026-05-27 19:36:56.487]     File "E:\credit line\infrastructure\auto_remediation\healer_agent.py", line 109, in remediate_error
+[2026-05-27 19:36:56.487]       vendor_client.process_vendor_response(failing_payload)
+[2026-05-27 19:36:56.487]     File "E:\credit line\infrastructure\auto_remediation\vendor_client.py", line 8, in process_vendor_response
+[2026-05-27 19:36:56.487]       tax_id = data["tax_id"]
+[2026-05-27 19:36:56.487]                ~~~~^^^^^^^^^^
+[2026-05-27 19:36:56.487]   KeyError: 'tax_id'
+[2026-05-27 19:36:56.487] Invoking LangChain Ollama [Model: Llama-3-Sovereign-8B]...
+[2026-05-27 19:36:56.487] Sending prompt to locally hosted LLM engine...
+[2026-05-27 19:36:56.492] LLM Thought: The KeyError is caused by data['tax_id'] when payload only provides 'tax_identifier'.
+[2026-05-27 19:36:56.493] LLM Thought: I will rewrite the schema parser to fallback to 'tax_identifier' or use get() defaults.
+[2026-05-27 19:36:56.493] Generating syntactic code patch...
+[2026-05-27 19:36:56.493] Patch written to vendor_client.py.
+[2026-05-27 19:36:56.493] Running isolated PyTest suite...
+[2026-05-27 19:36:57.214] Test Execution Output: ============================= test session starts =============================
 platform win32 -- Python 3.11.9, pytest-8.3.3, pluggy-1.6.0 -- E:\credit line\.venv\Scripts\python.exe
 cachedir: .pytest_cache
 rootdir: E:\credit line
@@ -30,28 +30,29 @@ tests/test_api/test_vendor_client.py::test_process_vendor_response PASSED [100%]
 
 ============================== 1 passed in 0.04s ==============================
 
-[2026-05-27 19:23:57.892] SUCCESS: All unit tests passed. Patch is stable.
-[2026-05-27 19:23:57.894] Git CI/CD Pipeline triggered.
-[2026-05-27 19:23:58.155] Git commit response: On branch main
+[2026-05-27 19:36:57.214] SUCCESS: All unit tests passed. Patch is stable.
+[2026-05-27 19:36:57.214] Git CI/CD Pipeline triggered.
+[2026-05-27 19:36:57.531] Git commit response: On branch main
 Your branch is up to date with 'origin/main'.
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   api/main.py
+	modified:   frontend/src/App.tsx
+	modified:   frontend/src/components/templates/AppLayout.tsx
+	modified:   infrastructure/auto_remediation/healer_daemon.log
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	api/routers/embedded_finance.py
-	contracts/
-	frontend/.gitignore
-	frontend/theme/
-	infrastructure/auto_remediation/healer_daemon.log
-	mobile/
-	sdk/
-	tests/test_api/test_embedded_finance.py
+	api/routers/institutional.py
+	contracts/solidity/RwaCollateralVault.sol
+	frontend/src/pages/admin/RwaInstitutionalPortal.tsx
+	services/amm_clearing/
+	services/did_identity/
+	tests/test_api/test_institutional.py
 
 no changes added to commit (use "git add" and/or "git commit -a")
-[2026-05-27 19:23:58.155] Git push initiated to repository branch 'main'.
-[2026-05-27 19:23:58.155] Kubernetes webhook triggered: Initiating rolling update for deployment 'tax-orchestrator'...
-[2026-05-27 19:23:58.155] Kubernetes deployment complete: v1.17.4-healed active. 0 downtime.
+[2026-05-27 19:36:57.531] Git push initiated to repository branch 'main'.
+[2026-05-27 19:36:57.531] Kubernetes webhook triggered: Initiating rolling update for deployment 'tax-orchestrator'...
+[2026-05-27 19:36:57.531] Kubernetes deployment complete: v1.17.4-healed active. 0 downtime.
