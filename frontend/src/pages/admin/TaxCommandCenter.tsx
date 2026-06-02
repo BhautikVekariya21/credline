@@ -18,6 +18,10 @@ import {
   Building,
   Activity,
   Award,
+  CreditCard,
+  Wallet,
+  Check,
+  Lock,
 } from 'lucide-react';
 import { useMockData } from '../../hooks/useMockData';
 import { apiGet, apiPost } from '../../lib/api';
@@ -57,7 +61,7 @@ interface BenfordResult {
 
 type SupplyType = 'INTRASTATE' | 'INTERSTATE' | 'EXPORT' | 'SEZ';
 type TransactionType = 'SALE' | 'PURCHASE' | 'CREDIT_NOTE' | 'DEBIT_NOTE' | 'ADVANCE' | 'REVERSE_CHARGE';
-type TaxTab = 'overview' | 'filing' | 'forensics' | 'alerts';
+type TaxTab = 'overview' | 'filing' | 'direct-taxes' | 'forensics' | 'alerts';
 
 interface GSTFilingItem {
   id: string;
@@ -225,13 +229,233 @@ export default function TaxCommandCenter() {
   const [cfoSummary, setCfoSummary] = useState<string>('');
   const [loadingForensics, setLoadingForensics] = useState(false);
 
+  // Direct & Corporate Tax States
+  const [filingsList, setFilingsList] = useState<any[]>([]);
+  const [loadingFilings, setLoadingFilings] = useState(false);
+  const [selectedFiling, setSelectedFiling] = useState<any | null>(null);
+  const [taxSubTab, setTaxSubTab] = useState<'itr' | 'corp' | 'vat'>('itr');
+
+  // ITR Form States
+  const [itrName, setItrName] = useState('Credit Line Inc.');
+  const [itrPan, setItrPan] = useState('PAN1234567A');
+  const [itrAY, setItrAY] = useState('2026-27');
+  const [itrSalary, setItrSalary] = useState(1200000);
+  const [itrBusiness, setItrBusiness] = useState(4500000);
+  const [itrOther, setItrOther] = useState(150000);
+  const [itrDeductions, setItrDeductions] = useState(150000);
+
+  // Corporate Form States
+  const [corpName, setCorpName] = useState('Credit Line Inc.');
+  const [corpId, setCorpId] = useState('L12345KA2020PTC123456');
+  const [corpYear, setCorpYear] = useState('2026');
+  const [corpRevenue, setCorpRevenue] = useState(18000000);
+  const [corpOpex, setCorpOpex] = useState(10500000);
+  const [corpInterest, setCorpInterest] = useState(800000);
+
+  // VAT Form States
+  const [vatName, setVatName] = useState('Credit Line Inc.');
+  const [vatGstin, setVatGstin] = useState('29ABCDE1234F1Z5');
+  const [vatPeriod, setVatPeriod] = useState('052026');
+  const [vatSales, setVatSales] = useState(6500000);
+  const [vatPurchases, setVatPurchases] = useState(4200000);
+  const [vatRate, setVatRate] = useState(18);
+
+  // Payment states
+  const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'ACH' | 'CRYPTO'>('CARD');
+  const [cardHolder, setCardHolder] = useState('Credit Line Inc.');
+  const [cardNumber, setCardNumber] = useState('4111 2222 3333 4444');
+  const [cardExpiry, setCardExpiry] = useState('12/29');
+  const [cardCvv, setCardCvv] = useState('123');
+  const [achBank, setAchBank] = useState('Chase Bank');
+  const [achRouting, setAchRouting] = useState('021000021');
+  const [achAccount, setAchAccount] = useState('1234567890');
+  const [cryptoWallet, setCryptoWallet] = useState('0x71C7656EC7ab88b098defB751B7401B5f6d8976F');
+  const [cryptoConnected, setCryptoConnected] = useState(false);
+  const [cryptoConnecting, setCryptoConnecting] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
+  const [payError, setPayError] = useState<string | null>(null);
+
   const data = liveData ?? MOCK_GST;
 
-  useEffect(() => {
-    if (activeTab === 'forensics') {
-      fetchForensicsData();
+  const fetchFilings = async () => {
+    setLoadingFilings(true);
+    try {
+      const res = await apiGet<any[]>('/api/v1/compliance/tax/filings');
+      setFilingsList(res);
+    } catch (e) {
+      console.warn("Failed to load filings, falling back:", e);
+      setFilingsList([
+        {
+          id: "TAX-GST-001",
+          tax_type: "GST",
+          period: "052026",
+          taxpayer_name: "Credit Line Inc.",
+          taxpayer_id: "29ABCDE1234F1Z5",
+          liability: 33100.0,
+          status: "UNPAID",
+          created_at: "2026-05-25T10:00:00Z",
+          payment_details: null
+        },
+        {
+          id: "TAX-ITR-001",
+          tax_type: "ITR",
+          period: "AY 2026-27",
+          taxpayer_name: "Credit Line Inc.",
+          taxpayer_id: "PAN1234567A",
+          liability: 1250000.0,
+          status: "PAID",
+          created_at: "2026-04-15T09:30:00Z",
+          payment_details: {
+            method: "ACH",
+            account_mask: "******4567",
+            timestamp: "2026-04-16T14:22:10Z"
+          }
+        }
+      ]);
+    } finally {
+      setLoadingFilings(false);
     }
-  }, [activeTab]);
+  };
+
+  useEffect(() => {
+    fetchFilings();
+  }, []);
+
+  const handleFileItr = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsFiling(true);
+    setFilingError(null);
+    try {
+      const res = await apiPost<any>('/api/v1/compliance/tax/file-itr', {
+        taxpayer_name: itrName,
+        pan: itrPan.trim().toUpperCase(),
+        assessment_year: itrAY,
+        salary_income: Number(itrSalary),
+        business_income: Number(itrBusiness),
+        other_income: Number(itrOther),
+        deductions: Number(itrDeductions)
+      });
+      await fetchFilings();
+      if (res.liability > 0) {
+        setSelectedFiling(res);
+      } else {
+        alert("ITR Filed successfully! Net tax liability is Nil.");
+      }
+    } catch (err: any) {
+      setFilingError(err.message || 'ITR Filing failed.');
+    } finally {
+      setIsFiling(false);
+    }
+  };
+
+  const handleFileCorporate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsFiling(true);
+    setFilingError(null);
+    try {
+      const res = await apiPost<any>('/api/v1/compliance/tax/file-corporate', {
+        entity_name: corpName,
+        corporate_id: corpId.trim().toUpperCase(),
+        tax_year: corpYear,
+        revenue: Number(corpRevenue),
+        opex: Number(corpOpex),
+        interest_paid: Number(corpInterest)
+      });
+      await fetchFilings();
+      if (res.liability > 0) {
+        setSelectedFiling(res);
+      } else {
+        alert("Corporate tax return filed successfully! Net tax liability is Nil.");
+      }
+    } catch (err: any) {
+      setFilingError(err.message || 'Corporate tax filing failed.');
+    } finally {
+      setIsFiling(false);
+    }
+  };
+
+  const handleFileVat = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsFiling(true);
+    setFilingError(null);
+    try {
+      const liability = Math.max(0, (Number(vatSales) - Number(vatPurchases)) * (Number(vatRate) / 100));
+      const payload = {
+        gstin: vatGstin.trim().toUpperCase(),
+        period: vatPeriod,
+        items: [
+          {
+            hsn_code: "9983",
+            description: `VAT Filing for ${vatPeriod}`,
+            quantity: 1,
+            unit_price: Number(vatSales) - Number(vatPurchases),
+            discount: 0,
+            supply_type: "INTRASTATE",
+            transaction_type: "SALE"
+          }
+        ]
+      };
+      
+      const res = await apiPost<any>('/api/v1/compliance/gst/file', payload);
+      await fetchFilings();
+      
+      const netLiab = res.summary?.net_liability ?? liability;
+      if (netLiab > 0) {
+        setSelectedFiling({
+          id: res.id || `TAX-GST-${Date.now().toString().slice(-4)}`,
+          tax_type: "GST",
+          period: vatPeriod,
+          liability: netLiab,
+          taxpayer_name: vatName,
+          taxpayer_id: vatGstin
+        });
+      } else {
+        alert("VAT return filed successfully! Net tax liability is Nil.");
+      }
+    } catch (err: any) {
+      setFilingError(err.message || 'VAT Filing failed.');
+    } finally {
+      setIsFiling(false);
+    }
+  };
+
+  const handlePayLiability = async () => {
+    if (!selectedFiling) return;
+    setIsPaying(true);
+    setPayError(null);
+    try {
+      let details: any = {};
+      if (paymentMethod === 'CARD') {
+        details = { cardholder_name: cardHolder, card_number: cardNumber.replace(/\s+/g, ''), expiry: cardExpiry, cvv: cardCvv };
+      } else if (paymentMethod === 'ACH') {
+        details = { bank_name: achBank, routing_number: achRouting, account_number: achAccount };
+      } else if (paymentMethod === 'CRYPTO') {
+        details = { wallet_address: cryptoWallet };
+      }
+
+      await apiPost('/api/v1/compliance/tax/pay-liability', {
+        filing_id: selectedFiling.id,
+        payment_method: paymentMethod,
+        payment_details: details,
+        amount: selectedFiling.liability
+      });
+
+      await fetchFilings();
+      setSelectedFiling(null);
+      alert("Payment settled successfully!");
+    } catch (err: any) {
+      setPayError(err.message || 'Payment failed.');
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
+  const connectCryptoWallet = async () => {
+    setCryptoConnecting(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setCryptoConnected(true);
+    setCryptoConnecting(false);
+  };
 
   const fetchForensicsData = async () => {
     setLoadingForensics(true);
@@ -242,7 +466,6 @@ export default function TaxCommandCenter() {
       setCfoSummary(summaryText.summary);
     } catch (e) {
       console.warn("Failed to load forensics telemetry from backend API, falling back to local simulation:", e);
-      // Simulated local fallback delay
       await new Promise((resolve) => setTimeout(resolve, 800));
       setBenfordData(MOCK_BENFORD);
       setCfoSummary(
@@ -254,6 +477,14 @@ export default function TaxCommandCenter() {
       setLoadingForensics(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'forensics') {
+      fetchForensicsData();
+    }
+  }, [activeTab]);
+
+
 
   const handlePdfUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []).filter((file) => (
@@ -341,6 +572,7 @@ export default function TaxCommandCenter() {
         };
       }
       setFilingResult(result);
+      fetchFilings(); // update filing ledger dynamically
     } catch (error) {
       setFilingError(error instanceof Error ? error.message : 'GST filing failed.');
     } finally {
@@ -368,6 +600,7 @@ export default function TaxCommandCenter() {
           )}
           <TabButton label="Oversight" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
           <TabButton label={`Filing ${filingItems.length ? `(${filingItems.length})` : ''}`} active={activeTab === 'filing'} onClick={() => setActiveTab('filing')} />
+          <TabButton label="Direct & Other Taxes" active={activeTab === 'direct-taxes'} onClick={() => setActiveTab('direct-taxes')} />
           <TabButton label="Forensics Audit" active={activeTab === 'forensics'} onClick={() => setActiveTab('forensics')} />
           <TabButton
             label="Risk Feed"
@@ -398,6 +631,22 @@ export default function TaxCommandCenter() {
           onFileGst={fileGst}
         />
       )}
+      {activeTab === 'direct-taxes' && (
+        <DirectTaxesTab
+          filings={filingsList}
+          loading={loadingFilings}
+          subTab={taxSubTab}
+          setSubTab={setTaxSubTab}
+          itr={{ name: itrName, setName: setItrName, pan: itrPan, setPan: setItrPan, ay: itrAY, setAy: setItrAY, salary: itrSalary, setSalary: setItrSalary, business: itrBusiness, setBusiness: setItrBusiness, other: itrOther, setOther: setItrOther, deductions: itrDeductions, setDeductions: setItrDeductions }}
+          corp={{ name: corpName, setName: setCorpName, id: corpId, setId: setCorpId, year: corpYear, setYear: setCorpYear, revenue: corpRevenue, setRevenue: setCorpRevenue, opex: corpOpex, setOpex: setCorpOpex, interest: corpInterest, setInterest: setCorpInterest }}
+          vat={{ name: vatName, setName: setVatName, gstin: vatGstin, setGstin: setVatGstin, period: vatPeriod, setPeriod: setVatPeriod, sales: vatSales, setSales: setVatSales, purchases: vatPurchases, setPurchases: setVatPurchases, rate: vatRate, setRate: setVatRate }}
+          onFileItr={handleFileItr}
+          onFileCorp={handleFileCorporate}
+          onFileVat={handleFileVat}
+          onPay={setSelectedFiling}
+          isFiling={isFiling}
+        />
+      )}
       {activeTab === 'forensics' && (
         <ForensicsTab
           benford={benfordData}
@@ -407,6 +656,21 @@ export default function TaxCommandCenter() {
         />
       )}
       {activeTab === 'alerts' && <AlertsTab alerts={alerts} isAutonomous={alertsAutonomous} />}
+
+      {selectedFiling && (
+        <PaymentGatewayModal
+          filing={selectedFiling}
+          onClose={() => setSelectedFiling(null)}
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          card={{ holder: cardHolder, setHolder: setCardHolder, number: cardNumber, setNumber: setCardNumber, expiry: cardExpiry, setExpiry: setCardExpiry, cvv: cardCvv, setCvv: setCardCvv }}
+          ach={{ bank: achBank, setBank: setAchBank, routing: achRouting, setRouting: setAchRouting, account: achAccount, setAccount: setAchAccount }}
+          crypto={{ wallet: cryptoWallet, setWallet: setCryptoWallet, connected: cryptoConnected, connecting: cryptoConnecting, connect: connectCryptoWallet }}
+          onPay={handlePayLiability}
+          isPaying={isPaying}
+          error={payError}
+        />
+      )}
     </div>
   );
 }
@@ -984,3 +1248,772 @@ function extractAmount(text: string): number | null {
   const parsed = Number.parseFloat(amountMatch[1].replace(/,/g, ''));
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
 }
+
+function DirectTaxesTab({
+  filings,
+  loading,
+  subTab,
+  setSubTab,
+  itr,
+  corp,
+  vat,
+  onFileItr,
+  onFileCorp,
+  onFileVat,
+  onPay,
+  isFiling,
+}: {
+  filings: any[];
+  loading: boolean;
+  subTab: 'itr' | 'corp' | 'vat';
+  setSubTab: (tab: 'itr' | 'corp' | 'vat') => void;
+  itr: any;
+  corp: any;
+  vat: any;
+  onFileItr: (e: React.FormEvent) => void;
+  onFileCorp: (e: React.FormEvent) => void;
+  onFileVat: (e: React.FormEvent) => void;
+  onPay: (filing: any) => void;
+  isFiling: boolean;
+}) {
+  const getItrEstimate = () => {
+    const gross = Number(itr.salary) + Number(itr.business) + Number(itr.other);
+    const taxable = Math.max(0, gross - Number(itr.deductions));
+    let tax = 0.0;
+    let ti = taxable;
+    if (ti > 1500000) { tax += (ti - 1500000) * 0.30; ti = 1500000; }
+    if (ti > 1200000) { tax += (ti - 1200000) * 0.20; ti = 1200000; }
+    if (ti > 900000) { tax += (ti - 900000) * 0.15; ti = 900000; }
+    if (ti > 600000) { tax += (ti - 600000) * 0.10; ti = 600000; }
+    if (ti > 300000) { tax += (ti - 300000) * 0.05; }
+    return tax;
+  };
+
+  const getCorpEstimate = () => {
+    const profit = Math.max(0, Number(corp.revenue) - Number(corp.opex) - Number(corp.interest));
+    return profit * 0.25;
+  };
+
+  const getVatEstimate = () => {
+    return Math.max(0, (Number(vat.sales) - Number(vat.purchases)) * (Number(vat.rate) / 100));
+  };
+
+  const activeEstimate = subTab === 'itr' ? getItrEstimate() : subTab === 'corp' ? getCorpEstimate() : getVatEstimate();
+
+  return (
+    <div className="space-y-6 animate-in fade-in duration-300">
+      <div className="grid grid-cols-12 gap-6">
+        
+        {/* Filing Forms Panel */}
+        <div className="col-span-12 lg:col-span-7">
+          <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-2xl">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-6">
+              <h3 className="text-base font-bold text-[var(--text-primary)] flex items-center gap-2">
+                <Receipt className="text-credit-line-500" size={18} /> Tax Returns Filing
+              </h3>
+              
+              <div className="flex gap-1 bg-[var(--bg-secondary)] p-1 rounded-xl border border-[var(--border-primary)] w-fit">
+                <button
+                  onClick={() => setSubTab('itr')}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all",
+                    subTab === 'itr' ? "bg-credit-line-500 text-white shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  )}
+                  type="button"
+                >
+                  ITR (Income Tax)
+                </button>
+                <button
+                  onClick={() => setSubTab('corp')}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all",
+                    subTab === 'corp' ? "bg-credit-line-500 text-white shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  )}
+                  type="button"
+                >
+                  Corporate
+                </button>
+                <button
+                  onClick={() => setSubTab('vat')}
+                  className={cn(
+                    "px-3 py-1.5 text-xs font-semibold rounded-lg transition-all",
+                    subTab === 'vat' ? "bg-credit-line-500 text-white shadow-sm" : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  )}
+                  type="button"
+                >
+                  VAT / Sales
+                </button>
+              </div>
+            </div>
+
+            {/* Income Tax Form */}
+            {subTab === 'itr' && (
+              <form onSubmit={onFileItr} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Taxpayer Name</span>
+                    <input
+                      type="text"
+                      value={itr.name}
+                      onChange={(e) => itr.setName(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">PAN (Tax Identifier)</span>
+                    <input
+                      type="text"
+                      maxLength={10}
+                      value={itr.pan}
+                      onChange={(e) => itr.setPan(e.target.value)}
+                      placeholder="ABCDE1234F"
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] font-mono placeholder-[var(--text-tertiary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Assessment Year</span>
+                    <input
+                      type="text"
+                      value={itr.ay}
+                      onChange={(e) => itr.setAy(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Salary Income (INR)</span>
+                    <input
+                      type="number"
+                      value={itr.salary}
+                      onChange={(e) => itr.setSalary(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Business profits (INR)</span>
+                    <input
+                      type="number"
+                      value={itr.business}
+                      onChange={(e) => itr.setBusiness(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Other Income (INR)</span>
+                    <input
+                      type="number"
+                      value={itr.other}
+                      onChange={(e) => itr.setOther(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Deductions (INR)</span>
+                    <input
+                      type="number"
+                      value={itr.deductions}
+                      onChange={(e) => itr.setDeductions(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isFiling}
+                  className="w-full bg-[#00E676] hover:bg-[#00C853] text-black font-extrabold text-xs py-3 rounded-xl transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 mt-4"
+                >
+                  {isFiling ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  File ITR Return
+                </button>
+              </form>
+            )}
+
+            {/* Corporate Tax Form */}
+            {subTab === 'corp' && (
+              <form onSubmit={onFileCorp} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Corporate Name</span>
+                    <input
+                      type="text"
+                      value={corp.name}
+                      onChange={(e) => corp.setName(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Corporate ID (CIN)</span>
+                    <input
+                      type="text"
+                      value={corp.id}
+                      onChange={(e) => corp.setId(e.target.value)}
+                      placeholder="L12345KA2020PTC123456"
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] font-mono placeholder-[var(--text-tertiary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Financial Year</span>
+                    <input
+                      type="text"
+                      value={corp.year}
+                      onChange={(e) => corp.setYear(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Annual Gross Revenue (INR)</span>
+                    <input
+                      type="number"
+                      value={corp.revenue}
+                      onChange={(e) => corp.setRevenue(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Operating Expenses (OPEX)</span>
+                    <input
+                      type="number"
+                      value={corp.opex}
+                      onChange={(e) => corp.setOpex(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Interest Paid on Credit Lines</span>
+                    <input
+                      type="number"
+                      value={corp.interest}
+                      onChange={(e) => corp.setInterest(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isFiling}
+                  className="w-full bg-[#00E676] hover:bg-[#00C853] text-black font-extrabold text-xs py-3 rounded-xl transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 mt-4"
+                >
+                  {isFiling ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  File Corporate Return
+                </button>
+              </form>
+            )}
+
+            {/* VAT / Sales Tax Form */}
+            {subTab === 'vat' && (
+              <form onSubmit={onFileVat} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Business Name</span>
+                    <input
+                      type="text"
+                      value={vat.name}
+                      onChange={(e) => vat.setName(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">GSTIN / VAT ID</span>
+                    <input
+                      type="text"
+                      value={vat.gstin}
+                      onChange={(e) => vat.setGstin(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] font-mono placeholder-[var(--text-tertiary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Filing Period</span>
+                    <input
+                      type="text"
+                      value={vat.period}
+                      onChange={(e) => vat.setPeriod(e.target.value)}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Taxable Sales Turnover (INR)</span>
+                    <input
+                      type="number"
+                      value={vat.sales}
+                      onChange={(e) => vat.setSales(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Taxable Purchase Turnover (INR)</span>
+                    <input
+                      type="number"
+                      value={vat.purchases}
+                      onChange={(e) => vat.setPurchases(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500 font-mono"
+                    />
+                  </label>
+                  <label className="space-y-1.5 flex flex-col">
+                    <span className="text-[10px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">VAT / GST Rate (%)</span>
+                    <select
+                      value={vat.rate}
+                      onChange={(e) => vat.setRate(Number(e.target.value))}
+                      className="rounded-xl border border-[var(--border-primary)] bg-[var(--bg-secondary)] px-3 py-2.5 text-xs text-[var(--text-primary)] outline-none focus:border-credit-line-500"
+                    >
+                      <option value={5}>5%</option>
+                      <option value={12}>12%</option>
+                      <option value={18}>18%</option>
+                      <option value={28}>28%</option>
+                    </select>
+                  </label>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isFiling}
+                  className="w-full bg-[#00E676] hover:bg-[#00C853] text-black font-extrabold text-xs py-3 rounded-xl transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 mt-4"
+                >
+                  {isFiling ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  File VAT Return
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+
+        {/* Live dynamic Preview Panel */}
+        <div className="col-span-12 lg:col-span-5">
+          <div className="card p-6 border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-2xl h-full flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-4 border-b border-[var(--border-primary)] pb-3">
+                <h3 className="text-sm font-bold text-[var(--text-primary)] flex items-center gap-2">
+                  <Activity size={16} className="text-credit-line-500" /> Audited Tax Preview
+                </h3>
+                <span className="badge text-[10px] text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-2 py-0.5 font-bold">
+                  On-The-Fly Calculations
+                </span>
+              </div>
+
+              <div className="space-y-4 font-mono text-xs">
+                {subTab === 'itr' && (
+                  <>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Gross Total Income:</span>
+                      <span className="text-[var(--text-primary)]">INR {(Number(itr.salary) + Number(itr.business) + Number(itr.other)).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Allowed Deductions:</span>
+                      <span className="text-risk-high">-INR {Number(itr.deductions).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Net Taxable Income:</span>
+                      <span className="text-[var(--text-primary)] font-bold">INR {Math.max(0, (Number(itr.salary) + Number(itr.business) + Number(itr.other)) - Number(itr.deductions)).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)] leading-normal text-[10px] text-[var(--text-tertiary)]">
+                      Standard dynamic slab calculations: Nil below 3L, 5% up to 6L, 10% up to 9L, 15% up to 12L, 20% up to 15L, and 30% above 15L.
+                    </div>
+                  </>
+                )}
+
+                {subTab === 'corp' && (
+                  <>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Gross Revenue:</span>
+                      <span className="text-[var(--text-primary)]">INR {Number(corp.revenue).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Allowable OPEX:</span>
+                      <span className="text-risk-high">-INR {Number(corp.opex).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Financial Interest:</span>
+                      <span className="text-risk-high">-INR {Number(corp.interest).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Net Taxable Profit:</span>
+                      <span className="text-[var(--text-primary)] font-bold">INR {Math.max(0, Number(corp.revenue) - Number(corp.opex) - Number(corp.interest)).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)] leading-normal text-[10px] text-[var(--text-tertiary)]">
+                      Corporate Income Tax rate flat 25% on net operating profits. Allowable OPEX is subject to GAAP auditing standards.
+                    </div>
+                  </>
+                )}
+
+                {subTab === 'vat' && (
+                  <>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Output Sales (VATable):</span>
+                      <span className="text-[var(--text-primary)] font-mono">INR {Number(vat.sales).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Input Purchases (ITC):</span>
+                      <span className="text-risk-low">-INR {Number(vat.purchases).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Net Value Added:</span>
+                      <span className="text-[var(--text-primary)]">INR {Math.max(0, Number(vat.sales) - Number(vat.purchases)).toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between border-b border-[var(--border-primary)] pb-2">
+                      <span className="text-[var(--text-secondary)]">Applicable Rate:</span>
+                      <span className="text-[var(--text-primary)]">{vat.rate}%</span>
+                    </div>
+                    <div className="p-3 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-primary)] leading-normal text-[10px] text-[var(--text-tertiary)]">
+                      Standard VAT / GST double-entry ledger offset matching. Net liability is computed as: Sales Output Tax minus Purchase Input Tax Credits.
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-6 border-t border-[var(--border-primary)] pt-4 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-[var(--text-tertiary)] font-bold uppercase tracking-wider block">Estimated Tax Liability</span>
+                <span className="text-2xl font-extrabold text-credit-line-500 tracking-tight mt-1">
+                  INR {activeEstimate.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                </span>
+              </div>
+              
+              <div className="bg-[var(--bg-secondary)] border border-[var(--border-primary)] rounded-xl p-3 flex items-center gap-2">
+                <Lock className="text-[var(--text-tertiary)]" size={14} />
+                <span className="text-[9px] font-mono text-[var(--text-tertiary)] uppercase tracking-wider">
+                  Secure Submission
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tax Filings Ledger List */}
+      <div className="card border border-[var(--border-primary)] bg-[var(--bg-card)] rounded-2xl overflow-hidden mt-6 animate-in fade-in duration-500">
+        <div className="border-b border-[var(--border-primary)] p-5 flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-primary)]">Direct & Corporate Tax filings ledger</h3>
+            <p className="text-xs text-[var(--text-tertiary)]">Ledger of returns, computed liabilities, and settlement state history</p>
+          </div>
+          {loading && <Loader2 size={16} className="animate-spin text-credit-line-500" />}
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm min-w-[900px]">
+            <thead className="bg-[var(--bg-secondary)] text-xs uppercase tracking-wider text-[var(--text-tertiary)] border-b border-[var(--border-primary)]">
+              <tr>
+                <th className="px-5 py-3.5">Filing ID</th>
+                <th className="px-5 py-3.5">Tax Category</th>
+                <th className="px-5 py-3.5">taxpayer / Entity</th>
+                <th className="px-5 py-3.5">Period</th>
+                <th className="px-5 py-3.5">Liability amount</th>
+                <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5">Settlement Info</th>
+                <th className="px-5 py-3.5" />
+              </tr>
+            </thead>
+            <tbody>
+              {filings.map((filing, index) => (
+                <tr key={filing.id || index} className="border-t border-[var(--border-primary)] hover:bg-[var(--bg-secondary)]/20">
+                  <td className="px-5 py-4 font-mono text-xs font-bold text-[var(--text-primary)]">{filing.id}</td>
+                  <td className="px-5 py-4">
+                    <span className={cn(
+                      "badge text-[10px] px-2 py-0.5 rounded-full font-bold",
+                      filing.tax_type === 'ITR' ? 'text-blue-400 bg-blue-400/10' : filing.tax_type === 'GST' ? 'text-amber-400 bg-amber-400/10' : 'text-purple-400 bg-purple-400/10'
+                    )}>
+                      {filing.tax_type}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4">
+                    <div className="text-xs font-semibold text-[var(--text-primary)]">{filing.taxpayer_name}</div>
+                    <div className="text-[10px] text-[var(--text-tertiary)] font-mono">{filing.taxpayer_id}</div>
+                  </td>
+                  <td className="px-5 py-4 text-xs font-medium text-[var(--text-secondary)]">{filing.period}</td>
+                  <td className="px-5 py-4 font-mono text-xs font-bold text-[var(--text-primary)]">
+                    INR {filing.liability.toLocaleString('en-IN')}
+                  </td>
+                  <td className="px-5 py-4">
+                    <span className={cn(
+                      "badge text-[10px] px-2 py-0.5 rounded-full font-extrabold flex items-center gap-1 w-fit",
+                      filing.status === 'PAID' ? 'text-emerald-400 bg-emerald-400/10' : 'text-rose-400 bg-rose-400/10'
+                    )}>
+                      {filing.status === 'PAID' ? (
+                        <>
+                          <CheckCircle2 size={10} />
+                          Settled
+                        </>
+                      ) : 'Awaiting Payment'}
+                    </span>
+                  </td>
+                  <td className="px-5 py-4 text-[10px] font-mono text-[var(--text-tertiary)]">
+                    {filing.payment_details ? (
+                      <div>
+                        Paid via <span className="text-[var(--text-primary)] font-bold">{filing.payment_details.method}</span> ({filing.payment_details.account_mask})
+                        <div className="text-[9px] text-[var(--text-tertiary)] mt-0.5">{new Date(filing.payment_details.timestamp).toLocaleString()}</div>
+                      </div>
+                    ) : (
+                      <span className="text-[var(--text-tertiary)] font-semibold">—</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-4 text-right">
+                    {filing.status !== 'PAID' && filing.liability > 0 && (
+                      <button
+                        onClick={() => onPay(filing)}
+                        className="bg-credit-line-500 hover:bg-credit-line-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+                        type="button"
+                      >
+                        Pay now
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PaymentGatewayModal({
+  filing,
+  onClose,
+  paymentMethod,
+  setPaymentMethod,
+  card,
+  ach,
+  crypto,
+  onPay,
+  isPaying,
+  error,
+}: {
+  filing: any;
+  onClose: () => void;
+  paymentMethod: 'CARD' | 'ACH' | 'CRYPTO';
+  setPaymentMethod: (method: 'CARD' | 'ACH' | 'CRYPTO') => void;
+  card: any;
+  ach: any;
+  crypto: any;
+  onPay: () => void;
+  isPaying: boolean;
+  error: string | null;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-md bg-[#0D0D11] border border-zinc-800 rounded-3xl p-6 shadow-2xl relative animate-in zoom-in-95 duration-200">
+        
+        {/* Modal Header */}
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-4 mb-4">
+          <div>
+            <h3 className="text-sm font-bold text-[var(--text-tertiary)] uppercase tracking-wider">Tax Checkout Gateway</h3>
+            <div className="text-xs font-semibold text-[var(--text-secondary)] mt-1 font-mono">Filing ID: <span className="text-[var(--text-primary)]">{filing.id}</span></div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all font-mono text-sm"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Amount to Settle */}
+        <div className="bg-zinc-950 p-4 rounded-2xl border border-zinc-900 text-center mb-5">
+          <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider block">Total Tax Liability to Settle</span>
+          <span className="text-3xl font-extrabold text-[#00E676] tracking-tight block mt-1 font-mono">
+            INR {filing.liability.toLocaleString('en-IN')}
+          </span>
+          <span className="text-[10px] text-[var(--text-secondary)] mt-1 block font-semibold">Payee: {filing.taxpayer_name}</span>
+        </div>
+
+        {/* Method Selectors */}
+        <div className="grid grid-cols-3 gap-2 mb-5">
+          <button
+            onClick={() => setPaymentMethod('CARD')}
+            className={cn(
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-bold transition-all",
+              paymentMethod === 'CARD' ? "border-[#00E676] bg-[#00E676]/5 text-white" : "border-zinc-800 bg-zinc-900/30 text-zinc-400 hover:text-white"
+            )}
+            type="button"
+          >
+            <CreditCard size={16} />
+            Card
+          </button>
+          <button
+            onClick={() => setPaymentMethod('ACH')}
+            className={cn(
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-bold transition-all",
+              paymentMethod === 'ACH' ? "border-[#00E676] bg-[#00E676]/5 text-white" : "border-zinc-800 bg-zinc-900/30 text-zinc-400 hover:text-white"
+            )}
+            type="button"
+          >
+            <Building size={16} />
+            ACH Bank
+          </button>
+          <button
+            onClick={() => setPaymentMethod('CRYPTO')}
+            className={cn(
+              "flex flex-col items-center gap-1.5 p-3 rounded-xl border text-xs font-bold transition-all",
+              paymentMethod === 'CRYPTO' ? "border-[#00E676] bg-[#00E676]/5 text-white" : "border-zinc-800 bg-zinc-900/30 text-zinc-400 hover:text-white"
+            )}
+            type="button"
+          >
+            <Wallet size={16} />
+            Web3
+          </button>
+        </div>
+
+        {/* Payment Forms */}
+        <div className="space-y-4 min-h-[140px]">
+          
+          {/* Card Form */}
+          {paymentMethod === 'CARD' && (
+            <div className="space-y-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Cardholder Name</span>
+                <input
+                  type="text"
+                  value={card.holder}
+                  onChange={(e) => card.setHolder(e.target.value)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white outline-none focus:border-[#00E676]"
+                />
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <label className="col-span-2 flex flex-col gap-1">
+                  <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Card number</span>
+                  <input
+                    type="text"
+                    value={card.number}
+                    onChange={(e) => card.setNumber(e.target.value)}
+                    className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white font-mono outline-none focus:border-[#00E676]"
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">CVV</span>
+                  <input
+                    type="password"
+                    maxLength={3}
+                    value={card.cvv}
+                    onChange={(e) => card.setCvv(e.target.value)}
+                    className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white font-mono outline-none focus:border-[#00E676]"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* ACH Form */}
+          {paymentMethod === 'ACH' && (
+            <div className="space-y-3">
+              <label className="flex flex-col gap-1">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Bank Name</span>
+                <input
+                  type="text"
+                  value={ach.bank}
+                  onChange={(e) => ach.setBank(e.target.value)}
+                  className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white outline-none focus:border-[#00E676]"
+                />
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <label className="flex flex-col gap-1">
+                  <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Routing Number</span>
+                  <input
+                    type="text"
+                    value={ach.routing}
+                    onChange={(e) => ach.setRouting(e.target.value)}
+                    className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white font-mono outline-none focus:border-[#00E676]"
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Account number</span>
+                  <input
+                    type="text"
+                    value={ach.account}
+                    onChange={(e) => ach.setAccount(e.target.value)}
+                    className="rounded-xl border border-zinc-800 bg-zinc-950 px-3 py-2 text-xs text-white font-mono outline-none focus:border-[#00E676]"
+                  />
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Web3 Form */}
+          {paymentMethod === 'CRYPTO' && (
+            <div className="flex flex-col items-center justify-center py-4 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/40 gap-3">
+              {crypto.connected ? (
+                <>
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                    <Check className="text-emerald-400" size={16} />
+                  </div>
+                  <div className="text-center">
+                    <span className="text-[10px] text-zinc-500 font-bold uppercase block">Wallet Connected</span>
+                    <span className="font-mono text-xs text-white mt-0.5 block">{crypto.wallet.slice(0,8)}...{crypto.wallet.slice(-6)}</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Wallet className="text-zinc-600" size={24} />
+                  <button
+                    onClick={crypto.connect}
+                    disabled={crypto.connecting}
+                    className="px-4 py-2 bg-credit-line-500 hover:bg-credit-line-600 text-white rounded-xl text-xs font-semibold shadow-sm transition-all animate-pulse"
+                    type="button"
+                  >
+                    {crypto.connecting ? (
+                      <span className="flex items-center gap-1.5">
+                        <Loader2 size={12} className="animate-spin" />
+                        Connecting...
+                      </span>
+                    ) : 'Connect Web3 Wallet'}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
+        </div>
+
+        {error && (
+          <div className="mt-4 rounded-xl border border-risk-high/20 bg-risk-high/8 p-3 text-xs font-bold text-risk-high font-mono">
+            {error}
+          </div>
+        )}
+
+        {/* Submit Payment button */}
+        <div className="border-t border-zinc-850 mt-5 pt-4">
+          <button
+            onClick={onPay}
+            disabled={isPaying || (paymentMethod === 'CRYPTO' && !crypto.connected)}
+            className="w-full bg-[#00E676] hover:bg-[#00C853] text-black font-extrabold text-xs py-3.5 rounded-xl transition-all shadow-md uppercase tracking-wider flex items-center justify-center gap-2 disabled:opacity-50"
+            type="button"
+          >
+            {isPaying ? (
+              <>
+                <Loader2 size={14} className="animate-spin" />
+                Settling tax transaction...
+              </>
+            ) : (
+              <>
+                <Lock size={14} />
+                Settle Payment
+              </>
+            )}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+

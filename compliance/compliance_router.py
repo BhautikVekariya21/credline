@@ -44,6 +44,36 @@ _monitor = CriticalTransactionMonitor()
 _notifier = NotificationService()
 _recon_engine = ReconciliationEngine()
 
+# In-memory tax filings database for simulation
+_tax_filings: dict[str, dict[str, Any]] = {
+    "TAX-GST-001": {
+        "id": "TAX-GST-001",
+        "tax_type": "GST",
+        "period": "052026",
+        "taxpayer_name": "Credit Line Inc.",
+        "taxpayer_id": "29ABCDE1234F1Z5",
+        "liability": 33100.0,
+        "status": "UNPAID",
+        "created_at": "2026-05-25T10:00:00Z",
+        "payment_details": None
+    },
+    "TAX-ITR-001": {
+        "id": "TAX-ITR-001",
+        "tax_type": "ITR",
+        "period": "AY 2026-27",
+        "taxpayer_name": "Credit Line Inc.",
+        "taxpayer_id": "PAN1234567A",
+        "liability": 1250000.0,
+        "status": "PAID",
+        "created_at": "2026-04-15T09:30:00Z",
+        "payment_details": {
+            "method": "ACH",
+            "account_mask": "******4567",
+            "timestamp": "2026-04-16T14:22:10Z"
+        }
+    }
+}
+
 
 # ─── Request/Response Models ─────────────────────────────────────────
 
@@ -201,7 +231,22 @@ async def file_gst_return(req: GSTFilingRequest):
     except GSTPortalSubmissionError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
+    # Register in our tax filing ledger
+    filing_id = f"TAX-GST-{uuid.uuid4().hex[:6].upper()}"
+    _tax_filings[filing_id] = {
+        "id": filing_id,
+        "tax_type": "GST",
+        "period": req.period,
+        "taxpayer_name": "Credit Line Inc.",
+        "taxpayer_id": req.gstin.upper(),
+        "liability": float(gst_return.net_liability),
+        "status": "UNPAID" if gst_return.net_liability > 0 else "PAID",
+        "created_at": datetime.now().isoformat() + "Z",
+        "payment_details": None
+    }
+
     return {
+        "id": filing_id,
         "gstin": req.gstin,
         "period": req.period,
         "summary": summary,
@@ -351,6 +396,147 @@ async def reconciliation_status():
     }
 
 
+# ─── Direct & Corporate Tax filing and Payment Acceptance ─────────────
+
+class ITRFilingRequest(BaseModel):
+    taxpayer_name: str
+    pan: str = Field(..., min_length=10, max_length=10)
+    assessment_year: str = "2026-27"
+    salary_income: float = 0.0
+    business_income: float = 0.0
+    other_income: float = 0.0
+    deductions: float = 0.0
+
+class CorporateTaxFilingRequest(BaseModel):
+    entity_name: str
+    corporate_id: str
+    tax_year: str = "2026"
+    revenue: float
+    opex: float
+    interest_paid: float = 0.0
+
+class TaxPaymentRequest(BaseModel):
+    filing_id: str
+    payment_method: str  # CARD, ACH, CRYPTO
+    payment_details: dict[str, Any]
+    amount: float
+
+@router.post("/tax/file-itr")
+async def file_itr(req: ITRFilingRequest):
+    """File an Income Tax Return (ITR) and compute tax using standard slab rates."""
+    gross_income = req.salary_income + req.business_income + req.other_income
+    taxable_income = max(0.0, gross_income - req.deductions)
+    
+    # Calculate tax based on standard Indian slab rates
+    tax = 0.0
+    ti = taxable_income
+    if ti > 1500000:
+        tax += (ti - 1500000) * 0.30
+        ti = 1500000
+    if ti > 1200000:
+        tax += (ti - 1200000) * 0.20
+        ti = 1200000
+    if ti > 900000:
+        tax += (ti - 900000) * 0.15
+        ti = 900000
+    if ti > 600000:
+        tax += (ti - 600000) * 0.10
+        ti = 600000
+    if ti > 300000:
+        tax += (ti - 300000) * 0.05
+    
+    filing_id = f"TAX-ITR-{uuid.uuid4().hex[:6].upper()}"
+    filing = {
+        "id": filing_id,
+        "tax_type": "ITR",
+        "period": f"AY {req.assessment_year}",
+        "taxpayer_name": req.taxpayer_name,
+        "taxpayer_id": req.pan.upper(),
+        "liability": round(tax, 2),
+        "status": "UNPAID" if tax > 0 else "PAID",
+        "created_at": datetime.now().isoformat() + "Z",
+        "payment_details": None,
+        "meta": {
+            "gross_income": gross_income,
+            "taxable_income": taxable_income,
+        }
+    }
+    _tax_filings[filing_id] = filing
+    return filing
+
+@router.post("/tax/file-corporate")
+async def file_corporate(req: CorporateTaxFilingRequest):
+    """File corporate tax return. Flat 25% tax on net profit."""
+    net_profit = max(0.0, req.revenue - req.opex - req.interest_paid)
+    tax = net_profit * 0.25
+    
+    filing_id = f"TAX-CORP-{uuid.uuid4().hex[:6].upper()}"
+    filing = {
+        "id": filing_id,
+        "tax_type": "Corporate Tax",
+        "period": f"FY {req.tax_year}",
+        "taxpayer_name": req.entity_name,
+        "taxpayer_id": req.corporate_id.upper(),
+        "liability": round(tax, 2),
+        "status": "UNPAID" if tax > 0 else "PAID",
+        "created_at": datetime.now().isoformat() + "Z",
+        "payment_details": None,
+        "meta": {
+            "revenue": req.revenue,
+            "opex": req.opex,
+            "net_profit": net_profit
+        }
+    }
+    _tax_filings[filing_id] = filing
+    return filing
+
+@router.post("/tax/pay-liability")
+async def pay_tax_liability(req: TaxPaymentRequest):
+    """Pay outstanding tax liability using card, ACH, or web3 crypto wallet."""
+    if req.filing_id not in _tax_filings:
+        raise HTTPException(status_code=404, detail="Tax filing entry not found")
+    
+    filing = _tax_filings[req.filing_id]
+    if filing["status"] == "PAID":
+        return {"success": True, "message": "Filing is already paid", "filing": filing}
+        
+    if req.amount < filing["liability"] - 0.1:
+        raise HTTPException(status_code=400, detail="Insufficient payment amount to cover liability")
+    
+    payment_method = req.payment_method.upper()
+    mask = ""
+    if payment_method == "CARD":
+        card_num = req.payment_details.get("card_number", "")
+        mask = f"Ending in {card_num[-4:]}" if len(card_num) >= 4 else "Card"
+    elif payment_method == "ACH":
+        acc_num = req.payment_details.get("account_number", "")
+        mask = f"Ending in {acc_num[-4:]}" if len(acc_num) >= 4 else "Bank Acc"
+    elif payment_method == "CRYPTO":
+        wallet = req.payment_details.get("wallet_address", "")
+        mask = f"{wallet[:6]}...{wallet[-4:]}" if len(wallet) >= 10 else "Web3 Wallet"
+    else:
+        raise HTTPException(status_code=400, detail="Unsupported payment method")
+        
+    filing["status"] = "PAID"
+    filing["payment_details"] = {
+        "method": payment_method,
+        "account_mask": mask,
+        "timestamp": datetime.now().isoformat() + "Z",
+        "tx_hash": f"TXH-{uuid.uuid4().hex[:12].upper()}"
+    }
+    
+    return {
+        "success": True,
+        "message": "Payment accepted and filing settled",
+        "filing": filing
+    }
+
+@router.get("/tax/filings")
+async def get_tax_filings():
+    """Get all filed returns."""
+    return list(_tax_filings.values())
+
+
 # ─── Compatibility Router for Frontend ──────────────────────────────
 compat_router = APIRouter(prefix="/compliance", tags=["Compliance Compatibility"])
 
@@ -401,4 +587,21 @@ async def get_cfo_summary():
     cfo = CFOExecutiveNarrative()
     summary = await cfo.generate_summary(financial_data, anomaly_report)
     return {"summary": summary}
+
+
+@compat_router.get("/tax/filings")
+async def get_compat_tax_filings():
+    return await get_tax_filings()
+
+@compat_router.post("/tax/file-itr")
+async def post_compat_file_itr(req: ITRFilingRequest):
+    return await file_itr(req)
+
+@compat_router.post("/tax/file-corporate")
+async def post_compat_file_corporate(req: CorporateTaxFilingRequest):
+    return await file_corporate(req)
+
+@compat_router.post("/tax/pay-liability")
+async def post_compat_pay_liability(req: TaxPaymentRequest):
+    return await pay_tax_liability(req)
 
